@@ -33,6 +33,11 @@ New to Arduino? Follow the
 [illustrated flashing guide](docs/FLASHING-WITH-ARDUINO.md) for screenshots of
 every board, port, build-option, and upload step.
 
+Prefer a formatted web guide? Open the
+[Advatek Labs Contact Trigger guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).
+Every page can be printed or saved as a clean PDF, and its editable Markdown
+source can be downloaded directly.
+
 1. Install [Arduino IDE](https://www.arduino.cc/en/software) and Espressif
    **Arduino-ESP32 3.3.10**.
 2. Extract and open the downloaded Arduino folder.
@@ -151,11 +156,16 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 
 ## Documentation
 
+The guides below are also published as a responsive
+[GitHub Pages documentation site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/)
+with dark/light themes and per-guide PDF/Markdown export controls.
+
 | Guide | Audience |
 | --- | --- |
 | [Illustrated Arduino flashing guide](docs/FLASHING-WITH-ARDUINO.md) | Non-technical users installing a release |
 | [Getting started](docs/GETTING-STARTED.md) | First-time Arduino and commissioning users |
 | [Industrial 8DI getting started](docs/GETTING-STARTED-8DI-8RO.md) | Users of the isolated-input DIN-rail board |
+| [Software user guide](docs/USER-GUIDE.md) | Operators using a flashed and commissioned controller |
 | [Hardware and project pinout](docs/HARDWARE.md) | First-time buyers and installers |
 | [Wiring](WIRING.md) | Installers wiring dry contacts |
 | [Protected contact inputs](docs/PROTECTED-CONTACT-INPUTS.md) | Builders adding cable and ground protection |

@@ -1,6 +1,7 @@
 node_modules/
 .pnpm-store/
 web/dist/
+site/
 build/
 .build/
 .pio/

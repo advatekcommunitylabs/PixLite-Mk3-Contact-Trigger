@@ -7,9 +7,10 @@ that project for its component licenses.
 by **jsmn**, Copyright (c) 2010 Serge A. Zaitsev, distributed under the MIT
 License.
 
-The maintainer UI uses Vite, TypeScript, Vitest and their transitive
-development dependencies. They are build/test tools and are not shipped as
-runtime libraries; their license metadata is recorded in `pnpm-lock.yaml`.
+The maintainer UI and documentation site use Vite, TypeScript, Vitest, Marked
+and their transitive development dependencies. They are build/test tools and
+are not shipped in the ESP32 firmware; their license metadata is recorded in
+`pnpm-lock.yaml`.
 
 PixLite API and ADAR documentation are used as protocol specifications with
 authorization from Advatek. Those documents are not redistributed here.

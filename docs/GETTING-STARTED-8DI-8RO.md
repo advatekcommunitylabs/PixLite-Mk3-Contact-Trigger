@@ -101,3 +101,6 @@ TF-card slot inactive. No extra Arduino libraries are required.
 7. Repeat for DI2–DI8 before treating the profile as hardware-ready.
 
 Do not connect loads to the relay terminals for this bring-up.
+
+After commissioning, use the short [software user guide](USER-GUIDE.md) for
+normal operation, input editing, backups, and diagnostics.

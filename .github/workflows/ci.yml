@@ -27,6 +27,7 @@ jobs:
       - run: pnpm test
       - run: mkdir -p build && pnpm test:native
       - run: pnpm check:docs
+      - run: pnpm check:docs-site
       - run: pnpm build:web
       - run: pnpm check:generated
       - name: Embedded UI size budget

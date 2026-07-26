@@ -160,6 +160,9 @@ interference.
 
 Backups deliberately omit Wi-Fi, PixLite, recovery, and interface passwords.
 
+For normal operation after commissioning, continue with the short
+[software user guide](USER-GUIDE.md).
+
 ## Recovery
 
 - Hold **BOOT** for 5–14 seconds and release while the LED flashes to clear
