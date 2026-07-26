@@ -9,6 +9,10 @@ For the DIN-rail ESP32-S3-(POE)-ETH-8DI-8RO with built-in isolated inputs, use
 the separate [industrial 8DI getting-started guide](GETTING-STARTED-8DI-8RO.md)
 and its board-specific Arduino download.
 
+If this is your first ESP32 upload, begin with the
+[illustrated Arduino flashing guide](FLASHING-WITH-ARDUINO.md), then return
+here for wiring and commissioning.
+
 ## What you need
 
 - Waveshare ESP32-S3-ETH / ESP32-S3R8.
@@ -35,7 +39,7 @@ a separate Arduino board definition.
 ## 2. Open the generated sketch
 
 Download the
-[latest same-named Arduino folder zip](../../../releases/latest/download/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip).
+[v1.0.0-beta.6 same-named Arduino folder zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip).
 It is the easiest and least error-prone release artifact:
 
 1. Extract the downloaded zip.

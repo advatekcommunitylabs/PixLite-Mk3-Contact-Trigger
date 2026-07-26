@@ -30,6 +30,21 @@ subsequently flashed and passed the regression checks recorded next; its
 physical GPIO flow still needs one repeat before all beta.3 evidence can be
 carried forward.
 
+## Beta.6 Arduino-release flashing check (2026-07-26)
+
+- The generated Pico-header development-board sketch was opened directly in
+  Arduino IDE 2.3.10 with Espressif Arduino-ESP32 3.3.10.
+- `ESP32S3 Dev Module`, 16 MB Flash, Huge APP, OPI PSRAM, Hardware CDC/JTAG,
+  and USB CDC on boot were selected before upload.
+- The IDE compiled the single-file convenience artifact, wrote and verified
+  the image over USB, and reset the physical board successfully.
+- The post-upload banner reported firmware 1.0.0-beta.6, board profile
+  `waveshare-esp32-s3-eth` 1.2.0, 16,777,216-byte flash, 8,388,608-byte PSRAM,
+  and normal memory mode.
+- The public [illustrated Arduino flashing guide](docs/FLASHING-WITH-ARDUINO.md)
+  uses screenshots captured during this upload. Unit-specific network
+  addresses are not included.
+
 ## Beta.5 regression (2026-07-26)
 
 - Schema v4 migrated to v5 without losing hostname, PixLite identity,

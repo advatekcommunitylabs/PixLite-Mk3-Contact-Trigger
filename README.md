@@ -29,6 +29,10 @@ same-named folder, and double-click its `.ino`. No source files need to be
 copied or edited. Repository builds are also available under
 [`generated/`](generated/).
 
+New to Arduino? Follow the
+[illustrated flashing guide](docs/FLASHING-WITH-ARDUINO.md) for screenshots of
+every board, port, build-option, and upload step.
+
 1. Install [Arduino IDE](https://www.arduino.cc/en/software) and Espressif
    **Arduino-ESP32 3.3.10**.
 2. Extract and open the downloaded Arduino folder.
@@ -149,6 +153,7 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 
 | Guide | Audience |
 | --- | --- |
+| [Illustrated Arduino flashing guide](docs/FLASHING-WITH-ARDUINO.md) | Non-technical users installing a release |
 | [Getting started](docs/GETTING-STARTED.md) | First-time Arduino and commissioning users |
 | [Industrial 8DI getting started](docs/GETTING-STARTED-8DI-8RO.md) | Users of the isolated-input DIN-rail board |
 | [Hardware and project pinout](docs/HARDWARE.md) | First-time buyers and installers |

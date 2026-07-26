@@ -8,10 +8,14 @@ The target is compile-supported but remains hardware-validation-pending until
 the ordered boards complete the checklist in
 [HARDWARE-TESTS.md](../HARDWARE-TESTS.md).
 
+First-time Arduino users should follow the
+[illustrated flashing guide](FLASHING-WITH-ARDUINO.md). It shows the shared
+ESP32-S3 board settings and upload process with real Arduino IDE screenshots.
+
 ## Download the correct build
 
 Download
-[AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip](../../../releases/latest/download/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip),
+[AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip),
 extract it, and open the same-named `.ino` file. Do not use the
 `ESP32-S3-ETH` sketch: its Ethernet and input pins are different.
 
