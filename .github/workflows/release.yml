@@ -1,0 +1,72 @@
+name: Release artifacts
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:native
+      - run: pnpm check:docs
+      - run: pnpm build:web
+      - run: pnpm check:generated
+      - name: Generate revision-stamped release sketch
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: pnpm build:sketch
+      - name: Build checksums
+        run: |
+          cp compatibility.json generated/
+          cp WIRING.md generated/
+          cp docs/GETTING-STARTED.md generated/GETTING-STARTED.md
+          cp docs/HARDWARE.md generated/HARDWARE.md
+          cp docs/waveshare-esp32-s3-eth-project-pinout.svg generated/
+          cp docs/waveshare-esp32-s3-eth-8di-8ro-inputs.svg generated/
+          cp HARDWARE-TESTS.md generated/
+          cp LICENSE generated/
+          cp docs/RELEASE-START-HERE.md generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH/START-HERE.md
+          cp docs/waveshare-esp32-s3-eth-project-pinout.svg generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH/
+          cp docs/RELEASE-START-8DI-8RO.md generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/START-HERE.md
+          cp docs/waveshare-esp32-s3-eth-8di-8ro-inputs.svg generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/
+          cd generated
+          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH/
+          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/
+          sha256sum *.ino *.zip compatibility.json WIRING.md GETTING-STARTED.md HARDWARE.md *.svg HARDWARE-TESTS.md LICENSE > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: advatek-trigger-${{ github.ref_name }}
+          path: generated/
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Advatek Trigger ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          files: |
+            generated/*.ino
+            generated/*.zip
+            generated/SHA256SUMS.txt
+            generated/compatibility.json
+            generated/WIRING.md
+            generated/GETTING-STARTED.md
+            generated/HARDWARE.md
+            generated/waveshare-esp32-s3-eth-project-pinout.svg
+            generated/waveshare-esp32-s3-eth-8di-8ro-inputs.svg
+            generated/HARDWARE-TESTS.md
+            generated/LICENSE

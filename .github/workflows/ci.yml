@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: mkdir -p build && pnpm test:native
+      - run: pnpm check:docs
+      - run: pnpm build:web
+      - run: pnpm check:generated
+      - name: Embedded UI size budget
+        # The guided input editor and 16-target manager remain a very small
+        # flash-only payload; 12 KB is the measured, explicit release ceiling.
+        run: test "$(wc -c < build/web/index.html.gz)" -le 12288
+      - name: Dependency license inventory
+        run: pnpm licenses list --json > build/dependency-licenses.json
+
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install pinned ESP32 core
+        run: |
+          arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core install esp32:esp32@3.3.10 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+      - name: Compile canonical modular firmware
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          --output-dir build/arduino-canonical
+          firmware/AdvatekTrigger
+      - name: Compile canonical industrial 8DI target
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          --build-property "compiler.cpp.extra_flags=-DADVATEK_BOARD_WAVESHARE_ESP32_S3_ETH_8DI_8RO=1"
+          --output-dir build/arduino-canonical-8di
+          firmware/AdvatekTrigger
+      - name: Firmware and static DRAM budgets
+        run: |
+          test "$(wc -c < build/arduino-canonical/AdvatekTrigger.ino.bin)" -le 1572864
+          size_tool="$(find ~/.arduino15/packages/esp32/tools -name xtensa-esp32s3-elf-size | head -1)"
+          dram="$("$size_tool" -A build/arduino-canonical/AdvatekTrigger.ino.elf | awk '$1==".dram0.data" || $1==".dram0.bss" {sum += $2} END {print sum+0}')"
+          echo "Static DRAM data+BSS: $dram bytes"
+          test "$dram" -le 65536
+      - name: Compile generated Arduino sketch
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH
+      - name: Compile generated industrial 8DI Arduino sketch
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO
+      - name: Compile Waveshare hardware canary
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          tools/hardware-bringup/WaveshareEsp32S3EthCanary
+      - name: Compile Waveshare 8DI/8RO hardware canary
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          tools/hardware-bringup/WaveshareEsp32S3Eth8Di8RoCanary

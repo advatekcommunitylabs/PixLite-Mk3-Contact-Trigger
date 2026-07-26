@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "boards": [
+    {
+      "id": "waveshare-esp32-s3-eth",
+      "name": "Waveshare ESP32-S3-ETH",
+      "profileVersion": "1.2.0",
+      "artifact": "AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino",
+      "buildMacro": "ADVATEK_BOARD_WAVESHARE_ESP32_S3_ETH",
+      "fqbn": "esp32:esp32:esp32s3",
+      "arduinoCore": ">=3.3.10 <4",
+      "buildProperties": {
+        "FlashSize": "16M",
+        "PartitionScheme": "huge_app",
+        "PSRAM": "opi",
+        "USBMode": "hwcdc",
+        "CDCOnBoot": "cdc"
+      },
+      "ethernet": {
+        "type": "W5500",
+        "miso": 12,
+        "mosi": 11,
+        "sclk": 13,
+        "cs": 14,
+        "reset": 9,
+        "interrupt": 10
+      },
+      "allowedInputPins": [1, 2, 15, 16, 18, 38, 39, 40],
+      "cameraSharedPins": [1, 2, 15, 18, 38, 39, 40],
+      "reservedPins": {
+        "boot": [0],
+        "strapping": [3, 45, 46],
+        "tfCard": [4, 5, 6, 7],
+        "ethernet": [9, 10, 11, 12, 13, 14],
+        "usb": [19, 20],
+        "rgb": [21],
+        "poeObstructed": [17, 47],
+        "octalPsram": [33, 34, 35, 36, 37],
+        "uart": [43, 44]
+      },
+      "poeModule": "power-only",
+      "recoveryButtonPin": 0,
+      "statusLedPin": 21,
+      "inputHardware": "direct-gpio"
+    },
+    {
+      "id": "waveshare-esp32-s3-eth-8di-8ro",
+      "name": "Waveshare ESP32-S3-ETH-8DI-8RO",
+      "profileVersion": "1.0.0",
+      "artifact": "AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.ino",
+      "buildMacro": "ADVATEK_BOARD_WAVESHARE_ESP32_S3_ETH_8DI_8RO",
+      "fqbn": "esp32:esp32:esp32s3",
+      "arduinoCore": ">=3.3.10 <4",
+      "buildProperties": {
+        "FlashSize": "16M",
+        "PartitionScheme": "huge_app",
+        "PSRAM": "opi",
+        "USBMode": "hwcdc",
+        "CDCOnBoot": "cdc"
+      },
+      "ethernet": {
+        "type": "W5500",
+        "miso": 14,
+        "mosi": 13,
+        "sclk": 15,
+        "cs": 16,
+        "reset": 39,
+        "interrupt": 12
+      },
+      "allowedInputPins": [4, 5, 6, 7, 8, 9, 10, 11],
+      "inputTerminals": ["DI1", "DI2", "DI3", "DI4", "DI5", "DI6", "DI7", "DI8"],
+      "reservedPins": {
+        "boot": [0],
+        "digitalInputs": [4, 5, 6, 7, 8, 9, 10, 11],
+        "ethernet": [12, 13, 14, 15, 16, 39],
+        "rs485": [17, 18],
+        "usb": [19, 20],
+        "octalPsram": [35, 36, 37],
+        "rgb": [38],
+        "onboardI2c": [41, 42],
+        "uart": [43, 44],
+        "tfCard": [45, 47, 48],
+        "buzzerAndStrapping": [46]
+      },
+      "poeModule": "separate product variant; power-only to firmware",
+      "recoveryButtonPin": 0,
+      "statusLedPin": 38,
+      "inputHardware": "isolated-digital-input"
+    }
+  ]
+}

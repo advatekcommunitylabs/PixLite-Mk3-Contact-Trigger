@@ -1,0 +1,30 @@
+{
+  "firmware": "1.0.0-beta.6",
+  "webUi": "1.0.0-beta.6",
+  "configurationSchema": 5,
+  "protocols": {
+    "adar": "v1.1",
+    "pixliteApi": "v1.0-v1.9"
+  },
+  "controllers": [
+    {
+      "family": "PixLite Mk3",
+      "status": "bench-validated, full-hardware-acceptance-pending"
+    }
+  ],
+  "boards": [
+    {
+      "id": "waveshare-esp32-s3-eth",
+      "profileVersion": "1.2.0",
+      "arduinoEsp32": "3.3.10",
+      "status": "bench-validated, full-hardware-acceptance-pending"
+    },
+    {
+      "id": "waveshare-esp32-s3-eth-8di-8ro",
+      "profileVersion": "1.0.0",
+      "arduinoEsp32": "3.3.10",
+      "status": "compile-supported, hardware-arrival-and-validation-pending",
+      "inputs": "8 isolated digital inputs"
+    }
+  ]
+}

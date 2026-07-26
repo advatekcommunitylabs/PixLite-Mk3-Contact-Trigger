@@ -1,0 +1,15 @@
+node_modules/
+.pnpm-store/
+web/dist/
+build/
+.build/
+.pio/
+.cache/
+coverage/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+*.inspect.ndjson

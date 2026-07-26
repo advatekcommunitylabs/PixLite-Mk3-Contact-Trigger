@@ -1,0 +1,37 @@
+{
+  "resp": "statusRead",
+  "id": 2,
+  "result": {
+    "status": {
+      "mode": "live",
+      "params": {
+        "fadeMs": 0
+      },
+      "state": {
+        "cont": true
+      },
+      "store": [
+        {
+          "typ": "MicroSD",
+          "speed": 10,
+          "fs": "FAT32",
+          "used": 16384,
+          "avail": 31251103744
+        }
+      ],
+      "outInt": [
+        {
+          "out": "Pix",
+          "progPri": "Lo",
+          "fc": [255, 255]
+        },
+        {
+          "out": "Aux:1",
+          "progPri": "Lo",
+          "fc": [255, 255]
+        }
+      ],
+      "identify": 0
+    }
+  }
+}

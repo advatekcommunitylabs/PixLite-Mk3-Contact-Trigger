@@ -1,0 +1,55 @@
+name: Hardware test report
+description: Contribute repeatable board, GPIO, PoE, or PixLite evidence
+title: "[Hardware] "
+labels: ["hardware"]
+body:
+  - type: input
+    id: board
+    attributes:
+      label: Board and revision
+    validations:
+      required: true
+  - type: input
+    id: power
+    attributes:
+      label: Power source and PoE module
+      placeholder: USB-C or Waveshare PoE module revision
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Trigger firmware and Arduino-ESP32 version
+    validations:
+      required: true
+  - type: input
+    id: pixlite
+    attributes:
+      label: PixLite model, firmware, and API
+  - type: textarea
+    id: topology
+    attributes:
+      label: Network and wiring topology
+      description: Include DHCP/static, link mode, GPIOs, contact circuit, and cable length.
+    validations:
+      required: true
+  - type: textarea
+    id: procedure
+    attributes:
+      label: Procedure
+      description: Provide enough detail for another tester to repeat it.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Results and evidence
+      description: Include counts, timings, memory/stack minima, logs, and failures.
+    validations:
+      required: true
+  - type: textarea
+    id: remaining
+    attributes:
+      label: Remaining or untested gates
+    validations:
+      required: true

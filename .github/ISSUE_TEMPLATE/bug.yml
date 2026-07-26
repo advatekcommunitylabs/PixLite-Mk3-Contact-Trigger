@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a reproducible firmware, web UI, or integration problem
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include passwords, private protocol documents, or unredacted configuration. Security issues belong in the private vulnerability-reporting flow.
+  - type: input
+    id: version
+    attributes:
+      label: Firmware and web UI version
+      placeholder: 1.0.0-beta.5
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: ESP32 board and Arduino-ESP32 version
+      placeholder: Waveshare ESP32-S3-ETH, Arduino-ESP32 3.3.10
+    validations:
+      required: true
+  - type: input
+    id: pixlite
+    attributes:
+      label: PixLite model, firmware, and negotiated API
+      placeholder: PixLite A4-S Mk3, firmware 3.14.2, API v1.9
+  - type: dropdown
+    id: uplink
+    attributes:
+      label: Operational uplink
+      options:
+        - Ethernet DHCP
+        - Ethernet static
+        - Wi-Fi Station DHCP
+        - Wi-Fi Station static
+        - Setup AP only
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include input mode, GPIO, debounce, action, and wiring when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed result
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Redacted diagnostics
+      description: Include reset reason, memory figures, link state, and relevant log lines. Remove secrets.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: I have not connected an externally powered signal directly to an ESP32 GPIO.
+          required: true
