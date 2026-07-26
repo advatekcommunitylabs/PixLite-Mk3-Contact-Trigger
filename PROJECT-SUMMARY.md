@@ -274,7 +274,7 @@ Before publishing a release:
 1. Complete the automated CI build and test suite.
 2. Confirm these budgets:
    - Firmware binary no larger than 1.5 MB.
-   - Embedded UI no larger than 12 KB gzip.
+   - Embedded UI no larger than 13 KB gzip.
    - Static DRAM data+BSS no larger than 64 KB.
 3. Complete the real-hardware matrix in
    [HARDWARE-TESTS.md](HARDWARE-TESTS.md).

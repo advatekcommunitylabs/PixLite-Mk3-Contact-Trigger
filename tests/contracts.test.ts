@@ -85,6 +85,18 @@ describe('repository contracts', () => {
     expect(app).not.toContain('delay(120)');
   });
 
+  it('exposes every debounced input edge to the lightweight SPA activity poll', () => {
+    const types = readFileSync('firmware/AdvatekTrigger/src/core/Types.h', 'utf8');
+    const engine = readFileSync('firmware/AdvatekTrigger/src/core/InputEngine.h', 'utf8');
+    const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
+    const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
+    expect(types).toContain('uint32_t eventSequence');
+    expect(engine).toContain('++runtime.eventSequence');
+    expect(app).toContain('String inputStateJson() override');
+    expect(app).toContain('\\"eventSequence\\"');
+    expect(webApi).toContain('server_.on("/api/inputs", HTTP_GET');
+  });
+
   it('persists status LED controls and migrates the Test Color schema v5', () => {
     const versions = readFileSync('firmware/AdvatekTrigger/src/core/Versions.h', 'utf8');
     const migration = readFileSync('firmware/AdvatekTrigger/src/core/ConfigMigration.h', 'utf8');

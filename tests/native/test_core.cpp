@@ -26,9 +26,11 @@ static void testDebounceAndEdges() {
   assert(!InputEngine::update(runtime, true, 50, 179).occurred);
   const InputEvent press = InputEngine::update(runtime, true, 50, 180);
   assert(press.occurred && press.active);
+  assert(runtime.eventSequence == 1);
   const InputEvent release = InputEngine::update(runtime, false, 10, 200);
   assert(!release.occurred);
   assert(InputEngine::update(runtime, false, 10, 210).occurred);
+  assert(runtime.eventSequence == 2);
 }
 
 static void testMillisRollover() {

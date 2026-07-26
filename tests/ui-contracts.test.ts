@@ -70,6 +70,17 @@ describe('compact commissioning UI contracts', () => {
     expect(script).toContain("setInputSaveStatus('Saved')");
   });
 
+  it('mirrors debounced make and break events with a per-input virtual LED', () => {
+    expect(script).toContain('id="i${index}-activity"');
+    expect(script).toContain("api('/api/inputs')");
+    expect(script).toContain('setInterval(refreshInputs, 250)');
+    expect(script).toContain('sequence - previous');
+    expect(script).toContain("setProperty('--pulses'");
+    expect(css).toContain('.input-activity.flash');
+    expect(css).toContain('@keyframes input-activity-flash');
+    expect(css).toContain('background:#fff');
+  });
+
   it('supports sixteen saved PixLites and targets every GPIO action explicitly', () => {
     expect(html).toContain('0 of 16 configured');
     expect(script).toContain('targetId:');

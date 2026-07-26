@@ -149,6 +149,9 @@ struct InputRuntime {
   bool lastRawActive;
   bool stableActive;
   uint32_t rawChangedAt;
+  // Monotonic edge counter lets slow web clients observe every debounced
+  // make/break transition without coupling GPIO scanning to HTTP polling.
+  uint32_t eventSequence;
   bool rampActive;
   uint32_t rampDueAt;
   uint8_t rampPercent;

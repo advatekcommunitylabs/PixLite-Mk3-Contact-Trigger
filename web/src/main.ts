@@ -15,6 +15,8 @@ let isolatedInputs = false;
 let inputSaveTimer: number | undefined;
 let inputSaveRevision = 0;
 let inputSaveActive = false;
+let inputPollActive = false;
+const inputEventSequences: number[] = [];
 const media = new Map<string, Json>();
 const kinds = [
   ['none', 'No action'], ['playScene', 'Play scene'], ['playPlaylist', 'Play playlist'],
@@ -135,7 +137,47 @@ async function refreshState() {
       : [];
     renderStatus();
     renderSavedPixLites();
+    updateInputActivity(state.inputs);
   } catch (error) { toast(error, true); }
+}
+
+function updateInputActivity(inputs: Json[] = []) {
+  inputs.forEach((live: Json, index: number) => {
+    const led = document.getElementById(`i${index}-activity`);
+    if (led) {
+      led.classList.toggle('active', !!live.active);
+      led.title = live.active ? 'Contact active' : 'Contact inactive';
+    }
+
+    const sequence = Number(live.eventSequence || 0) >>> 0;
+    const previous = inputEventSequences[index];
+    inputEventSequences[index] = sequence;
+    // A lower value means the controller restarted; establish a new baseline
+    // instead of replaying old events as a large unsigned wraparound.
+    if (previous === undefined || sequence < previous) return;
+    const pulses = Math.min(sequence - previous, 4);
+    if (led && pulses) {
+      led.style.setProperty('--pulses', String(pulses));
+      led.classList.remove('flash');
+      void led.offsetWidth;
+      led.classList.add('flash');
+    }
+  });
+}
+
+async function refreshInputs() {
+  if (inputPollActive) return;
+  inputPollActive = true;
+  try {
+    const snapshot = await api('/api/inputs');
+    state.inputs = snapshot.inputs || [];
+    updateInputActivity(state.inputs);
+  } catch {
+    // The regular status poll reports connection errors. Keep this frequent,
+    // cosmetic poll quiet so a disconnected device cannot flood notifications.
+  } finally {
+    inputPollActive = false;
+  }
 }
 
 function renderSavedPixLites() {
@@ -229,7 +271,7 @@ function renderInputs() {
   $('add-input').toggleAttribute('disabled', active.length >= 8);
   $('input-list').innerHTML = active.map(({input, index}: Json) => `
     <details class="input-card" data-input="${index}" open>
-      <summary><span class="input-summary"><strong>${escapeHtml(input.name || `Input ${index + 1}`)}</strong><small>${input.gpio == null ? `Select ${isolatedInputs ? 'an input terminal' : 'a pin'}` : inputLabel(input.gpio)} · ${input.mode === 'maintained' ? 'Maintained switch' : 'Momentary button'}</small></span><span class="tag">${input.debounceMs || 100} ms debounce</span></summary>
+      <summary><span class="input-summary"><span class="input-title"><i id="i${index}-activity" class="input-activity" role="img" aria-label="Input activity; flashes white on contact make and break"></i><strong>${escapeHtml(input.name || `Input ${index + 1}`)}</strong></span><small>${input.gpio == null ? `Select ${isolatedInputs ? 'an input terminal' : 'a pin'}` : inputLabel(input.gpio)} · ${input.mode === 'maintained' ? 'Maintained switch' : 'Momentary button'}</small></span><span class="tag">${input.debounceMs || 100} ms debounce</span></summary>
       <div class="input-body">
         <div class="input-basics">
           <label>Name<input id="i${index}-name" maxlength="31" value="${escapeHtml(input.name || `Input ${index + 1}`)}" /></label>
@@ -260,6 +302,7 @@ function renderInputs() {
       updateActionFields(index, edge);
     });
   });
+  updateInputActivity(state.inputs);
 }
 
 // Each action shows only parameters the selected PixLite API operation uses.
@@ -546,5 +589,6 @@ async function start() {
     await refreshState();
   } catch (error) { toast(error, true); }
   setInterval(refreshState, 2000);
+  setInterval(refreshInputs, 250);
 }
 start();

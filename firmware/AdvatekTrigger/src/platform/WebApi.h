@@ -19,6 +19,7 @@ namespace advatek {
 class WebApiDelegate {
  public:
   virtual String stateJson() = 0;
+  virtual String inputStateJson() = 0;
   virtual void configurationChanged() = 0;
   virtual void requestFactoryReset() = 0;
 };
@@ -50,6 +51,9 @@ class WebApi {
     server_.on("/hotspot-detect.html", HTTP_ANY, [this]() { serveUi(); });
     server_.on("/api/state", HTTP_GET, [this]() {
       if (authorize()) sendJson(200, delegate_.stateJson());
+    });
+    server_.on("/api/inputs", HTTP_GET, [this]() {
+      if (authorize()) sendJson(200, delegate_.inputStateJson());
     });
     server_.on("/api/config", HTTP_GET, [this]() {
       if (authorize()) streamConfig();

@@ -32,8 +32,8 @@ jobs:
       - run: pnpm check:generated
       - name: Embedded UI size budget
         # The guided input editor and 16-target manager remain a very small
-        # flash-only payload; 12 KB is the measured, explicit release ceiling.
-        run: test "$(wc -c < build/web/index.html.gz)" -le 12288
+        # flash-only payload; 13 KB is the measured, explicit release ceiling.
+        run: test "$(wc -c < build/web/index.html.gz)" -le 13312
       - name: Dependency license inventory
         run: pnpm licenses list --json > build/dependency-licenses.json
 

@@ -187,7 +187,22 @@ class App : public WebApiDelegate {
     for (uint8_t i = 0; i < MAX_INPUTS; ++i) {
       if (i) json += ',';
       json += "{\"active\":" + String(runtime_[i].stableActive ? "true" : "false") +
-              ",\"ramping\":" + String(runtime_[i].rampActive ? "true" : "false") + "}";
+              ",\"ramping\":" + String(runtime_[i].rampActive ? "true" : "false") +
+              ",\"eventSequence\":" + String(runtime_[i].eventSequence) + "}";
+    }
+    json += "]}";
+    return json;
+  }
+
+  String inputStateJson() override {
+    // This intentionally small response is polled more often than /api/state.
+    // eventSequence prevents a complete press/release between polls being lost.
+    String json = "{\"inputs\":[";
+    json.reserve(420);
+    for (uint8_t i = 0; i < MAX_INPUTS; ++i) {
+      if (i) json += ',';
+      json += "{\"active\":" + String(runtime_[i].stableActive ? "true" : "false") +
+              ",\"eventSequence\":" + String(runtime_[i].eventSequence) + "}";
     }
     json += "]}";
     return json;

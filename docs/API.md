@@ -9,6 +9,7 @@ TLS. JSON is UTF-8. When UI protection is enabled, send the password in
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET | `/state` | Versions, board/uplink/AP state, PixLite state, inputs, Ethernet and memory diagnostics |
+| GET | `/inputs` | Lightweight live input states and debounced edge counters for the SPA activity indicators |
 | GET | `/config` | Configuration with secrets omitted |
 | GET | `/devices` | Last ADAR result and truncation flag |
 | GET | `/media?targetId=<id>` | Separate `scenes` and `playlists` arrays for one saved PixLite |
@@ -95,6 +96,9 @@ letters, numbers and interior hyphens; the `.local` suffix is added by clients.
 internal block, total/free PSRAM, network-task stack watermark, reset reason,
 and uptime. `/state.ethernet` reports W5500 initialization attempts, link,
 DHCP/static selection, link speed, duplex, and the last initialization failure.
+Both `/state.inputs` and `/inputs` include `active` and the monotonically
+increasing `eventSequence`. Clients can use the sequence difference to retain
+make and break events that occur between HTTP polls.
 
 Configuration request bodies are capped at 12 KB and PixLite responses at
 32 KB. Config, device, media, and log reads use streamed HTTP responses.
