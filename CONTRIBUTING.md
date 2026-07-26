@@ -27,7 +27,7 @@ more useful and reliable for the community.
 
 Required tools:
 
-- Node.js 22
+- Node.js 24
 - pnpm 10.12.1
 - C++17 host compiler
 - Arduino CLI with Arduino-ESP32 3.3.10 for firmware compilation

@@ -138,7 +138,7 @@ See [Architecture](docs/ARCHITECTURE.md) for the runtime design and
 
 ## Maintainer validation
 
-Prerequisites are Node.js 22, pnpm 10.12.1, a C++17 compiler, Arduino CLI, and
+Prerequisites are Node.js 24, pnpm 10.12.1, a C++17 compiler, Arduino CLI, and
 Arduino-ESP32 3.3.10.
 
 ```sh

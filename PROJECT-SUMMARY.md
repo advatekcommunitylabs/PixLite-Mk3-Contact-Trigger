@@ -236,7 +236,7 @@ Exported backups omit Wi-Fi, PixLite, recovery, and web-interface passwords.
 
 Prerequisites:
 
-- Node.js 22
+- Node.js 24
 - pnpm 10.12.1
 - Arduino CLI or Arduino IDE
 - Arduino-ESP32 3.3.10

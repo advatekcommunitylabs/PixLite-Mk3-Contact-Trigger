@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Sustainable ESP32 contact-closure controller for PixLite Mk3.",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "vite --config web/vite.config.ts",
     "build:web": "vite build --config web/vite.config.ts && node tools/embed-web.mjs",
@@ -19,7 +22,7 @@
     "check:generated": "node tools/build-sketch.mjs --check"
   },
   "devDependencies": {
-    "@types/node": "^22.15.0",
+    "@types/node": "^24.0.0",
     "marked": "^18.0.7",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
