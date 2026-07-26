@@ -33,8 +33,8 @@ ESP32-S3 board settings and upload process with real Arduino IDE screenshots.
    switches, and dry relay contacts.
 4. **BOOT and RESET:** use these only if the board does not enter download mode
    automatically.
-5. **Other terminal group:** the 7–36 V input and RS485 terminals are not used
-   by this PoE installation.
+5. **Alternative DC power / RS485:** the board may be powered from its 7–36 V
+   DC input instead of PoE. RS485 is not used by Advatek Trigger.
 
 The eight large relay-output terminal groups on the opposite edge are also
 unused by Advatek Trigger.
@@ -88,22 +88,31 @@ board with two power sources. If automatic download mode fails:
 3. Start **Upload** in Arduino IDE.
 4. Release **BOOT** when Arduino begins writing.
 
-## Connect PoE for normal operation
+## Choose operational power and connect Ethernet
 
-- Disconnect USB-C after the successful first upload.
-- Connect the board's RJ45 socket to an **IEEE 802.3af PoE switch** or suitable
-  802.3af injector. A normal router, unmanaged non-PoE switch, or computer
-  Ethernet socket does not supply power.
+- Disconnect USB-C after the successful first upload, then choose one normal
+  operating power method:
+  - **PoE:** connect the RJ45 socket to an IEEE 802.3af PoE switch or suitable
+    802.3af injector. This carries power and network data in one cable.
+  - **7–36 V DC:** connect a suitable regulated DC supply to the labeled
+    `7–36V` positive and negative screw terminals, observing the polarity
+    printed on the enclosure. Connect RJ45 separately to a normal Ethernet
+    switch or router for network data.
+- Do not intentionally power the board from PoE, 7–36 V and USB-C at the same
+  time. The first hardware test will verify source-change behaviour before the
+  project recommends any dual-connected service arrangement.
 - Connect the PixLite and computer to the same LAN. The computer can use
   another switch/router port or Wi-Fi, provided it remains on the same local
   network.
-- The non-PoE `ESP32-S3-ETH-8DI-8RO` needs USB-C or its documented 7–36 V DC
-  supply. An ordinary Ethernet cable does not power it.
+- A normal non-PoE router, switch, or computer Ethernet socket carries data but
+  does not supply power.
 
 ![Official Waveshare example showing an 802.3af PoE switch connected to the board](assets/waveshare-official/poe-network-example.jpg)
 
 Waveshare's example switch is illustrative only; any correctly configured
 IEEE 802.3af PoE switch or injector with Ethernet data passthrough is suitable.
+The alternative 7–36 V input is useful when a suitable local DC supply already
+exists or PoE is unavailable.
 
 At a healthy boot, Serial Monitor at `115200` reports 16 MB flash, 8 MB PSRAM,
 W5500 initialization, and the DHCP address. Open `http://advatrigger.local/`,

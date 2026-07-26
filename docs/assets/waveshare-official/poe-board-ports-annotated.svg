@@ -54,8 +54,8 @@
   <g transform="translate(818 706)">
     <rect class="chip" width="354" height="86" rx="9"/>
     <circle cx="34" cy="43" r="19" fill="#ffd166"/><text class="num" x="34" y="50" text-anchor="middle">5</text>
-    <text class="label" x="66" y="36">Not used by this project</text>
-    <text class="small" x="66" y="63">7–36 V power and RS485 terminal group</text>
+    <text class="label" x="66" y="36">Alternative DC power</text>
+    <text class="small" x="66" y="63">7–36 V optional · RS485 unused by firmware</text>
   </g>
   <path class="lead other" d="M915 706 L881 655"/>
 </svg>

@@ -31,9 +31,9 @@ digital inputs, a rail enclosure, 16 MB flash, 8 MB PSRAM, and W5500 Ethernet.
 - [Official Waveshare wiki](https://www.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO)
 - [Illustrated industrial PoE setup and wiring guide](GETTING-STARTED-8DI-8RO.md)
 
-The non-PoE version needs USB-C or 7–36 V DC. The PoE version accepts IEEE
-802.3af. Both use the same sketch because the PoE circuitry does not change the
-ESP32 pin map.
+Both versions accept their labeled 7–36 V DC input. The PoE version additionally
+accepts IEEE 802.3af through RJ45, allowing power and data in one cable. Both
+use the same sketch because the power option does not change the ESP32 pin map.
 
 ![Waveshare industrial board input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
 
