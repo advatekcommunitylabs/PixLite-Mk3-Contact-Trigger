@@ -13,8 +13,9 @@ for the manufacturer's complete electrical specification.
 
 ![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front.jpg)
 
-The target is compile-supported but remains hardware-validation-pending until
-the ordered boards complete the checklist in
+The PoE target has passed USB flashing, Ethernet, PixLite Mk3 discovery and two
+complete DI1–DI8 contact-input sweeps. Full release acceptance still requires
+the longer-duration checks listed in
 [HARDWARE-TESTS.md](../HARDWARE-TESTS.md).
 
 First-time Arduino users should follow the
@@ -29,8 +30,9 @@ ESP32-S3 board settings and upload process with real Arduino IDE screenshots.
    injector for normal power and network operation.
 2. **USB-C programming:** connect a data-capable USB-C cable directly to the
    Windows or Mac computer when flashing.
-3. **Isolated inputs:** use `COM` and `DI1` through `DI8` for passive buttons,
-   switches, and dry relay contacts.
+3. **Isolated inputs:** for passive buttons, switches, and dry relay contacts,
+   use `DGND` and `DI1` through `DI8`. Leave the neighbouring `COM` terminal
+   unused.
 4. **BOOT and RESET:** use these only if the board does not enter download mode
    automatically.
 5. **Alternative DC power / RS485:** the board may be powered from its 7–36 V
@@ -101,7 +103,7 @@ board with two power sources. If automatic download mode fails:
 - Do not intentionally power the board from PoE, 7–36 V and USB-C at the same
   time. The first hardware test will verify source-change behaviour before the
   project recommends any dual-connected service arrangement.
-- Connect the PixLite and computer to the same LAN. The computer can use
+- Connect the PixLite Mk3 and computer to the same LAN. The computer can use
   another switch/router port or Wi-Fi, provided it remains on the same local
   network.
 - A normal non-PoE router, switch, or computer Ethernet socket carries data but
@@ -119,11 +121,14 @@ W5500 initialization, and the DHCP address. Open `http://advatrigger.local/`,
 or the displayed numeric address. Ethernet is the commissioning connection;
 Wi-Fi Station can be selected later as the operational uplink.
 
-The SPA also selects the BOOT recovery connection. For direct-Ethernet
-recovery, unplug the installed network first, hold BOOT for 5–14 seconds,
-release, and only then connect one computer directly. A normal computer
-Ethernet port will not provide PoE, so power the controller from USB-C during
-this direct-cable recovery. Open `http://192.168.4.1/`; recovery expires after
+Wi-Fi and Ethernet are explicit operating modes; failed Wi-Fi does not
+automatically fall back to the wired port. The SPA selects the BOOT recovery
+connection. Hold BOOT for 5–14 seconds and release, then either join the
+temporary `Advatek-Trigger-XXXXXX` Wi-Fi network or use direct Ethernet. For
+direct-Ethernet recovery, unplug the installed network before holding BOOT and
+only then connect one computer directly. A normal computer Ethernet port will
+not provide PoE, so power the controller from USB-C or 7–36 V during this
+direct-cable recovery. Open `http://192.168.4.1/`; recovery expires after
 15 minutes.
 
 ## Isolated input terminals
@@ -146,22 +151,24 @@ This board maps its eight isolated field inputs as follows:
 For the passive buttons and contact closures used by this project:
 
 1. Remove PoE and USB power before changing terminal wiring.
-2. Connect one side of the dry contact to the board's isolated **COM**
+2. Leave the first input terminal, **COM**, empty. It is used only by
+   Waveshare's active/wet-input arrangements.
+3. Connect one side of the dry contact to the board's isolated **DGND**
    terminal.
-3. Connect the other side to the chosen **DI1–DI8** terminal.
-4. For a switch several metres away, carry `COM` and its `DIx` signal together
+4. Connect the other side to the chosen **DI1–DI8** terminal.
+5. For a switch several metres away, carry `DGND` and its `DIx` signal together
    as one twisted pair. The two conductors of that pair go to the two sides of
    the switch.
-5. If several switch cables need a COM connection, use a suitable insulated
+6. If several switch cables need a DGND connection, use a suitable insulated
    distribution terminal instead of forcing multiple conductors into one screw
    terminal.
 
-![Eight optional dry contacts wired between isolated COM and DI1 through DI8](assets/waveshare-official/poe-dry-contact-wiring.svg)
+![Eight optional dry contacts wired between isolated DGND and DI1 through DI8](assets/waveshare-official/poe-dry-contact-wiring.svg)
 
-Do not use `DGND`/`DCGND`, relay `COM`, an ESP32 GPIO header, ESP32 ground,
-protective earth, or an external voltage for a passive dry contact. The
-isolated input `COM` is the shared return shown in Waveshare's official passive
-input diagram.
+The input terminals read `COM`, `DGND`, `DI1`, `DI2` … from left to right.
+For a passive contact, the second screw (`DGND`) is the shared return; the first
+screw (`COM`) stays empty. Do not substitute relay `COM`, an ESP32 GPIO-header
+ground, protective earth, or an external voltage.
 
 ![Official Waveshare passive and active digital-input wiring reference](assets/waveshare-official/digital-input-wiring.jpg)
 
@@ -183,7 +190,7 @@ TF-card slot inactive. No extra Arduino libraries are required.
 1. Confirm the boot banner names `waveshare-esp32-s3-eth-8di-8ro`.
 2. Confirm 16 MB flash, 8 MB PSRAM, Ethernet link, and DHCP.
 3. Verify the orange RGB LED on GPIO38 and BOOT recovery on GPIO0.
-4. Add one PixLite and confirm its media list.
+4. Add one PixLite Mk3 and confirm its media list.
 5. Configure DI1 with 100 ms debounce and a harmless test action.
 6. Operate DI1 as a passive dry contact and confirm one LED flash per edge.
 7. Repeat for DI2–DI8 before treating the profile as hardware-ready.

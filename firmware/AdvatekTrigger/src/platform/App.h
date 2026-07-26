@@ -98,7 +98,11 @@ class App : public WebApiDelegate {
     pinMode(board_.recoveryButtonPin, INPUT_PULLUP);
     network_.begin(apName);
     web_.begin();
-    xTaskCreatePinnedToCore(networkTaskEntry, "network", 12288, this, 1, &networkTask_, 0);
+    // Live industrial-board testing showed the combined HTTP, ADAR and PixLite
+    // call path could leave less than 200 bytes free in the original 12 KB
+    // task. The extra 8 KB remains well inside the internal-heap budget and
+    // gives network failures enough headroom to unwind safely.
+    xTaskCreatePinnedToCore(networkTaskEntry, "network", 20480, this, 1, &networkTask_, 0);
   }
 
   void loop() {
@@ -490,13 +494,12 @@ class App : public WebApiDelegate {
   void showStatusOrange() {
     if (board_.statusLedPin < 0) return;
     if (!config_.statusLed.enabled) {
-      rgbLedWrite(board_.statusLedPin, 0, 0, 0);
+      writeStatusLed(0, 0, 0);
       return;
     }
     // Tuned on the fitted WS2812 so the status color reads as orange rather
     // than pink through the board and enclosure.
-    rgbLedWrite(
-        board_.statusLedPin,
+    writeStatusLed(
         scaleStatusLedChannel(255),
         scaleStatusLedChannel(48),
         0);
@@ -505,7 +508,7 @@ class App : public WebApiDelegate {
   void flashStatusLed(uint32_t now) {
     if (board_.statusLedPin < 0 || !config_.statusLed.enabled) return;
     const uint8_t white = scaleStatusLedChannel(255);
-    rgbLedWrite(board_.statusLedPin, white, white, white);
+    writeStatusLed(white, white, white);
     triggerFlashActive_ = true;
     triggerFlashUntil_ = now + 120;
   }
@@ -515,7 +518,7 @@ class App : public WebApiDelegate {
     // Recovery feedback overrides the user brightness/off preference so a
     // person holding BOOT can safely see which release zone is armed.
     if (recoveryLedIntent_ == RecoveryIntent::FactoryReset) {
-      rgbLedWrite(board_.statusLedPin, 255, 0, 0);
+      writeStatusLed(255, 0, 0);
       return;
     }
     if (recoveryLedIntent_ == RecoveryIntent::ClearAuthentication) {
@@ -523,9 +526,9 @@ class App : public WebApiDelegate {
         recoveryLedIntent_ = RecoveryIntent::None;
         showStatusOrange();
       } else if (((now / 250U) & 1U) == 0) {
-        rgbLedWrite(board_.statusLedPin, 255, 48, 0);
+        writeStatusLed(255, 48, 0);
       } else {
-        rgbLedWrite(board_.statusLedPin, 255, 255, 255);
+        writeStatusLed(255, 255, 255);
       }
       return;
     }
@@ -538,6 +541,15 @@ class App : public WebApiDelegate {
       triggerFlashActive_ = false;
       showStatusOrange();
     }
+  }
+
+  void writeStatusLed(uint8_t red, uint8_t green, uint8_t blue) {
+    if (board_.statusLedPin < 0) return;
+    const rgb_led_color_order_t order =
+        board_.statusLedColorOrder == StatusLedColorOrder::Rgb
+            ? LED_COLOR_ORDER_RGB
+            : LED_COLOR_ORDER_GRB;
+    rgbLedWriteOrdered(board_.statusLedPin, order, red, green, blue);
   }
 
   uint8_t scaleStatusLedChannel(uint8_t channel) const {
@@ -556,8 +568,10 @@ class App : public WebApiDelegate {
         heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     memorySnapshot_.internalLargestBlock =
         heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    // ESP-IDF reports this value in bytes, unlike upstream FreeRTOS where the
+    // value is expressed in StackType_t words.
     memorySnapshot_.networkStackWatermarkBytes =
-        networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) * sizeof(StackType_t) : 0;
+        networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) : 0;
     if ((initial || memorySnapshot_.internalFree < 64U * 1024U) && !warnedFreeHeap_) {
       if (memorySnapshot_.internalFree < 64U * 1024U) {
         log_.add(LogLevel::Warning, "Internal free heap crossed below 64 KB");

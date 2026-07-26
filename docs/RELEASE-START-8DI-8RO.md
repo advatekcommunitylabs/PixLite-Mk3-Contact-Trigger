@@ -27,13 +27,21 @@ header development board and uses different pins.
 
 ## Connect
 
-Connect Ethernet, then open `http://advatrigger.local/`, the DHCP address shown
-at `115200` baud, or join `Advatek-Trigger-XXXXXX` and open
-`http://192.168.4.1`.
+Connect Ethernet to the same network as the computer, then open
+`http://advatrigger.local/` or the DHCP address shown at `115200` baud. Normal
+commissioning does not create a Wi-Fi setup access point.
+
+For a passive button or dry contact, leave input `COM` unused and wire the
+contact between `DGND` and its chosen `DI1`–`DI8` terminal. Remove power before
+changing terminal wiring.
+
+BOOT recovery can temporarily provide Wi-Fi or direct-Ethernet access at
+`http://192.168.4.1/`; follow the full guide before using recovery mode.
 
 The input selector shows `DI1`–`DI8`. Use the isolated input screw terminals,
 not ESP32 header pins. Relays, RS485, buzzer, and TF card are intentionally
 unused by this release.
 
-This target remains a community beta until real-board electrical testing is
-recorded in `HARDWARE-TESTS.md`.
+The eight inputs have passed real-board electrical sweeps. This target remains
+a community beta until the longer-duration acceptance gates in
+`HARDWARE-TESTS.md` are complete.

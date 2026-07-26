@@ -47,6 +47,7 @@ describe('repository contracts', () => {
       miso: 14, mosi: 13, sclk: 15, cs: 16, reset: 39, interrupt: 12,
     });
     expect(board.statusLedPin).toBe(38);
+    expect(board.statusLedColorOrder).toBe('RGB');
     expect(board.recoveryButtonPin).toBe(0);
   });
 
@@ -78,8 +79,14 @@ describe('repository contracts', () => {
 
   it('keeps the status LED orange and pulses it without blocking input scans', () => {
     const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
+    const industrial = readFileSync(
+      'firmware/AdvatekTrigger/src/boards/WaveshareEsp32S3Eth8Di8Ro.h',
+      'utf8',
+    );
     expect(app).toContain('scaleStatusLedChannel(255)');
     expect(app).toContain('scaleStatusLedChannel(48)');
+    expect(app).toContain('rgbLedWriteOrdered');
+    expect(industrial).toContain('StatusLedColorOrder::Rgb');
     expect(app).toContain('if (!config_.statusLed.enabled)');
     expect(app).toContain('triggerFlashUntil_ = now + 120');
     expect(app).not.toContain('delay(120)');
@@ -151,8 +158,10 @@ describe('repository contracts', () => {
     const web = readFileSync('web/src/main.ts', 'utf8');
     expect(types).toContain('NextScene');
     expect(types).toContain('PreviousScene');
+    expect(types).toContain('TestColorFade');
     expect(policy).toContain('previous ? lastScene : firstScene');
     expect(client).toContain('sceneStepIndex(');
+    expect(client).toContain('sortMediaFiles(targetMedia, count)');
     expect(client).toContain('ActionConfig playback = action');
     expect(web).toContain("['nextScene', 'Next scene']");
     expect(web).toContain("['previousScene', 'Previous scene']");
@@ -160,6 +169,7 @@ describe('repository contracts', () => {
       "repeat: ['playScene', 'playPlaylist', 'nextScene', 'previousScene'].includes(kind)",
     );
     expect(web).toContain('Play selected scene');
+    expect(web).toContain("alphabetical scene order");
   });
 
   it('defaults new playback actions to loop until explicitly stopped', () => {
@@ -172,6 +182,38 @@ describe('repository contracts', () => {
     expect(web).toContain("mediaName: '', repeat: 'forever'");
     expect(web.indexOf('<option value="forever"'))
       .toBeLessThan(web.indexOf('<option value="once"'));
+  });
+
+  it('keeps the ESP-IDF network stack measurement in bytes with hardware-tested headroom', () => {
+    const app = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/App.h',
+      'utf8',
+    );
+    expect(app).toContain(
+      'xTaskCreatePinnedToCore(networkTaskEntry, "network", 20480',
+    );
+    expect(app).toContain(
+      'networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) : 0',
+    );
+    expect(app).not.toContain(
+      'uxTaskGetStackHighWaterMark(networkTask_) * sizeof(StackType_t)',
+    );
+  });
+
+  it('retains the scene-step cursor when Live mode clears the current file', () => {
+    const types = readFileSync(
+      'firmware/AdvatekTrigger/src/core/Types.h',
+      'utf8',
+    );
+    const client = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
+    expect(types).toContain('char lastScene[64]');
+    expect(client).toContain('sceneStepReference(');
+    expect(client).toContain(
+      'copyText(current.lastScene, sizeof(current.lastScene), selectedScene)',
+    );
   });
 
   it('tracks the real PixLite A4-S status response shape', () => {
@@ -264,7 +306,7 @@ describe('repository contracts', () => {
 
   it('keeps the required PixLite v1 operation vocabulary in the codec', () => {
     const protocol = readFileSync('firmware/AdvatekTrigger/src/core/PixLiteProtocol.h', 'utf8');
-    for (const operation of ['fileList', 'modePlayback', 'modeLive', 'modeTestData', 'setColor', 'Blank', 'progInt', 'HiSet', 'Lo', 'statusRead']) {
+    for (const operation of ['fileList', 'modePlayback', 'modeLive', 'modeTestData', 'setColor', 'colorFade', 'Blank', 'progInt', 'HiSet', 'Lo', 'statusRead']) {
       expect(protocol).toContain(operation);
     }
     expect(protocol).not.toContain('\\"req\\":\\"modeCtrl\\"');
@@ -287,6 +329,11 @@ describe('repository contracts', () => {
     expect(configJson).toContain('"testRed"');
     expect(configJson).toContain('"testGreen"');
     expect(configJson).toContain('"testBlue"');
+    const webApi = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/WebApi.h',
+      'utf8',
+    );
+    expect(webApi).toContain('if (action.kind == ActionKind::None)');
     const responsePolicy = readFileSync(
       'firmware/AdvatekTrigger/src/core/PixLiteResponsePolicy.h',
       'utf8',
@@ -307,7 +354,7 @@ describe('repository contracts', () => {
     expect(policy).toContain('heldMs >= 15000');
     expect(policy).toContain('heldMs >= 5000');
     expect(app).toContain('RecoveryIntent::ClearAuthentication');
-    expect(app).toContain('rgbLedWrite(board_.statusLedPin, 255, 0, 0)');
+    expect(app).toContain('writeStatusLed(255, 0, 0)');
     expect(app).toContain('factoryResetDueAt_ = millis() + 750');
   });
 });

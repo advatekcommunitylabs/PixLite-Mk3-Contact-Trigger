@@ -123,7 +123,7 @@ After uploading the firmware:
 2. Select **Add input**.
 3. Choose the wired GPIO.
 4. Leave debounce at its 100 ms default.
-5. Assign a harmless PixLite test action.
+5. Assign a harmless PixLite Mk3 test action.
 6. Save, then operate the contact.
 
 The underside LED stays Advatek orange and flashes white for every accepted,

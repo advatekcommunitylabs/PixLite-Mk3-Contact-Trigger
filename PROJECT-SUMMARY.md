@@ -1,11 +1,11 @@
-# Advatek PixLite Contact Closure Trigger
+# Advatek PixLite Mk3 Contact Closure Trigger
 
 ## GitHub project summary
 
-The Advatek PixLite Contact Closure Trigger is an open-source ESP32 appliance
+The Advatek PixLite Mk3 Contact Closure Trigger is an open-source ESP32 appliance
 that connects physical push buttons, relay contacts, and maintained switches to
 a PixLite Mk3. It gives installers and operators a compact local web interface
-for discovering a PixLite, selecting scenes or playlists, assigning GPIOs, and
+for discovering a PixLite Mk3, selecting scenes or playlists, assigning GPIOs, and
 configuring playback and intensity actions without writing custom firmware.
 
 The supported targets are the Waveshare ESP32-S3-ETH development board and the
@@ -13,7 +13,7 @@ Waveshare ESP32-S3-(POE)-ETH-8DI-8RO industrial board. Both use W5500 Ethernet,
 16 MB flash, and 8 MB PSRAM; each standard/PoE pair shares one firmware
 artifact because PoE only changes the power path. The firmware is structured
 as reusable core, ESP32 platform, and board-profile layers so future ESP32
-boards can be added without forking PixLite, ADAR, trigger, configuration, or
+boards can be added without forking PixLite Mk3, ADAR, trigger, configuration, or
 web-interface code.
 
 Suggested GitHub description:
@@ -67,7 +67,7 @@ be described as hardware-ready until every remaining gate in
   channels; newly added contacts default to 100 ms debounce.
 - Provides Momentary Press/Release and Maintained Latch On/Latch Off behavior.
 - Triggers PixLite Mk3 scenes and playlists once or continuously.
-- Steps forward or backward through each PixLite's cached scene list with
+- Steps forward or backward through each PixLite Mk3's cached scene list with
   wraparound.
 - Stops playback, blanks outputs, sets or releases intensity overrides, and
   provides tap/hold brighter and darker controls.
@@ -87,9 +87,9 @@ be described as hardware-ready until every remaining gate in
 ### Current boundaries
 
 Version 1 can target up to 16 PixLite Mk3 controllers from its GPIO actions.
-PixLite HTTP work is serialized and it does not provide synchronized
+PixLite Mk3 HTTP work is serialized and it does not provide synchronized
 multi-controller playback. It also does not support PixLite Mk2, scene upload,
-PixLite network reconfiguration, OTA, cloud control, MQTT, cameras, or TF
+PixLite Mk3 network reconfiguration, OTA, cloud control, MQTT, cameras, or TF
 cards.
 
 The web interface is local HTTP, not TLS. Deploy it only on a trusted local
@@ -118,7 +118,7 @@ Its enabled state and 1–100% brightness are persistent web settings; disabling
 the LED also suppresses trigger flashes.
 
 Stop Playback returns the controller to live mode. This is intentional:
-PixLite's `modeCtrl/Stop` does not stop continuous (`cnt: 0`) playback.
+PixLite Mk3's `modeCtrl/Stop` does not stop continuous (`cnt: 0`) playback.
 
 Read [WIRING.md](WIRING.md) before connecting switches or relay contacts.
 
@@ -189,13 +189,13 @@ Leave unsupported camera and TF-card peripherals disconnected.
 
 1. Power the board by USB first. Test PoE only after USB-powered Ethernet has
    been confirmed.
-2. Connect the W5500 Ethernet port to the same network as the PixLite.
+2. Connect the W5500 Ethernet port to the same network as the PixLite Mk3.
 3. Open `http://advatrigger.local/` or the DHCP address printed in Serial
    Monitor.
 4. Keep Ethernet selected, or configure Wi-Fi Station as the operational
    uplink.
 5. Choose DHCP or static addressing.
-6. Run PixLite discovery, select the controller, and enter operator
+6. Run PixLite Mk3 discovery, select the controller, and enter operator
    credentials if required.
 7. Confirm that scenes and playlists load.
 8. Configure each input name, GPIO, contact polarity, debounce, switch mode,
@@ -230,7 +230,7 @@ debounce is not surge protection.
   configuration and restart with factory defaults.
 - Keep holding for 20 seconds to cancel the pending recovery/reset action.
 
-Exported backups omit Wi-Fi, PixLite, recovery, and web-interface passwords.
+Exported backups omit Wi-Fi, PixLite Mk3, recovery, and web-interface passwords.
 
 ## Maintainer setup
 
@@ -280,9 +280,9 @@ Before publishing a release:
    [HARDWARE-TESTS.md](HARDWARE-TESTS.md).
 4. Confirm at least 25 PoE-only cold boots.
 5. Confirm all eight permitted GPIOs, BOOT recovery, DHCP/static Ethernet,
-   operational Wi-Fi Station, ADAR discovery, authenticated PixLite connection,
+   operational Wi-Fi Station, ADAR discovery, authenticated PixLite Mk3 connection,
    playback, intensity, backup restoration, and the 24-hour burn-in.
-6. Record the Waveshare revision, PoE module, PixLite model/firmware, memory
+6. Record the Waveshare revision, PoE module, PixLite Mk3 model/firmware, memory
    watermarks, timings, and evidence.
 7. Update `compatibility.json`, release notes, and known limitations.
 
@@ -318,7 +318,7 @@ Each release should state:
 
 - Firmware, UI, configuration-schema, and board-profile versions.
 - Supported Arduino-ESP32 version and exact Arduino IDE settings.
-- Supported hardware and PixLite API range.
+- Supported hardware and PixLite Mk3 API range.
 - Whether hardware acceptance is complete.
 - New features, fixes, migrations, and breaking changes.
 - Wiring changes and any GPIOs requiring remapping.
@@ -383,5 +383,5 @@ The project is licensed under the MIT License. Contributions should follow
 secrets in fixtures or backups, include appropriate tests and documentation,
 and keep generated artifacts in sync.
 
-The PixLite API and ADAR protocol documents are not redistributed by this
+The PixLite Mk3 API and ADAR protocol documents are not redistributed by this
 repository.

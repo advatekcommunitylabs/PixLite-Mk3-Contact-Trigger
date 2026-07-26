@@ -1,7 +1,7 @@
 # Architecture
 
 The project separates portable behavior from ESP32 services and board-specific
-hardware. This allows another ESP32 PCB to reuse the same PixLite, ADAR,
+hardware. This allows another ESP32 PCB to reuse the same PixLite Mk3, ADAR,
 configuration, trigger, and web-interface behavior.
 
 ## Design goals
@@ -24,7 +24,7 @@ policy:
 - latest-event-wins and offline expiry;
 - action and intensity-ramp policy;
 - ADAR packet encoding/decoding;
-- PixLite request and response rules;
+- PixLite Mk3 request and response rules;
 - configuration types, defaults, validation, JSON, and migrations;
 - recovery timing and memory-mode decisions.
 
@@ -38,7 +38,7 @@ server, FreeRTOS, or UI behavior.
 - GPIO and time;
 - the network task and one-element action mailbox;
 - W5500/Wi-Fi/AP/mDNS/DNS lifecycle;
-- ADAR UDP and PixLite HTTP;
+- ADAR UDP and PixLite Mk3 HTTP;
 - two-slot NVS configuration;
 - web API, authentication, diagnostics, and PSRAM resources.
 
@@ -64,14 +64,14 @@ flowchart LR
     Scan --> Debounce["InputEngine debounce"]
     Debounce --> Mailbox["Latest-action mailbox"]
     Mailbox --> Network["Serialized network task"]
-    Network --> Resolve["Resolve target PixLite"]
-    Resolve --> HTTP["PixLite API v1.x"]
+    Network --> Resolve["Resolve target PixLite Mk3"]
+    Resolve --> HTTP["PixLite Mk3 API v1.x"]
     HTTP --> Status["Status/media cache in PSRAM"]
     Status --> API["Streamed local web API"]
     API --> UI["Embedded Advatek Labs SPA"]
 ```
 
-The GPIO loop never waits for PixLite HTTP. Publishing a newer edge replaces
+The GPIO loop never waits for PixLite Mk3 HTTP. Publishing a newer edge replaces
 the pending action. The network task discards an action older than two seconds,
 which prevents a stale press from firing after reconnection.
 
@@ -90,7 +90,7 @@ uses the configured Wi-Fi AP or direct-Ethernet DHCP connection; normal
 commissioning uses Ethernet and `advatrigger.local`. Direct-Ethernet recovery
 is refused while the W5500 has link, preventing a DHCP server from being
 started on an installed LAN.
-PixLite HTTP is intentionally serialized through one client and one reusable
+PixLite Mk3 HTTP is intentionally serialized through one client and one reusable
 32 KB response buffer, keeping socket and memory use predictable with up to 16
 saved controllers.
 
@@ -102,7 +102,7 @@ rolled back and the active valid record remains usable.
 
 The model separates:
 
-- **Portable settings:** PixLites, logical inputs, actions, debounce, network
+- **Portable settings:** PixLite Mk3 controllers, logical inputs, actions, debounce, network
   intent, LED preference, and UI behavior.
 - **Hardware binding:** board ID, board-profile version, and logical-input GPIO
   assignments.

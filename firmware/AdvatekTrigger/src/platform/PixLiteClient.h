@@ -3,6 +3,7 @@
 #include <HTTPClient.h>
 
 #include "../core/JsonLite.h"
+#include "../core/MediaOrderPolicy.h"
 #include "../core/PixLiteProtocol.h"
 #include "../core/PixLiteResponsePolicy.h"
 #include "../core/SceneStepPolicy.h"
@@ -84,6 +85,9 @@ class PixLiteClient {
         ++count;
       }
     }
+    // PixLite Mk3 presents media alphabetically. Cache the same deterministic
+    // order so the SPA, action choices, and GPIO scene stepping all agree.
+    sortMediaFiles(targetMedia, count);
     return true;
   }
 
@@ -97,8 +101,12 @@ class PixLiteClient {
     if (!validIndex(index)) return targetFailed("Action target is not configured");
     if (action.kind == ActionKind::None) return true;
     String request;
+    char selectedScene[64]{};
     switch (action.kind) {
       case ActionKind::PlayScene:
+        copyText(selectedScene, sizeof(selectedScene), action.mediaName);
+        request = pixLitePlaybackRequest(action, nextId());
+        break;
       case ActionKind::PlayPlaylist:
       case ActionKind::BlankOutputs:
         request = pixLitePlaybackRequest(action, nextId());
@@ -109,7 +117,9 @@ class PixLiteClient {
         const int16_t selected = sceneStepIndex(
             mediaSlice(index),
             mediaCount(index),
-            status(index).currentFile,
+            sceneStepReference(
+                status(index).currentFile,
+                status(index).lastScene),
             action.kind == ActionKind::PreviousScene);
         if (selected < 0) {
           char message[128];
@@ -125,6 +135,7 @@ class PixLiteClient {
             playback.mediaName,
             sizeof(playback.mediaName),
             media(index, static_cast<uint8_t>(selected)).name);
+        copyText(selectedScene, sizeof(selectedScene), playback.mediaName);
         log_.addf(
             LogLevel::Info,
             "%s scene step selected %s",
@@ -137,6 +148,7 @@ class PixLiteClient {
         request = pixLiteStopRequest(nextId());
         break;
       case ActionKind::TestColor:
+      case ActionKind::TestColorFade:
         request = pixLiteTestColorRequest(action, nextId());
         break;
       case ActionKind::IntensityBrighter:
@@ -159,6 +171,9 @@ class PixLiteClient {
     current.lastError[0] = '\0';
     clientError_[0] = '\0';
     if (strstr(response(), "\"status\"")) parseStatus(index, response());
+    if (selectedScene[0]) {
+      copyText(current.lastScene, sizeof(current.lastScene), selectedScene);
+    }
     return true;
   }
 
@@ -413,6 +428,9 @@ class PixLiteClient {
         document.stringValue(i + 1, candidate, sizeof(candidate));
         if (mediaNameIsScene(candidate) || mediaNameIsPlaylist(candidate)) {
           copyText(current.currentFile, sizeof(current.currentFile), candidate);
+          if (mediaNameIsScene(candidate)) {
+            copyText(current.lastScene, sizeof(current.lastScene), candidate);
+          }
         }
       } else if (document.equals(i, "out") &&
                  document.token(i + 1).type == JsonTokenType::String &&

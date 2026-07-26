@@ -85,7 +85,7 @@ or PSRAM is reported as degraded.
 
 ## 5. Open the interface
 
-With Ethernet connected to the same network as the computer and PixLite, try:
+With Ethernet connected to the same network as the computer and PixLite Mk3, try:
 
 1. `http://advatrigger.local/`
 2. The numeric IP printed in Serial Monitor.
@@ -97,14 +97,14 @@ installing multiple units; `front-of-house`, for example, becomes
 `.local` depends on mDNS support in the computer and network. The numeric IP
 remains the reliable fallback.
 
-## 6. Add a PixLite
+## 6. Add a PixLite Mk3
 
-1. Open **PixLites**.
-2. Select **Discover PixLites**.
+1. Open **PixLite Mk3 controllers**.
+2. Select **Discover PixLite Mk3 controllers**.
 3. Confirm the expected nickname, IP address, and MAC address.
 4. Connect it with Operator credentials where possible.
 5. Use Administrator credentials only for operations that require them, such
-   as PixLite Test mode.
+   as PixLite Mk3 Test mode.
 6. Open **Media** and verify the expected scenes and playlists.
 
 Discovery stores the MAC address so a later ADAR scan can update a changed DHCP
@@ -117,10 +117,10 @@ address. A controller can also be entered manually by IP.
 3. Select one permitted, unused GPIO.
 4. Choose **Momentary** or **Maintained**.
 5. Leave debounce at its 100 ms default for the first test.
-6. Select a PixLite and action for each edge.
+6. Select a PixLite Mk3 and action for each edge.
 7. Wait for the input status to show **Saved**.
 
-**Next scene** and **Previous scene** move through the selected PixLite's
+**Next scene** and **Previous scene** move through the selected PixLite Mk3's
 `.scn` list, skip playlists, and wrap at the ends. Choose Once or Loop just as
 you would for a directly selected scene.
 
@@ -136,7 +136,7 @@ Assigned GPIO ───── dry contact ───── GND
 ```
 
 For the first bench test, GPIO16 is a convenient known-tested choice. Confirm
-Press and Release—or Latch On and Latch Off—while watching both the PixLite and
+Press and Release—or Latch On and Latch Off—while watching both the PixLite Mk3 and
 diagnostics. The status LED should pulse white once for each accepted,
 debounced edge.
 
@@ -154,16 +154,21 @@ interference.
   operational network SSID and password. Uplinks never change automatically.
 - Add an optional interface password if the local network requires it.
 - Export a redacted backup.
-- Reboot and confirm the PixLite, GPIO mapping, hostname, and LED preference
+- Reboot and confirm the PixLite Mk3, GPIO mapping, hostname, and LED preference
   persist.
 - Record device IPs, MAC addresses, firmware versions, and wiring labels.
 
-Backups deliberately omit Wi-Fi, PixLite, recovery, and interface passwords.
+Backups deliberately omit Wi-Fi, PixLite Mk3, recovery, and interface passwords.
 
 For normal operation after commissioning, continue with the short
 [software user guide](USER-GUIDE.md).
 
 ## Recovery
+
+Wi-Fi and Ethernet are explicit operating modes. If the configured Wi-Fi
+network is unavailable, the controller does **not** automatically switch to
+Ethernet. Use the BOOT recovery method selected under **Network → Advanced
+network settings**:
 
 - Hold **BOOT** for 5–14 seconds and release while the LED flashes to clear
   local authentication and start the selected 15-minute recovery connection.
@@ -172,6 +177,8 @@ For normal operation after commissioning, continue with the short
 - **Direct Ethernet:** disconnect the board from the network before holding
   BOOT. After releasing BOOT, connect one computer directly to the board. Its
   DHCP server assigns the computer an address; open `http://192.168.4.1/`.
+  Power the board separately over USB-C or its supported DC input because a
+  normal computer Ethernet port does not provide PoE.
   Firmware refuses this mode if Ethernet already has link, protecting the
   existing LAN from an unintended DHCP server.
 - Hold for 15–19 seconds and release while the LED is red to erase all
@@ -188,8 +195,8 @@ Factory reset is destructive. Export a backup before testing it.
 | Flash or PSRAM degraded | Recheck the exact Arduino IDE options |
 | No Ethernet address | Check W5500 link, DHCP, and Serial diagnostics |
 | `.local` name fails | Use the numeric IP shown in Serial/UI |
-| PixLite not discovered | Confirm both devices share a subnet; try manual IP |
-| Scene list empty | Confirm files exist and PixLite credentials are accepted |
+| PixLite Mk3 not discovered | Confirm both devices share a subnet; try manual IP |
+| Scene list empty | Confirm files exist and PixLite Mk3 credentials are accepted |
 | Multiple trigger flashes | Increase that input's debounce in the web UI |
 | Pin remapping required | Select a permitted unused GPIO and save again |
 

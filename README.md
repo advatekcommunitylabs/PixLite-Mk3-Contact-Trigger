@@ -1,14 +1,14 @@
-# Advatek Labs PixLite Contact Closure Trigger
+# Advatek Labs PixLite Mk3 Contact Closure Trigger
 
 An open-source ESP32 appliance that turns physical push buttons, maintained
 switches, and relay contacts into PixLite Mk3 playback and intensity actions.
 Installers configure it through a compact local web interface; no firmware
 editing is required after the initial Arduino upload.
 
-> **Community beta:** the Waveshare ESP32-S3-ETH and a PixLite A4-S Mk3 have
-> passed initial bench bring-up. The industrial
-> ESP32-S3-(POE)-ETH-8DI-8RO target is compile-supported and awaits real-board
-> electrical validation. See
+> **Community beta:** both Waveshare targets and a PixLite A4-S Mk3 have passed
+> initial bench bring-up. The industrial ESP32-S3-POE-ETH-8DI-8RO has also
+> passed PoE Ethernet and two complete DI1–DI8 input sweeps. Extended cold-boot,
+> recovery, static-IP and burn-in gates remain. See
 > [HARDWARE-TESTS.md](HARDWARE-TESTS.md) before using it in a production
 > installation.
 
@@ -53,8 +53,21 @@ source can be downloaded directly.
 
 4. Select the board's COM/serial port and click **Upload**.
 5. Connect Ethernet and open `http://advatrigger.local/`.
-6. If that name is unavailable, use the IP printed at 115200 baud or join
-   `Advatek-Trigger-XXXXXX` and open `http://192.168.4.1`.
+6. If that name is unavailable, use the numeric IP printed at 115200 baud or
+   shown at the top of the web interface.
+
+The controller does not automatically fall back from Wi-Fi to Ethernet. If the
+configured Wi-Fi network is unavailable, hold **BOOT for 5–14 seconds** and
+release to start the recovery method selected in the web interface:
+
+- **Wi-Fi AP:** join `Advatek-Trigger-XXXXXX`, then open
+  `http://192.168.4.1/`.
+- **Direct Ethernet:** unplug the installed LAN first, enter BOOT recovery, and
+  connect one computer directly. Power the controller separately over USB-C or
+  its supported DC input because a normal computer Ethernet port does not
+  provide PoE. Open `http://192.168.4.1/`.
+
+Recovery access expires after 15 minutes.
 
 Continue with the [development-board guide](docs/GETTING-STARTED.md) or
 [industrial 8DI guide](docs/GETTING-STARTED-8DI-8RO.md). The
@@ -69,12 +82,13 @@ where each supported contact is connected.
   New inputs default to 100 ms.
 - Momentary Press/Release and maintained Latch On/Latch Off actions.
 - Scene and playlist playback Once or Loop Forever, next/previous scene
-  stepping with wraparound, Live, Blank, and solid colour Test mode.
+  stepping with wraparound, Live, Blank, solid colour Test mode, and the
+  PixLite Mk3 RGB colour-fade test.
 - GPIO-driven Set/Release intensity and press-and-hold Brighter/Darker actions
   for Pixels, Aux, or combined outputs.
 - Up to 16 saved PixLite Mk3 controllers, identified by nickname and MAC
   address and selected independently by each GPIO action.
-- ADAR v1.1 discovery and PixLite API negotiation from v1.0 through v1.9.
+- ADAR v1.1 discovery and PixLite Mk3 API negotiation from v1.0 through v1.9.
 - Explicit Ethernet or Wi-Fi Station uplink with DHCP or static IPv4; there is
   no silent fallback between uplinks.
 - Ethernet-first commissioning, operational Wi-Fi Station, editable `.local`
@@ -83,7 +97,7 @@ where each supported contact is connected.
 - Persistent orange status LED with configurable brightness and a white pulse
   on each debounced contact edge.
 
-PixLite HTTP work is serialized on a separate FreeRTOS task so slow controller
+PixLite Mk3 HTTP work is serialized on a separate FreeRTOS task so slow controller
 requests cannot block GPIO debounce or release detection. Latest physical event
 wins, and actions that cannot be delivered expire after two seconds.
 
@@ -128,7 +142,7 @@ tools/            deterministic web embedding and sketch generation
 The modular source is canonical. The large `.ino` is a deterministic,
 generated convenience artifact for Arduino IDE users and must not be edited by
 hand. New ESP32 boards are added as profiles rather than forks of the shared
-PixLite logic.
+PixLite Mk3 logic.
 
 The earlier experimental v0.8 sketch was an unverified idea reference and is
 not part of this implementation or its architectural foundation.
@@ -181,7 +195,7 @@ with dark/light themes and per-guide PDF/Markdown export controls.
 ## Scope
 
 Version 1 does not support PixLite Mk2, synchronized multi-controller playback,
-scene upload, PixLite network reconfiguration, OTA, MQTT/cloud control, camera
+scene upload, PixLite Mk3 network reconfiguration, OTA, MQTT/cloud control, camera
 operation, or TF-card operation. The web interface is local HTTP, not TLS; use
 it only on a trusted LAN or control VLAN.
 
@@ -196,5 +210,5 @@ Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
 as described in [SECURITY.md](SECURITY.md).
 
 MIT licensed. See [LICENSE](LICENSE) and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). PixLite API and ADAR protocol
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). PixLite Mk3 API and ADAR protocol
 documents are not redistributed.

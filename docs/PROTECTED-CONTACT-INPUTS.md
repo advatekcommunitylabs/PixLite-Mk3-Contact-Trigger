@@ -222,7 +222,7 @@ stripboard track cut with a meter before plugging the board into the ESP32.
    harmless test action.
 8. Close and open the contact repeatedly. Expect one white status-LED flash per
    debounced edge.
-9. Repeat for each populated channel before assigning live PixLite actions.
+9. Repeat for each populated channel before assigning live PixLite Mk3 actions.
 
 If a switch occasionally causes two events, increase that input's debounce in
 the web interface. Do not increase the capacitor to compensate for a wiring or

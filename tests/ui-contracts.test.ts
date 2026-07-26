@@ -33,12 +33,16 @@ describe('compact commissioning UI contracts', () => {
     expect(html).not.toContain('id="ap-mode"');
     expect(html).toContain('id="recovery-connection"');
     expect(html).toContain('Direct Ethernet DHCP — unplug LAN first');
+    expect(html).toContain('no automatic Ethernet fallback');
+    expect(html).toContain('Hold BOOT 5–14 seconds');
+    expect(html).toContain('port provides no PoE');
+    expect(html).toContain('http://192.168.4.1/');
     expect(script).toContain("recoveryConnection: value('recovery-connection')");
   });
 
   it('handles authentication, discovery empty states, and cross-board remapping', () => {
     expect(script).toContain("response.status === 401");
-    expect(script).toContain('No PixLites found');
+    expect(script).toContain('No PixLite Mk3 controllers found');
     expect(html).toContain('id="devices" class="device-list empty-state" hidden');
     expect(html).toContain('id="close-media"');
     expect(script).toContain('remapRequired');
@@ -70,6 +74,18 @@ describe('compact commissioning UI contracts', () => {
     expect(script).toContain("setInputSaveStatus('Saved')");
   });
 
+  it('tests each input as an ordered held make and break action', () => {
+    expect(script).toContain('data-test-input="${index}"');
+    expect(script).toContain('Hold to test');
+    expect(script).toContain("api('/api/action/test'");
+    expect(script).toContain('inputTestQueues.get(index)');
+    expect(script).toContain('queueInputTest(index, active)');
+    expect(script).toContain('button.onpointercancel');
+    expect(script).toContain('button.onlostpointercapture');
+    expect(script).toContain('button.onblur');
+    expect(css).toContain('.test-input.testing');
+  });
+
   it('mirrors debounced make and break events with a per-input virtual LED', () => {
     expect(script).toContain('id="i${index}-activity"');
     expect(script).toContain("api('/api/inputs')");
@@ -81,15 +97,24 @@ describe('compact commissioning UI contracts', () => {
     expect(css).toContain('background:#fff');
   });
 
-  it('supports sixteen saved PixLites and targets every GPIO action explicitly', () => {
+  it('supports sixteen saved PixLite Mk3 controllers and targets every GPIO action explicitly', () => {
     expect(html).toContain('0 of 16 configured');
     expect(script).toContain('targetId:');
     expect(script).toContain('targetOptions(action.targetId)');
     expect(script).toContain('/api/pixlites/remove');
     expect(script).toContain('/api/media?targetId=');
+    expect(script).toContain('primeMediaChoices');
+    expect(script).toContain('Choose or type a media filename');
     expect(script).toContain('MAC ${escapeHtml(target.mac');
     expect(script).toContain("['testColor', 'Test mode · solid colour']");
+    expect(script).toContain("['testColorFade', 'Test mode · RGB colour fade']");
     expect(script).toContain('type="color"');
     expect(script).toContain('colorChannels(testColor)');
+    expect(script).toContain("document.addEventListener('pointerdown'");
+    expect(script).toContain("active.type === 'color'");
+    expect(html).toContain('PixLite Mk3 controllers');
+    expect(html).toContain('Discover PixLite Mk3 controllers');
+    expect(html).not.toContain('>PixLites<');
+    expect(html).not.toContain('>Add PixLite<');
   });
 });

@@ -13,7 +13,7 @@
       </a>
       <nav aria-label="Main sections">
         <a href="#status">Status</a>
-        <a href="#pixlites">PixLites</a>
+        <a href="#pixlites">PixLite Mk3 controllers</a>
         <a href="#inputs">Inputs</a>
         <a href="#network">Network</a>
       </nav>
@@ -35,12 +35,12 @@
 
       <section id="pixlites" class="wide">
         <div class="section-heading">
-          <div><p class="eyebrow">Destinations</p><h2>PixLites</h2></div>
+          <div><p class="eyebrow">Destinations</p><h2>PixLite Mk3 controllers</h2></div>
           <span id="pixlite-count" class="tag">0 of 16 configured</span>
         </div>
-        <p class="intro">Add the PixLite controllers this device can control. Their PixLite nicknames are used automatically, and each input can target a different controller.</p>
+        <p class="intro">Add the PixLite Mk3 controllers this device can control. Their nicknames are used automatically, and each input can target a different controller.</p>
         <div class="toolbar">
-          <button id="discover" class="primary">Discover PixLites</button>
+          <button id="discover" class="primary">Discover PixLite Mk3 controllers</button>
           <button id="manual-pixlite">Add by IP</button>
           <span id="discovery-message" class="muted">Searches this local network</span>
         </div>
@@ -49,22 +49,22 @@
 
         <form id="pixlite-form" class="editor-panel" hidden>
           <div class="editor-title">
-            <div><p class="eyebrow">Connection</p><h3 id="pixlite-form-title">Add PixLite</h3></div>
+            <div><p class="eyebrow">Connection</p><h3 id="pixlite-form-title">Add PixLite Mk3</h3></div>
             <button type="button" id="cancel-pixlite" class="quiet">Cancel</button>
           </div>
           <input id="pix-target-id" type="hidden" />
           <input id="pix-mac" type="hidden" />
           <div class="form-grid">
-            <label>PixLite name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">You can give it a clearer local name here.</span></label>
+            <label>PixLite Mk3 name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">You can give it a clearer local name here.</span></label>
             <label>IP address<input id="pix-host" inputmode="decimal" placeholder="192.168.1.100" /></label>
-            <label>PixLite account<select id="pix-user"><option value="oper">Operator</option><option value="admin">Administrator (needed for Test mode)</option></select></label>
+            <label>PixLite Mk3 account<select id="pix-user"><option value="oper">Operator</option><option value="admin">Administrator (needed for Test mode)</option></select></label>
             <label>Password<input id="pix-password" type="password" autocomplete="new-password" placeholder="Leave blank if unused" /></label>
           </div>
           <div class="form-actions"><button type="submit" class="primary">Connect and save</button></div>
         </form>
 
         <div id="media-panel" class="media-panel" hidden>
-          <div class="editor-title"><div><p class="eyebrow">Available media</p><h3 id="media-title">PixLite</h3></div><button id="close-media" class="quiet">Close</button></div>
+          <div class="editor-title"><div><p class="eyebrow">Available media</p><h3 id="media-title">PixLite Mk3</h3></div><button id="close-media" class="quiet">Close</button></div>
           <div class="media-grid">
             <div><h4>Scenes</h4><ul id="scenes"></ul></div>
             <div><h4>Playlists</h4><ul id="playlists"></ul></div>
@@ -124,7 +124,8 @@
             <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP — unplug LAN first</option></select></label>
           </div>
         </details>
-        <p class="notice">Open the current IP shown at the top if the .local address does not resolve. Give each trigger a unique local name. This local setup page uses HTTP, not TLS.</p>
+        <p class="notice"><b>Wi-Fi recovery — no automatic Ethernet fallback</b><br>Hold BOOT 5–14 seconds and release. <b>Wi-Fi AP:</b> join <code>Advatek-Trigger-XXXXXX</code>. <b>Direct Ethernet:</b> unplug the LAN, connect one computer, and power separately; its port provides no PoE. Open <code>http://192.168.4.1/</code> within 15 minutes.</p>
+        <p class="notice">If .local fails, open the current IP shown above. Use a unique local name. This page uses HTTP, not TLS.</p>
         <button id="apply-network" class="primary">Save network and restart</button>
       </section>
 

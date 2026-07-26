@@ -1,4 +1,4 @@
-# PixLite Contact Trigger guides
+# PixLite Mk3 Contact Trigger guides
 
 Configure physical buttons, switches, and relay contacts to control PixLite Mk3
 scenes, playlists, output modes, and intensity.

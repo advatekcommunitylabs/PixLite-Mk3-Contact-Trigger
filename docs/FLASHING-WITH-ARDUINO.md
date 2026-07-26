@@ -60,11 +60,12 @@ file makes releases easy to flash.
 Connect USB-C directly to the ESP32-S3 board. In the board selector:
 
 1. Select **ESP32S3 Dev Module**.
-2. Select the serial port shown beside the board.
+2. Select the serial port that appeared when the board was connected.
 
 Windows normally calls the port `COM3`, `COM4`, or similar. macOS normally
 shows a `/dev/cu.usbmodem...` name. The number or name will differ from the
-screenshot.
+screenshot. Ignore an unavailable port remembered from an earlier board; if
+unsure, disconnect and reconnect USB and select the newly appearing port.
 
 Do **not** select `Waveshare ESP32-S3-Zero`; it is a different board.
 
@@ -105,6 +106,10 @@ and indexes the generated convenience sketch. Wait until the IDE reports
 **Done uploading**, or the output ends with **Hash of data verified** and
 **Hard resetting via RTS pin**, before unplugging the board.
 
+Immediately after installing or changing the ESP32 package, allow Arduino IDE
+to finish indexing before judging the automatically displayed board name.
+Your manual selection must remain **ESP32S3 Dev Module**.
+
 ![Arduino IDE compiling the Advatek Trigger sketch after Upload is selected](assets/arduino-flash-guide/04-upload-firmware.png)
 
 ![Arduino IDE output showing the firmware write reached 100 percent, its hash was verified, and the board was reset](assets/arduino-flash-guide/05-upload-complete.png)
@@ -134,7 +139,7 @@ Do not continue if the log reports the wrong board profile or degraded PSRAM.
 
 ![Serial Monitor boot lines confirming beta.6, the Waveshare ESP32-S3-ETH profile, 16 MB flash and normal 8 MB PSRAM](assets/arduino-flash-guide/06-first-boot.png)
 
-Connect Ethernet to the same local network as the computer and PixLite, then
+Connect Ethernet to the same local network as the computer and PixLite Mk3, then
 open:
 
 ```text

@@ -549,6 +549,10 @@ class WebApi {
       return;
     }
     parseAction(doc, doc.root(), action);
+    if (action.kind == ActionKind::None) {
+      sendJson(200, "{\"ok\":true}");
+      return;
+    }
     if (pixlite_.execute(action)) sendJson(200, "{\"ok\":true}");
     else sendError(502, pixlite_.lastError());
   }

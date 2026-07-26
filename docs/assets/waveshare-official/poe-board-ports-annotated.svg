@@ -38,7 +38,7 @@
     <rect class="chip" width="420" height="86" rx="9"/>
     <circle cx="34" cy="43" r="19" fill="#7abf45"/><text class="num" x="34" y="50" text-anchor="middle">3</text>
     <text class="label" x="66" y="36">Isolated inputs</text>
-    <text class="small" x="66" y="63">COM + DI1–DI8 for dry-contact switches</text>
+    <text class="small" x="66" y="63">DGND + DI1–DI8 · leave input COM unused</text>
   </g>
   <path class="lead input" d="M448 749 L616 749 L650 655"/>
 

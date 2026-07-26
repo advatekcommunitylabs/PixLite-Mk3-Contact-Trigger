@@ -12,7 +12,9 @@
 
 #include <Arduino.h>
 #include <ETH.h>
+#include <ESPmDNS.h>
 #include <SPI.h>
+#include <WebServer.h>
 #include <esp_heap_caps.h>
 
 namespace {
@@ -27,12 +29,15 @@ constexpr uint8_t kW5500CsPin = 16;
 constexpr uint8_t kW5500ResetPin = 39;
 constexpr uint8_t kInputPins[] = {4, 5, 6, 7, 8, 9, 10, 11};
 
+WebServer server(80);
 bool lastBootState = HIGH;
 bool lastInputStates[8] = {};
 uint32_t lastReportMs = 0;
 
 void setRgb(uint8_t red, uint8_t green, uint8_t blue) {
-  rgbLedWrite(kRgbPin, red, green, blue);
+  // This board's fitted addressable LED uses RGB byte order. The smaller
+  // Waveshare ESP32-S3-ETH development board uses the WS2812B GRB default.
+  rgbLedWriteOrdered(kRgbPin, LED_COLOR_ORDER_RGB, red, green, blue);
 }
 
 void printNetworkState() {
@@ -42,6 +47,47 @@ void printNetworkState() {
       ETH.fullDuplex() ? "full" : "half", ETH.macAddress().c_str(),
       ETH.localIP().toString().c_str(), ETH.subnetMask().toString().c_str(),
       ETH.gatewayIP().toString().c_str(), ETH.dnsIP().toString().c_str());
+}
+
+String inputStateJson() {
+  // This deliberately exposes the electrical level as well as the interpreted
+  // active-low state. It makes first-board polarity and terminal tests
+  // conclusive even when the canary is powered by PoE with USB disconnected.
+  String json = "{\"inputs\":[";
+  json.reserve(360);
+  for (size_t index = 0; index < 8; ++index) {
+    if (index) json += ',';
+    const bool rawHigh = digitalRead(kInputPins[index]) == HIGH;
+    json += "{\"terminal\":\"DI" + String(index + 1) +
+            "\",\"gpio\":" + String(kInputPins[index]) +
+            ",\"rawHigh\":" + String(rawHigh ? "true" : "false") +
+            ",\"active\":" + String(rawHigh ? "false" : "true") + "}";
+  }
+  json += "]}";
+  return json;
+}
+
+void startDiagnosticServer() {
+  if (!ETH.linkUp() || ETH.localIP() == IPAddress()) return;
+
+  server.on("/", HTTP_GET, []() {
+    server.send(
+        200, "text/plain",
+        "Advatek Trigger industrial input canary\n"
+        "Open /api/inputs for DI1-DI8 electrical levels.\n");
+  });
+  server.on("/api/inputs", HTTP_GET, []() {
+    server.send(200, "application/json", inputStateJson());
+  });
+  server.begin();
+
+  if (MDNS.begin("advatek-8di-canary")) {
+    MDNS.addService("http", "tcp", 80);
+    Serial.println("Input diagnostics: http://advatek-8di-canary.local/api/inputs");
+  } else {
+    Serial.printf("Input diagnostics: http://%s/api/inputs\n",
+                  ETH.localIP().toString().c_str());
+  }
 }
 
 bool startEthernet() {
@@ -130,9 +176,11 @@ void setup() {
     delay(100);
   }
   printNetworkState();
+  startDiagnosticServer();
 }
 
 void loop() {
+  server.handleClient();
   reportChangedInputs();
   if (millis() - lastReportMs >= 5000) {
     lastReportMs = millis();

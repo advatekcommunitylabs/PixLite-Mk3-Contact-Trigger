@@ -9,6 +9,7 @@ const checkOnly = process.argv.includes('--check');
 const modules = [
   'src/core/Versions.h',
   'src/core/Types.h',
+  'src/core/MediaOrderPolicy.h',
   'src/core/SceneStepPolicy.h',
   'src/core/MediaRefreshPolicy.h',
   'src/core/Util.h',

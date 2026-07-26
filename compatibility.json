@@ -21,9 +21,9 @@
     },
     {
       "id": "waveshare-esp32-s3-eth-8di-8ro",
-      "profileVersion": "1.0.0",
+      "profileVersion": "1.1.0",
       "arduinoEsp32": "3.3.10",
-      "status": "compile-supported, hardware-arrival-and-validation-pending",
+      "status": "physical-bring-up-passed, extended-acceptance-pending",
       "inputs": "8 isolated digital inputs"
     }
   ]
