@@ -8,7 +8,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import {dirname, join, relative, resolve, sep} from 'node:path';
+import {dirname, extname, join, relative, resolve, sep} from 'node:path';
 import {Marked, Renderer} from 'marked';
 
 const root = process.cwd();
@@ -128,13 +128,31 @@ function pathInsideWorkspace(path) {
     relativePath !== '..';
 }
 
+const copiedAssets = new Set();
+
 function copyLocalAsset(absolutePath) {
   if (!existsSync(absolutePath) || !pathInsideWorkspace(absolutePath) ||
       !statSync(absolutePath).isFile()) return null;
   const repositoryPath = relative(root, absolutePath).replaceAll('\\', '/');
   const destination = join(output, 'files', ...repositoryPath.split('/'));
-  mkdirSync(dirname(destination), {recursive: true});
-  copyFileSync(absolutePath, destination);
+  if (!copiedAssets.has(repositoryPath)) {
+    copiedAssets.add(repositoryPath);
+    mkdirSync(dirname(destination), {recursive: true});
+    copyFileSync(absolutePath, destination);
+
+    // Annotated guide SVGs deliberately retain the unmodified product photo as
+    // a separate, attributed source file. Copy local SVG image dependencies so
+    // the same vector overlay works on GitHub Pages and in local previews.
+    if (extname(absolutePath).toLowerCase() === '.svg') {
+      const svg = readFileSync(absolutePath, 'utf8');
+      for (const match of svg.matchAll(/href="([^"]+)"/g)) {
+        const dependency = match[1];
+        if (!dependency || dependency.startsWith('#') ||
+            /^(?:https?:|data:)/i.test(dependency)) continue;
+        copyLocalAsset(resolve(dirname(absolutePath), dependency));
+      }
+    }
+  }
   return `files/${repositoryPath}`;
 }
 

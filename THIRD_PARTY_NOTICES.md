@@ -12,5 +12,10 @@ and their transitive development dependencies. They are build/test tools and
 are not shipped in the ESP32 firmware; their license metadata is recorded in
 `pnpm-lock.yaml`.
 
+Waveshare product photographs used in the industrial PoE-board installation
+guide remain copyright Waveshare and are not covered by this repository's MIT
+licence. Each retained image and its official source URL are recorded in
+`docs/assets/waveshare-official/README.md`.
+
 PixLite API and ADAR documentation are used as protocol specifications with
 authorization from Advatek. Those documents are not redistributed here.

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">Waveshare ESP32-S3-POE-ETH-8DI-8RO connection points</title>
+  <desc id="desc">Official Waveshare top-view product image annotated to identify the PoE Ethernet port, USB-C programming port, BOOT and RESET buttons, isolated digital inputs, and unused power and RS485 terminals.</desc>
+  <style>
+    .bg{fill:#202020}.photo{filter:drop-shadow(0 12px 20px #0007)}
+    .focus{fill:none;stroke-width:7}.poe{stroke:#f15a2c}.usb{stroke:#4db6ff}.input{stroke:#7abf45}.other{stroke:#ffd166}.button{stroke:#d7d7d7}
+    .lead{fill:none;stroke-width:4}.label{font:700 22px Arial,sans-serif;fill:#fff}.small{font:16px Arial,sans-serif;fill:#cbc8c5}
+    .chip{fill:#2c2c2e;stroke:#555;stroke-width:2}.num{font:700 20px Arial,sans-serif;fill:#202020}
+  </style>
+  <rect class="bg" width="1200" height="820"/>
+  <image class="photo" href="poe-board-top.jpg" x="0" y="0" width="1200" height="728" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Coordinates preserve the official product image; only vector callouts are added. -->
+  <rect class="focus poe" x="302" y="546" width="103" height="108" rx="12"/>
+  <rect class="focus usb" x="408" y="561" width="33" height="55" rx="8"/>
+  <rect class="focus input" x="493" y="548" width="326" height="107" rx="12"/>
+  <rect class="focus other" x="827" y="548" width="116" height="107" rx="12"/>
+  <circle class="focus button" cx="471" cy="591" r="20"/>
+  <circle class="focus button" cx="219" cy="394" r="20"/>
+
+  <g transform="translate(28 28)">
+    <rect class="chip" width="360" height="82" rx="9"/>
+    <circle cx="34" cy="41" r="19" fill="#f15a2c"/><text class="num" x="34" y="48" text-anchor="middle">1</text>
+    <text class="label" x="66" y="34">PoE Ethernet (RJ45)</text>
+    <text class="small" x="66" y="60">Power + network from 802.3af equipment</text>
+  </g>
+  <path class="lead poe" d="M388 109 L407 160 L355 546"/>
+
+  <g transform="translate(812 28)">
+    <rect class="chip" width="360" height="82" rx="9"/>
+    <circle cx="34" cy="41" r="19" fill="#4db6ff"/><text class="num" x="34" y="48" text-anchor="middle">2</text>
+    <text class="label" x="66" y="34">USB-C programming</text>
+    <text class="small" x="66" y="60">Data cable to the Windows or Mac computer</text>
+  </g>
+  <path class="lead usb" d="M812 108 L737 153 L426 561"/>
+
+  <g transform="translate(28 706)">
+    <rect class="chip" width="420" height="86" rx="9"/>
+    <circle cx="34" cy="43" r="19" fill="#7abf45"/><text class="num" x="34" y="50" text-anchor="middle">3</text>
+    <text class="label" x="66" y="36">Isolated inputs</text>
+    <text class="small" x="66" y="63">COM + DI1–DI8 for dry-contact switches</text>
+  </g>
+  <path class="lead input" d="M448 749 L616 749 L650 655"/>
+
+  <g transform="translate(468 706)">
+    <rect class="chip" width="330" height="86" rx="9"/>
+    <circle cx="34" cy="43" r="19" fill="#d7d7d7"/><text class="num" x="34" y="50" text-anchor="middle">4</text>
+    <text class="label" x="66" y="36">BOOT / RESET</text>
+    <text class="small" x="66" y="63">Use only if automatic upload fails</text>
+  </g>
+  <path class="lead button" d="M570 706 L471 612"/>
+  <path class="lead button" d="M619 706 L568 541 L219 414"/>
+
+  <g transform="translate(818 706)">
+    <rect class="chip" width="354" height="86" rx="9"/>
+    <circle cx="34" cy="43" r="19" fill="#ffd166"/><text class="num" x="34" y="50" text-anchor="middle">5</text>
+    <text class="label" x="66" y="36">Not used by this project</text>
+    <text class="small" x="66" y="63">7–36 V power and RS485 terminal group</text>
+  </g>
+  <path class="lead other" d="M915 706 L881 655"/>
+</svg>

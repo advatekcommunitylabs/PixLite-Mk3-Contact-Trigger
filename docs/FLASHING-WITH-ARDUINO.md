@@ -70,6 +70,12 @@ Do **not** select `Waveshare ESP32-S3-Zero`; it is a different board.
 
 ![Arduino board selector showing ESP32S3 Dev Module and a connected COM port](assets/arduino-flash-guide/02-select-board-and-port.png)
 
+For the industrial **ESP32-S3-POE-ETH-8DI-8RO**, disconnect PoE for the first
+upload and use only a data-capable USB-C cable to the computer. The
+[industrial PoE connection guide](GETTING-STARTED-8DI-8RO.md#identify-the-poe-board-connections)
+shows the exact USB-C, PoE, BOOT, RESET, and isolated-input locations using
+official Waveshare product images.
+
 ## 4. Set the required build options
 
 Open **Tools** and set these values exactly:
