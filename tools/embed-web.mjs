@@ -19,6 +19,11 @@ if (remainingAssetTag) {
   throw new Error(`Vite asset inlining failed: ${remainingAssetTag}`);
 }
 const compressed = gzipSync(Buffer.from(html), { level: 9, mtime: 0 });
+// zlib writes a platform-specific operating-system value into gzip byte 9
+// (Windows 10, Unix 3). It has no effect on decompression, but normalizing it
+// makes the committed firmware asset byte-for-byte reproducible in local
+// Windows builds and Linux CI.
+compressed[9] = 255;
 await writeFile(resolve(dist, 'index.html.gz'), compressed);
 const rows = [];
 for (let i = 0; i < compressed.length; i += 12) {

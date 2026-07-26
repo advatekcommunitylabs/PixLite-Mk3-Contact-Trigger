@@ -28,6 +28,8 @@ The current release candidate identifies as `1.0.0-beta.6`.
 
 ### Changed
 
+- Embedded web gzip headers are normalized so generated Arduino artifacts are
+  byte-for-byte reproducible on Windows and Linux.
 - ESP32 Ethernet dependencies removed from the generic board-profile contract
   so portable core tests compile cleanly on a host.
 - Release assets now include the hardware guide and pinout alongside the
