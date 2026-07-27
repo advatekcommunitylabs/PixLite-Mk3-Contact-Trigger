@@ -19,10 +19,13 @@ here for wiring and commissioning.
 - Data-capable USB-C cable for the initial upload.
 - Optional Waveshare PoE module. Begin with USB power during first bring-up.
 - PixLite Mk3 on the same local network.
+- Suitable industrial-grade microSD installed in the PixLite Mk3 for SHOWTime
+  scene and playlist playback.
 - Arduino IDE and internet access to install the Espressif board package.
 - A volt-free push button, switch, relay contact, or temporary jumper.
 
-Do not connect an externally powered signal to an ESP32 input.
+Do not connect an externally powered signal to an ESP32 input. The ESP32
+board's TF/microSD slot is not used by this firmware.
 The illustrated [hardware and pinout guide](HARDWARE.md) includes sourcing
 links, board orientation, and the optional isolated-input parts.
 
@@ -106,6 +109,11 @@ remains the reliable fallback.
 5. Use Administrator credentials only for operations that require them, such
    as PixLite Mk3 Test mode.
 6. Open **Media** and verify the expected scenes and playlists.
+
+If Media is empty, first confirm that the PixLite Mk3 has a suitable
+industrial-grade microSD installed and that SHOWTime media has been placed on
+it. This requirement belongs to the PixLite Mk3; the ESP32 trigger board's own
+TF/microSD slot remains unused.
 
 Discovery stores the MAC address so a later ADAR scan can update a changed DHCP
 address. A controller can also be entered manually by IP.
@@ -196,7 +204,7 @@ Factory reset is destructive. Export a backup before testing it.
 | No Ethernet address | Check W5500 link, DHCP, and Serial diagnostics |
 | `.local` name fails | Use the numeric IP shown in Serial/UI |
 | PixLite Mk3 not discovered | Confirm both devices share a subnet; try manual IP |
-| Scene list empty | Confirm files exist and PixLite Mk3 credentials are accepted |
+| Scene list empty | Confirm the PixLite Mk3 has an industrial-grade microSD, SHOWTime files exist, and credentials are accepted |
 | Multiple trigger flashes | Increase that input's debounce in the web UI |
 | Pin remapping required | Select a permitted unused GPIO and save again |
 

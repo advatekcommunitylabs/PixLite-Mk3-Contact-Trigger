@@ -1,5 +1,5 @@
 name: Hardware test report
-description: Contribute repeatable board, GPIO, PoE, or PixLite evidence
+description: Contribute repeatable board, GPIO, PoE, or PixLite Mk3 evidence
 title: "[Hardware] "
 labels: ["hardware"]
 body:

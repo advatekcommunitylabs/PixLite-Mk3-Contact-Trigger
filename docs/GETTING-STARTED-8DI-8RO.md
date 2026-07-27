@@ -13,10 +13,15 @@ for the manufacturer's complete electrical specification.
 
 ![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front.jpg)
 
-The PoE target has passed USB flashing, Ethernet, PixLite Mk3 discovery and two
-complete DI1–DI8 contact-input sweeps. Full release acceptance still requires
-the longer-duration checks listed in
+The PoE target has passed USB flashing, Ethernet, PixLite Mk3 discovery,
+complete DI1–DI8 contact-input sweeps, and 25 consecutive PoE-only cold boots.
+Full release acceptance still requires the recovery, Wi-Fi, static-addressing,
+and longer-duration checks listed in
 [HARDWARE-TESTS.md](../HARDWARE-TESTS.md).
+
+PixLite Mk3 SHOWTime scene and playlist playback also requires a suitable
+industrial-grade microSD installed in the PixLite Mk3. The industrial ESP32
+board's own TF/microSD slot is unused by this firmware.
 
 First-time Arduino users should follow the
 [illustrated flashing guide](FLASHING-WITH-ARDUINO.md). It shows the shared
@@ -193,7 +198,7 @@ TF-card slot inactive. No extra Arduino libraries are required.
 4. Add one PixLite Mk3 and confirm its media list.
 5. Configure DI1 with 100 ms debounce and a harmless test action.
 6. Operate DI1 as a passive dry contact and confirm one LED flash per edge.
-7. Repeat for DI2–DI8 before treating the profile as hardware-ready.
+7. Repeat for DI2–DI8 to verify the wiring and terminals in this installation.
 
 Do not connect loads to the relay terminals for this bring-up.
 

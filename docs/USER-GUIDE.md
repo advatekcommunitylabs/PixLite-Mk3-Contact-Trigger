@@ -4,6 +4,31 @@ This short guide covers normal software use after the controller has been
 flashed, wired, and connected to the same local network as its PixLite Mk3
 controllers.
 
+## Current beta validation
+
+The following workflow has been exercised on physical Waveshare hardware and a
+PixLite A4-S Mk3 running firmware 3.14.2 with API v1.9:
+
+- both supported Arduino downloads compile, upload, and report the expected
+  16 MB flash and 8 MB PSRAM;
+- the industrial PoE board completed 25 consecutive PoE-only cold boots, each
+  restoring Ethernet, DHCP, and its PixLite Mk3 connection;
+- all eight industrial `DI1`–`DI8` terminals detected contact close and open
+  without crosstalk or false startup events;
+- the development board runs from USB with ordinary Ethernet and reconnects to
+  its saved PixLite Mk3 automatically;
+- discovery, media refresh, alphabetic scene lists, scene and playlist
+  once/loop playback, Live, Blank, scene stepping, Test modes, and intensity
+  actions have passed bench tests;
+- input autosave, configurable debounce, normally-open/normally-closed
+  operation, momentary/maintained modes, Hold-to-test, status LED feedback, and
+  desktop/mobile layouts have been exercised.
+
+An eight-hour dual-board network and memory burn-in is in progress. Operational
+Wi-Fi, static addressing, and every BOOT recovery duration remain release
+gates. See the versioned [hardware acceptance record](../HARDWARE-TESTS.md) for
+measurements, limitations, and the current release decision.
+
 ## Open the controller
 
 In a web browser, open:
@@ -19,6 +44,8 @@ controller is ready to receive contact triggers.
 If the `.local` address does not open, use the numeric Device IP shown in the
 interface or by Serial Monitor at `115200` baud.
 
+![Contact Trigger status dashboard showing the device address, Ethernet health, connected PixLite Mk3, and setup progress](assets/user-guide/01-status-and-pixlite-mk3.png)
+
 ## Check or add a PixLite Mk3
 
 Open **PixLite Mk3 controllers** to see each saved controller and whether it is online.
@@ -30,6 +57,14 @@ Open **PixLite Mk3 controllers** to see each saved controller and whether it is 
    **Connect and save**.
 5. Select **View media** to confirm that its scenes and playlists are listed.
 
+PixLite Mk3 SHOWTime requires a suitable industrial-grade microSD installed in
+the PixLite Mk3. If both media lists are empty, check the PixLite Mk3 card and
+SHOWTime files before troubleshooting the ESP32 trigger. The ESP32 board's own
+TF/microSD slot is not used.
+See the
+[official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
+for the PixLite Mk3 card requirement.
+
 Use an Administrator account only when an input must activate PixLite Mk3
 **Test mode**. Up to 16 PixLite Mk3 controllers can be saved, and each input action can target
 a different one.
@@ -38,6 +73,8 @@ If a saved PixLite Mk3 changes IP address, **Discover PixLite Mk3 controllers** 
 address and updates the connection. If its media list is empty after files
 have changed, reconnect it with **Edit** and **Connect and save**, then open
 **View media** again.
+
+![Saved PixLite Mk3 controller and alphabetically ordered scenes and playlists](assets/user-guide/02-pixlite-mk3-media.png)
 
 ## Configure a button or switch
 
@@ -59,6 +96,8 @@ fields** means a pin, PixLite Mk3, or media selection is still missing.
 
 For a normally-closed field contact, enable **Normally closed** so the displayed
 and triggered states follow its logical operation.
+
+![Input editor showing terminal assignment, switch type, debounce, edge actions, autosave state, and Hold-to-test](assets/user-guide/03-input-configuration.png)
 
 ## Choose actions
 
@@ -84,6 +123,12 @@ maintained setup is a looping scene on Latch on and **Live mode** on Latch off.
 The web interface configures intensity behaviour; normal intensity changes are
 then driven by the connected button or switch rather than an on-screen slider.
 
+![Input action configured to step through PixLite Mk3 scenes with a selected playback repeat mode](assets/user-guide/04-scene-stepping.png)
+
+![Solid-colour and RGB Fade Test mode choices with a configurable test colour](assets/user-guide/05-test-colour-fade.png)
+
+![GPIO-driven intensity action showing output target, step size, repeat timing, and fade](assets/user-guide/06-intensity-action.png)
+
 ## Understand the status LED
 
 - **Steady orange:** the controller is running.
@@ -104,6 +149,8 @@ give each installed controller a unique **Local name**, for example
 
 Changing the uplink, local name, or IP settings restarts the controller. Keep a
 note of the new address before selecting **Save network and restart**.
+
+![Network settings showing the operational connection, editable local name, addressing, and BOOT recovery method](assets/user-guide/07-network-and-recovery.png)
 
 Wi-Fi does not automatically fall back to Ethernet if its configured network
 is unavailable. To recover access, hold **BOOT for 5–14 seconds** and release:
@@ -136,6 +183,25 @@ PixLite Mk3, or interface passwords.
 4. Check that the input editor says **Saved**.
 5. Open **Diagnostics**, select **Refresh log**, and keep the result for a
    support report.
+
+![Diagnostics view showing board identity, firmware versions, Ethernet state, memory health, and the event log](assets/user-guide/08-diagnostics.png)
+
+## Use the interface on a phone
+
+The same interface adapts to narrow phone screens. Status, input controls, and
+network recovery remain available without a separate app.
+
+### Mobile status
+
+![Mobile status dashboard](assets/user-guide/09-mobile-status.png)
+
+### Mobile input editing
+
+![Mobile input editor with full-width Hold-to-test and Remove controls](assets/user-guide/10-mobile-input.png)
+
+### Mobile network recovery
+
+![Mobile network and recovery controls](assets/user-guide/11-mobile-network.png)
 
 For access recovery and factory-reset instructions, see the
 [getting-started recovery section](GETTING-STARTED.md#recovery). For a

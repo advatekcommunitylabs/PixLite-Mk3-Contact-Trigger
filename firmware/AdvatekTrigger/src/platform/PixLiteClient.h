@@ -59,7 +59,7 @@ class PixLiteClient {
   bool refreshMedia(uint8_t index) {
     if (!validIndex(index) || !memory_.media || !memory_.mediaCounts ||
         !memory_.tokens || !memory_.pixliteResponse) {
-      return requestFailed(index, -4, "", "file list");
+      return requestFailed(index, RESPONSE_MEMORY_UNAVAILABLE, "", "file list");
     }
     const int code = post(index, pixLiteFileListRequest(nextId()));
     if (!responseAccepted(index, code, "file list")) return false;
@@ -227,6 +227,13 @@ class PixLiteClient {
   }
 
  private:
+  // Keep client-side failures outside HTTPClient's negative error range. This
+  // prevents a transport error such as SEND_HEADER_FAILED from being reported
+  // as one of our bounded-buffer or degraded-memory conditions.
+  static constexpr int RESPONSE_TOO_LARGE = -1002;
+  static constexpr int RESPONSE_INCOMPLETE = -1003;
+  static constexpr int RESPONSE_MEMORY_UNAVAILABLE = -1004;
+
   bool validIndex(uint8_t index) const {
     return index < config_.pixliteCount && index < MAX_PIXLITES &&
            config_.pixlites[index].enabled && config_.pixlites[index].host[0];
@@ -268,7 +275,11 @@ class PixLiteClient {
   }
 
   int get(uint8_t index, const char *path) {
-    if (!memory_.pixliteResponse) return -4;
+    if (!memory_.pixliteResponse) return RESPONSE_MEMORY_UNAVAILABLE;
+    // A failed HTTP transaction may not call readResponse(). Clear the shared
+    // workspace here so diagnostics can never quote a previous successful
+    // PixLite Mk3 response as if it belonged to the current failure.
+    memory_.pixliteResponse[0] = '\0';
     HTTPClient http;
     http.setConnectTimeout(1500);
     http.setTimeout(1800);
@@ -284,7 +295,8 @@ class PixLiteClient {
   }
 
   int post(uint8_t index, const String &body) {
-    if (!memory_.pixliteResponse) return -4;
+    if (!memory_.pixliteResponse) return RESPONSE_MEMORY_UNAVAILABLE;
+    memory_.pixliteResponse[0] = '\0';
     HTTPClient http;
     http.setConnectTimeout(1500);
     http.setTimeout(1800);
@@ -303,7 +315,9 @@ class PixLiteClient {
   int readResponse(HTTPClient &http, int code) {
     memory_.pixliteResponse[0] = '\0';
     const int declared = http.getSize();
-    if (declared > static_cast<int>(PIXLITE_RESPONSE_LIMIT)) return -2;
+    if (declared > static_cast<int>(PIXLITE_RESPONSE_LIMIT)) {
+      return RESPONSE_TOO_LARGE;
+    }
     NetworkClient *stream = http.getStreamPtr();
     size_t used = 0;
     uint32_t lastDataAt = millis();
@@ -312,7 +326,7 @@ class PixLiteClient {
       const size_t available = stream->available();
       if (available) {
         const size_t room = PIXLITE_RESPONSE_LIMIT - used;
-        if (!room) return -2;
+        if (!room) return RESPONSE_TOO_LARGE;
         const size_t requested = available < room ? available : room;
         const int read = stream->readBytes(
             reinterpret_cast<uint8_t *>(memory_.pixliteResponse + used),
@@ -327,7 +341,9 @@ class PixLiteClient {
       }
     }
     memory_.pixliteResponse[used] = '\0';
-    if (declared >= 0 && used != static_cast<size_t>(declared)) return -3;
+    if (declared >= 0 && used != static_cast<size_t>(declared)) {
+      return RESPONSE_INCOMPLETE;
+    }
     return code;
   }
 
@@ -350,10 +366,20 @@ class PixLiteClient {
     current.online = false;
     current.httpStatus = code > 0 ? code : 0;
     String error = String("PixLite ") + operation + " failed";
-    if (code == -2) error += ": response exceeded 32 KB";
-    else if (code == -3) error += ": incomplete response";
-    else if (code == -4) error += ": degraded memory mode";
-    else if (responseBody && responseBody[0]) {
+    if (code == RESPONSE_TOO_LARGE) {
+      error += ": response exceeded 32 KB";
+    } else if (code == RESPONSE_INCOMPLETE) {
+      error += ": incomplete response";
+    } else if (code == RESPONSE_MEMORY_UNAVAILABLE) {
+      error += ": degraded memory mode";
+    } else if (code < 0) {
+      error += ": transport error ";
+      error += String(code);
+    } else if (code != 200) {
+      error += ": HTTP ";
+      error += String(code);
+    }
+    if (responseBody && responseBody[0]) {
       char excerpt[91];
       strlcpy(excerpt, responseBody, sizeof(excerpt));
       error += ": " + String(excerpt);

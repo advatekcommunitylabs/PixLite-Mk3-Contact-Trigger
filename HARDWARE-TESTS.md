@@ -38,7 +38,8 @@ can verify isolated inputs while the board is powered only from PoE. During the
 same session, production diagnostics exposed an incorrectly scaled FreeRTOS
 stack watermark: the original 12 KB network task had less than 200 bytes
 remaining. The reporting unit was corrected and the task increased to 20 KB;
-the corrected production build must pass the ≥3 KB gate before release.
+the corrected production regression subsequently reported 17,228 bytes,
+comfortably above the ≥3 KB release gate.
 
 The industrial board's GPIO38 addressable LED was also verified to use RGB
 byte order, unlike the smaller development board's GRB order. Board profile
@@ -47,8 +48,31 @@ incorrect bright green to the intended orange, while logical white trigger
 flashes remain unchanged.
 
 Remaining industrial-board gates include static IPv4, direct-Ethernet/BOOT
-recovery, repeated PoE cold boots, active wet-input polarity, and the full
-burn-in.
+recovery, operational Wi-Fi, configuration recovery, and the beta burn-in.
+
+### Industrial PoE cold-boot sequence (2026-07-27)
+
+- All 25 required PoE-only cold boots passed.
+- The fifth boot reported a power-on reset, initialized the W5500 on attempt
+  one, linked at 100 Mbps full duplex, obtained its DHCP lease, and reconnected
+  to the PixLite Mk3 with API v1.9 approximately 5.7 seconds after startup.
+- The fifth-boot memory reading remained comfortably within the release gates:
+  218,764-byte minimum internal heap, 196,596-byte largest internal block, and
+  9,292-byte network-task stack watermark.
+- All eight digital inputs initialized open with event sequence zero, proving
+  that this clean boot produced no false contact action.
+- The sixth boot repeated the same clean power-on result: W5500 attempt one,
+  100 Mbps full duplex DHCP, PixLite Mk3 API v1.9 reconnect at approximately
+  5.6 seconds, normal memory mode, and all eight inputs open with no events.
+  Its initial minimum internal heap, largest block, and network-task stack
+  watermark were 237,024 bytes, 200,692 bytes, and 17,400 bytes respectively.
+- Boots 7–25 were counted by an automated read-only monitor while power was
+  removed and restored manually. Every cycle reported a power-on reset,
+  first-attempt W5500 initialization, 100 Mbps full-duplex DHCP, successful
+  PixLite Mk3 reconnect, normal memory mode, and no false input event.
+- Across the automated sequence, the observed startup minimum internal heap
+  remained at or above 246,652 bytes, the largest block at or above 204,788
+  bytes, and the network-task stack watermark at or above 18,776 bytes.
 
 ### Industrial production regression (2026-07-26)
 
@@ -70,10 +94,9 @@ burn-in.
   board's addressable-LED order from GRB to RGB produced the intended orange;
   the smaller board retains its previously validated GRB order.
 
-The original end-to-end GPIO results below were captured on beta.3. Beta.4 was
-subsequently flashed and passed the regression checks recorded next; its
-physical GPIO flow still needs one repeat before all beta.3 evidence can be
-carried forward.
+The earlier beta.3 and beta.4 observations below are retained as historical
+evidence. The industrial production regression above supersedes their pending
+DI1 repeat, while the broader acceptance matrix remains open.
 
 ## Beta.6 Arduino-release flashing check (2026-07-26)
 
@@ -89,6 +112,58 @@ carried forward.
 - The public [illustrated Arduino flashing guide](docs/FLASHING-WITH-ARDUINO.md)
   uses screenshots captured during this upload. Unit-specific network
   addresses are not included.
+
+### Final header-board UI regression (2026-07-27)
+
+- The final regenerated header-board convenience sketch compiled with the
+  documented ESP32-S3 options at 1,258,851 bytes of flash and 61,540 bytes of static
+  data/BSS, then uploaded and verified over USB.
+- The boot banner reported profile `waveshare-esp32-s3-eth` 1.2.0, 16 MB
+  flash, 8 MB PSRAM, normal memory mode, and first-attempt W5500
+  initialization.
+- With USB power and ordinary non-PoE Ethernet, the board obtained a DHCP
+  lease, resolved as `advatrigger.local`, linked at 100 Mbps full duplex, and
+  reconnected to the PixLite Mk3 using API v1.9.
+- It loaded seven scenes in alphabetical order and two playlists without a
+  remove/re-add operation. Diagnostics contained no warning or error entry.
+- Minimum internal heap was 237,104 bytes, the largest internal block was
+  200,692 bytes, and the network-task stack watermark was 17,392 bytes.
+- The served HTML contained the final narrow-screen input-control layout that
+  prevents Hold-to-test and Remove controls from clipping at mobile widths.
+
+### Clean release-package regression (2026-07-27)
+
+- Fresh same-named Arduino folders were assembled with only the generated
+  sketch, `START-HERE.md`, and the matching SVG pinout, then zipped and
+  extracted as an end user would receive them.
+- Both extracted sketches compiled with Arduino-ESP32 3.3.10 and the documented
+  ESP32-S3 options. The header artifact used 1,258,851 bytes of flash and the
+  industrial artifact used 1,259,187 bytes; both used 61,540 bytes of static
+  data/BSS.
+- A deliberately deep Windows extraction path caused the industrial sketch to
+  end with only `Error during build: exit status 1`. The identical extracted
+  sketch compiled from a normal short user path. The flashing guide and
+  industrial `START-HERE.md` now document this toolchain path-length recovery.
+- The release workflow defensively excludes ignored Arduino `build/`
+  directories from both downloadable zips.
+
+### Dual-board burn-in finding (2026-07-27)
+
+- Both supported boards were left online simultaneously, polling the same
+  PixLite Mk3 while the unattended read-only monitor sampled state, media,
+  diagnostics, inputs, and memory every 15 minutes.
+- The industrial board encountered one transient status transport failure,
+  then automatically reconnected and refreshed its media cache. The header
+  board stayed online and both controllers subsequently continued normal
+  polling.
+- The warning incorrectly included the start of an earlier successful
+  `statusRead` body. Review found that a negative HTTP transport result skipped
+  the response-reading function, leaving the reusable PSRAM buffer unchanged.
+  Canonical source now clears that buffer before every GET/POST and gives
+  bounded-buffer failures distinct codes outside the HTTP client's negative
+  error range.
+- The recovery behaviour passed, but the corrected diagnostic build still
+  requires a post-burn-in flash and short dual-board regression before release.
 
 ## Beta.5 regression (2026-07-26)
 
@@ -128,7 +203,8 @@ carried forward.
 
 ## Bench setup
 
-- ESP32 connected over USB on COM4 and by wired Ethernet to a DHCP router.
+- ESP32 connected over a redacted USB serial port and by wired Ethernet to a
+  DHCP router.
 - Test computer connected to the same router by Wi-Fi.
 - ESP32 address: private DHCP lease, redacted from the public record.
 - PixLite Mk3 address: private LAN address, redacted from the public record.
@@ -144,45 +220,45 @@ carried forward.
 | --- | --- | --- |
 | Identity | **Pass.** Canary and production firmware identified ESP32-S3 revision 0.2, 16,777,216-byte flash and 8,388,608-byte PSRAM. RGB GPIO21 exercised red/green/blue/white and BOOT GPIO0 transitions were observed. | Record the PCB revision markings. |
 | W5500 / DHCP | **Pass for initial DHCP bring-up.** W5500 initialized on the first attempt, linked at 100 Mbps full duplex and received a private DHCP lease. | Static IPv4, cable removal/recovery and repeated reset testing. |
-| PoE | PoE module is fitted but treated as power-only by firmware. | USB-first isolation, 25 PoE-only cold boots, resets, lease renewal and static addressing. |
+| PoE | **Pass for repeated startup.** The industrial board completed 25 consecutive PoE-only cold boots; every cycle reported a power-on reset, first-attempt W5500 initialization, DHCP, PixLite Mk3 reconnect, healthy memory, and no false input event. | Lease renewal and static addressing. |
 | Wi-Fi station | Not exercised. | DHCP/static, incorrect credentials and reconnect. |
 | Recovery connections | The earlier general setup-AP result is superseded; normal commissioning now uses Ethernet. | Test Wi-Fi AP recovery and direct-Ethernet DHCP at `192.168.4.1`, LAN-link refusal, timeout, and return to the selected uplink. |
 | Local address | **Pass on this Windows computer.** `http://advatrigger.local/` resolved to the ESP32's private DHCP address; firmware logged the claimed mDNS name. The UI showed both addresses and normalized `Front Of House.local` to the preview `http://front-of-house.local/`. | Confirm from macOS and on representative customer routers; retain numeric-IP fallback for networks blocking mDNS. |
 | ADAR | **Pass for multicast.** Discovered “PixLite A4-S Mk3”, firmware 3.14.2, MAC `******E0E9C1`, on the private test LAN; MAC selection survived firmware reboot. | Directed-broadcast fallback, malformed/deduplicated responses, DHCP IP change and 64-device cap on hardware. |
-| PixLite Mk3 connection/auth | **Pass for operator/no-password.** `/ver` negotiated API v1.9 and status polling remained responsive. | Password-protected operator access, explicit admin fallback and invalid-password behavior. |
-| Media/playback | **Partial pass.** Loaded two nonzero `.scn` files. Scene Once, Loop Forever, deterministic Stop via `modeLive`, Blank and status polling passed. | No `.pl` file was present, so playlist once/loop remains pending. |
+| PixLite Mk3 connection/auth | **Pass.** `/ver` negotiated API v1.9, status polling remained responsive, Operator access controlled normal playback, and explicit Administrator access enabled Test mode. | Invalid-password behavior remains to be recorded. |
+| Media/playback | **Pass for the bench library.** Seven scenes and two playlists loaded automatically after reboot, scenes were alphabetized, scene/playlist Once and Loop, Live, Blank, next/previous first/last wraparound, solid Test mode, and RGB Fade all passed. | Repeat after a deliberately delayed or interrupted network request. |
 | GPIO16 momentary | **Pass.** With 100 ms debounce, normally-open Press entered looping playback and Release returned to Live. Repeated manual closures produced no stuck state. | Normally-closed wiring and an instrumented bounce-count test. |
 | GPIO16 maintained | **Pass.** Latch On held one scene in continuous playback without retrigger/ramp state; Latch Off returned to Live. | Boot with contact held. |
-| Other contact pins | Not electrically exercised. | GPIO1, 2, 15, 18, 38, 39 and 40, including camera-shared warnings. |
-| Intensity | **Partial pass.** Pixels 50%, Aux 1, Pixels + configured Aux, High/Low priority and cleanup were accepted. A physical GPIO16 Brighter hold reached the 255 clamp while input scanning and status polling remained responsive; release stopped the ramp and returned Pixels to Low priority. | Darker hold, exact 400/250 ms timing capture, every Aux output and release during a deliberately delayed HTTP request. |
+| Industrial DI1–DI8 | **Pass.** All eight isolated terminals detected one close and one open in order, ended inactive, showed no crosstalk, and generated no startup event. DI1 additionally passed momentary, maintained, normally-open/closed, configurable debounce, boot-held, intensity hold/release, and physical LED-feedback tests. | Active-voltage inputs are outside this contact-closure release and remain unvalidated. |
+| Other development-board contact pins | GPIO16 passed the original physical momentary/maintained flow. | Electrically exercise GPIO1, 2, 15, 18, 38, 39 and 40 on the header board. |
+| Intensity | **Pass for supported action shapes.** Pixels, Aux 1, and Pixels + configured Aux Set/Release, Brighter, and Darker were accepted. A physical held input ramped to a clamp, release stopped the ramp, and priority returned to Low while polling remained responsive. | Exact 400/250 ms timing capture, every available Aux output, and release during a deliberately delayed HTTP request. |
 | Aux 1 observation | Direct and firmware-issued v1.9 requests both accepted `fc:128`; this A4-S reported an effective programmed factor of 121 for Aux 1. Release returned `progPri` to `Lo`. | Confirm whether the 121 result is caused by the PixLite Mk3 Aux configuration and document expected scaling. |
 | LED behavior/UI | **Pass.** Idle colour is orange at RGB 255/48/0 and contact edges flash white without blocking scans. The live web control changed brightness to 30%, displayed and persisted it, and restored 100%. API tests also covered disabled/off and 25% brightness. | Long-duration observation and optional user preference tuning. |
 | Configuration/migration | **Pass for schema v3 to v4 on this unit.** PixLite Mk3 identity, hostname, LED setting and all input data survived migration/reflash. | Frozen-v1/v2 device migration, corrupt-newest-slot fallback and cross-board remapping on hardware. |
 | Backup | **Partial pass.** Exported schema-v3 JSON was 4,910 bytes, set `secretsOmitted:true`, and contained none of the password/hash/salt fields. | Import/restore on this device and import requiring GPIO remapping on another profile. |
 | Recovery | BOOT electrical state was confirmed by the canary. | Five-second authentication recovery and fifteen-second factory reset, followed by configuration restoration. |
 | Arbitration | Host tests pass latest-event-wins and two-second offline expiry. GPIO scanning remained responsive during normal PixLite Mk3 traffic. | Hardware test with queued conflicting events, disconnect expiry and delayed HTTP release. |
-| Stress / burn-in | Not executed. | Recovery-AP + Ethernet traffic, operational Wi-Fi Station, configuration-import stress and a 24-hour trigger/network burn-in. |
-| Memory gates | **Pass during this session.** Minimum internal heap 199,616 bytes, largest internal block 167,924 bytes and network-task stack watermark 8,020 bytes. PSRAM free was approximately 8.31 MB. | Record minima over the 24-hour burn-in. |
+| Stress / burn-in | Eight-hour unattended beta burn-in scheduled for 2026-07-27, with read-only state, media, diagnostics and memory sampling every 15 minutes. | Complete the run plus recovery-AP/Ethernet traffic, operational Wi-Fi Station and configuration-import stress. |
+| Memory gates | **Pass during this session.** Minimum internal heap 199,616 bytes, largest internal block 167,924 bytes and network-task stack watermark 8,020 bytes. PSRAM free was approximately 8.31 MB. | Record minima over the eight-hour beta burn-in. |
 
 ## Build and protocol evidence
 
 - Generated Arduino sketch matches canonical modular source.
-- Generated firmware size: 1,258,751 bytes for the development board and
-  1,259,087 bytes for the industrial board, from the 3,145,728-byte
+- Generated firmware size: 1,258,851 bytes for the development board and
+  1,259,187 bytes for the industrial board, from the 3,145,728-byte
   application partition.
 - Static data/BSS: 61,540 bytes of 327,680 bytes.
-- Embedded UI: 13,296 bytes gzip.
+- Embedded UI: 13,206 bytes gzip.
 - TypeScript/UI/repository contracts: 31 tests passed.
 - A live flow test exposed that PixLite Mk3 API v1.9 rejects `progInt/Lo` when a
   duration is included. The codec now omits both factor and duration for `Lo`;
   the regression check passes and the corrected firmware is flashed.
-- Final industrial-board bench state: PixLite Mk3 Live, DI1 enabled as a maintained
-  Next-scene/Live switch at 100 ms debounce, hostname `advatrigger`, and the
-  orange status LED enabled at 100%.
+- Current dual-board bench state: both targets are online with unique hostnames,
+  the PixLite Mk3 is Live, both boards are in normal memory mode, and their
+  status LEDs use the correct per-board colour order and saved brightness.
 
 ## Release decision
 
 These units are suitable for continued bench development, but the release must
-not be labelled hardware-ready until the remaining repeated PoE cold-boot,
-operational Wi-Fi, recovery, playlist, static-IP, stress and burn-in gates are
-completed.
+not be labelled hardware-ready until the remaining operational Wi-Fi,
+recovery, static-IP, stress and burn-in gates are completed.

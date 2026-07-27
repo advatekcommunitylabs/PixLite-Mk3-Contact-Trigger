@@ -292,7 +292,7 @@ function renderPage(page) {
   <body>
     <header class="topbar">
       <a class="brand" href="index.html" aria-label="Advatek Labs Contact Trigger guide home">
-        <span><b>ADVATEK LABS</b><small>PixLite Contact Trigger</small></span>
+        <span><b>ADVATEK LABS</b><small>PixLite Mk3 Contact Trigger</small></span>
       </a>
       <span class="top-context">${escapeHtml(page.group)} · Community beta</span>
       <div class="top-actions">

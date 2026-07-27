@@ -1,17 +1,22 @@
 # Contributing
 
-Thank you for helping make the Advatek Labs PixLite Contact Closure Trigger
+Thank you for helping make the Advatek Labs PixLite Mk3 Contact Closure Trigger
 more useful and reliable for the community.
+
+Advatek team members, integrators, and community contributors are all welcome
+to propose improvements and contribute repeatable evidence. References to
+third-party hardware must describe compatibility or observed testing without
+presenting a supplier or product as endorsed by Advatek.
 
 ## Before starting
 
 - Search existing issues and pull requests for overlapping work.
 - For a substantial behavior, API, configuration-schema, or board-profile
   change, open a proposal before investing in an implementation.
-- Keep version 1 boundaries in mind. Features such as cloud control, PixLite
+- Keep version 1 boundaries in mind. Features such as cloud control, PixLite Mk3
   network editing, OTA, and non-ESP32 targets require an explicit project
   decision rather than an opportunistic dependency.
-- Never include PixLite protocol documents, credentials, private network
+- Never include PixLite Mk3 protocol documents, credentials, private network
   captures, or unredacted configuration exports in the repository.
 
 ## Branch workflow
@@ -82,7 +87,7 @@ Hardware evidence should identify:
 
 - exact PCB and module revisions;
 - Arduino-ESP32 version and build settings;
-- PixLite model, firmware, and negotiated API version;
+- PixLite Mk3 model, firmware, and negotiated API version;
 - power method, link mode, and network topology;
 - GPIOs and contact circuits exercised;
 - memory and stack watermarks;

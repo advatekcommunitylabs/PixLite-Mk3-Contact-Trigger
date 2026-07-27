@@ -17,6 +17,10 @@ header development board and uses different pins.
 4. Select **ESP32S3 Dev Module** and the board's COM/serial port.
 5. Set the options below and click **Upload**.
 
+On Windows, keep the extracted folder in a short path such as
+`Documents\AdvatekTrigger`. If Arduino ends with only
+`Error during build: exit status 1`, shorten the folder path and compile again.
+
 | Arduino IDE option | Required value |
 | --- | --- |
 | Flash Size | `16MB` |
@@ -31,6 +35,10 @@ Connect Ethernet to the same network as the computer, then open
 `http://advatrigger.local/` or the DHCP address shown at `115200` baud. Normal
 commissioning does not create a Wi-Fi setup access point.
 
+PixLite Mk3 SHOWTime scene and playlist playback requires an industrial-grade
+microSD installed in the PixLite Mk3. The ESP32 board's own TF/microSD slot is
+unrelated and remains unused.
+
 For a passive button or dry contact, leave input `COM` unused and wire the
 contact between `DGND` and its chosen `DI1`–`DI8` terminal. Remove power before
 changing terminal wiring.
@@ -42,6 +50,9 @@ The input selector shows `DI1`–`DI8`. Use the isolated input screw terminals,
 not ESP32 header pins. Relays, RS485, buzzer, and TF card are intentionally
 unused by this release.
 
-The eight inputs have passed real-board electrical sweeps. This target remains
-a community beta until the longer-duration acceptance gates in
-`HARDWARE-TESTS.md` are complete.
+The eight inputs and 25 consecutive PoE-only cold boots have passed real-board
+testing. This target remains a community beta until the recovery, operational
+Wi-Fi, static-addressing, stress, and burn-in gates in `HARDWARE-TESTS.md` are
+complete. Third-party hardware references are compatibility examples, not
+Advatek endorsements. Follow local electrical codes, applicable standards, and
+manufacturer instructions.

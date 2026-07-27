@@ -53,6 +53,11 @@ large generated sketch like the screenshot below. This is intentional: the
 readable modular source is maintained in the repository, while the generated
 file makes releases easy to flash.
 
+On Windows, extract near the top of a normal user folder, such as
+`Documents\AdvatekTrigger`, rather than several folders deep. Arduino's
+toolchain can fail without a useful error when the industrial board's longer
+filename is placed inside an excessively long path.
+
 ![Generated Advatek Trigger sketch open in Arduino IDE](assets/arduino-flash-guide/01-open-sketch.png)
 
 ## 3. Connect the board and select its port
@@ -159,6 +164,7 @@ and lets you assign a unique local name.
 | Device starts in degraded mode | Select OPI PSRAM and upload again |
 | Upload waits for a connection | Use the BOOT/RESET sequence above |
 | Upload succeeds but Ethernet fails | Confirm the downloaded ZIP matches the physical board |
+| Industrial sketch ends with only `Error during build: exit status 1` | Move the extracted folder to a shorter path such as `Documents\AdvatekTrigger` and compile again |
 | Browser cannot open `.local` | Use the numeric DHCP address from Serial Monitor |
 
 After the web interface opens, continue with the

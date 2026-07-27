@@ -7,8 +7,9 @@ editing is required after the initial Arduino upload.
 
 > **Community beta:** both Waveshare targets and a PixLite A4-S Mk3 have passed
 > initial bench bring-up. The industrial ESP32-S3-POE-ETH-8DI-8RO has also
-> passed PoE Ethernet and two complete DI1–DI8 input sweeps. Extended cold-boot,
-> recovery, static-IP and burn-in gates remain. See
+> passed PoE Ethernet, complete DI1–DI8 input sweeps, and 25 consecutive
+> PoE-only cold boots. A dual-board eight-hour burn-in is in progress;
+> recovery, operational Wi-Fi, and static-IP gates remain. See
 > [HARDWARE-TESTS.md](HARDWARE-TESTS.md) before using it in a production
 > installation.
 
@@ -16,18 +17,27 @@ editing is required after the initial Arduino upload.
 
 Choose the download that exactly matches the Waveshare hardware:
 
-| Hardware | Recommended Arduino download | Input connection |
+| Hardware | Matching Arduino download | Input connection |
 | --- | --- | --- |
-| ESP32-S3-ETH / ESP32-S3-POE-ETH Pico-header development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; external isolation recommended |
+| ESP32-S3-ETH / ESP32-S3-POE-ETH Pico-header development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
 | ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
 
 PoE changes the power path, not the firmware pin map, so the standard-Ethernet
 and PoE variants of each physical board share a download.
 
-The zip is the recommended route for non-technical users: extract it, open the
+The zip is the simplest route for non-technical users: extract it, open the
 same-named folder, and double-click its `.ino`. No source files need to be
 copied or edited. Repository builds are also available under
 [`generated/`](generated/).
+
+### PixLite Mk3 SHOWTime prerequisite
+
+Scene and playlist playback uses PixLite Mk3 SHOWTime. A suitable
+**industrial-grade microSD card must be installed in the PixLite Mk3** before
+SHOWTime media can be stored or played. Follow the
+[official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
+for card preparation. The microSD/TF slot on either ESP32 trigger board is
+unrelated and is not used by this firmware.
 
 New to Arduino? Follow the
 [illustrated flashing guide](docs/FLASHING-WITH-ARDUINO.md) for screenshots of
@@ -71,8 +81,8 @@ Recovery access expires after 15 minutes.
 
 Continue with the [development-board guide](docs/GETTING-STARTED.md) or
 [industrial 8DI guide](docs/GETTING-STARTED-8DI-8RO.md). The
-[hardware and pinout guide](docs/HARDWARE.md) shows what to buy and exactly
-where each supported contact is connected.
+[hardware and pinout guide](docs/HARDWARE.md) describes compatible parts and
+exactly where each supported contact is connected.
 
 ## What it supports
 
@@ -112,10 +122,16 @@ For PoE-powered installations and switch cabling outside the enclosure, use
 the isolated-input approach described in
 [Protected contact inputs](docs/PROTECTED-CONTACT-INPUTS.md). The included
 stripboard circuits are prototype references, not certified safety designs.
-For a small immersive event, the recommended default is the group-isolated
-optocoupler route; direct GPIO-to-GND wiring is reserved for bench tests or
-buttons inside the controller enclosure. See the
+For a small immersive event, the group-isolated optocoupler route provides
+more separation than direct GPIO wiring; direct GPIO-to-GND wiring is intended
+for bench tests or buttons inside the controller enclosure. See the
 [hardware decision guide](docs/HARDWARE.md#which-button-connection-should-i-build).
+
+Third-party boards, modules, suppliers, and product links are compatibility
+examples, not Advatek endorsements. Listings and product designs can change.
+Integrators are responsible for checking local electrical codes, applicable
+standards, manufacturer instructions, and whether qualified electrical
+personnel are required for their installation.
 
 Permitted contact pins on the Pico-header PoE-accessible board layout are:
 `GPIO1`, `GPIO2`, `GPIO15`, `GPIO16`, `GPIO18`, `GPIO38`, `GPIO39`, and
@@ -204,6 +220,10 @@ it only on a trusted LAN or control VLAN.
 This is an unofficial Advatek Labs community integration. It is not an
 Advatek Lighting-supported production product, and community issues are not a
 substitute for urgent show-critical support.
+
+Advatek does not endorse one compatible third-party product or supplier over
+another. Community members and the Advatek team are welcome to share tested
+profiles, improvements, documentation, and repeatable hardware evidence.
 
 Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
 [Code of Conduct](CODE_OF_CONDUCT.md). Please report security issues privately

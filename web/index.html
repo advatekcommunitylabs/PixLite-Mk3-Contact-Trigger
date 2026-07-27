@@ -38,11 +38,11 @@
           <div><p class="eyebrow">Destinations</p><h2>PixLite Mk3 controllers</h2></div>
           <span id="pixlite-count" class="tag">0 of 16 configured</span>
         </div>
-        <p class="intro">Add the PixLite Mk3 controllers this device can control. Their nicknames are used automatically, and each input can target a different controller.</p>
+        <p class="intro">Add up to 16 PixLite Mk3 controllers. Each input can target a different one.</p>
         <div class="toolbar">
           <button id="discover" class="primary">Discover PixLite Mk3 controllers</button>
           <button id="manual-pixlite">Add by IP</button>
-          <span id="discovery-message" class="muted">Searches this local network</span>
+          <span id="discovery-message" class="muted">Searches this network</span>
         </div>
         <div id="devices" class="device-list empty-state" hidden></div>
         <div id="saved-pixlites" class="saved-list"></div>
@@ -55,7 +55,7 @@
           <input id="pix-target-id" type="hidden" />
           <input id="pix-mac" type="hidden" />
           <div class="form-grid">
-            <label>PixLite Mk3 name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">You can give it a clearer local name here.</span></label>
+            <label>PixLite Mk3 name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">Optionally give it a clearer local name.</span></label>
             <label>IP address<input id="pix-host" inputmode="decimal" placeholder="192.168.1.100" /></label>
             <label>PixLite Mk3 account<select id="pix-user"><option value="oper">Operator</option><option value="admin">Administrator (needed for Test mode)</option></select></label>
             <label>Password<input id="pix-password" type="password" autocomplete="new-password" placeholder="Leave blank if unused" /></label>
@@ -81,10 +81,10 @@
               <button id="add-input">Add input</button>
             </div>
         </div>
-        <p class="intro">Add the inputs you need, choose an offered terminal, then configure its activate and release actions.</p>
+        <p class="intro">Add an input, choose its terminal, then configure its close and open actions.</p>
         <div id="input-empty" class="empty-state">
           <b>No inputs configured</b>
-          <span>Add a push button, relay contact or maintained switch to begin.</span>
+          <span>Add a button, relay contact or maintained switch.</span>
         </div>
         <div id="input-list"></div>
       </section>
@@ -92,7 +92,7 @@
       <section id="system">
         <div class="section-heading"><div><p class="eyebrow">Controller</p><h2>System</h2></div></div>
         <div class="setting-row">
-          <div><b>Status LED</b><small>Orange while running and flashes when an input triggers.</small></div>
+          <div><b>Status LED</b><small>Orange while running; flashes for input edges.</small></div>
           <label class="switch"><input id="status-led-enabled" type="checkbox" /><span></span></label>
         </div>
         <label>LED brightness
@@ -124,8 +124,8 @@
             <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP — unplug LAN first</option></select></label>
           </div>
         </details>
-        <p class="notice"><b>Wi-Fi recovery — no automatic Ethernet fallback</b><br>Hold BOOT 5–14 seconds and release. <b>Wi-Fi AP:</b> join <code>Advatek-Trigger-XXXXXX</code>. <b>Direct Ethernet:</b> unplug the LAN, connect one computer, and power separately; its port provides no PoE. Open <code>http://192.168.4.1/</code> within 15 minutes.</p>
-        <p class="notice">If .local fails, open the current IP shown above. Use a unique local name. This page uses HTTP, not TLS.</p>
+        <p class="notice"><b>Wi-Fi recovery — no automatic Ethernet fallback</b><br>Hold BOOT 5–14 seconds. <b>Wi-Fi AP:</b> join <code>Advatek-Trigger-XXXXXX</code>. <b>Direct Ethernet:</b> unplug LAN, connect one computer, and use separate power; its port provides no PoE. Open <code>http://192.168.4.1/</code> within 15 minutes.</p>
+        <p class="notice">If .local fails, use Device IP. Use a unique local name. Local HTTP only.</p>
         <button id="apply-network" class="primary">Save network and restart</button>
       </section>
 
@@ -135,7 +135,7 @@
           <button id="export">Export redacted backup</button>
           <label class="file-button">Import backup<input id="import" type="file" accept="application/json" /></label>
         </div>
-        <p class="muted">Backups omit passwords. Hold BOOT 5–14 seconds for 15-minute recovery, 15–19 seconds to factory reset, or 20 seconds to cancel.</p>
+        <p class="muted">Backups omit passwords. Hold BOOT 5–14 seconds for recovery, 15–19 for factory reset, or 20 seconds to cancel.</p>
       </section>
 
       <section id="diagnostics" class="wide">

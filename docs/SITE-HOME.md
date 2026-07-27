@@ -6,6 +6,12 @@ scenes, playlists, output modes, and intensity.
 > **Advatek Labs community beta:** review the hardware acceptance record before
 > using this project in a production installation.
 
+Both supported board downloads have passed real-board flashing and Ethernet
+bring-up. The industrial PoE board has also passed all eight isolated inputs
+and 25 consecutive PoE-only cold boots. See
+[Hardware acceptance](../HARDWARE-TESTS.md) for the live beta status and
+remaining recovery, Wi-Fi, static-addressing, and burn-in gates.
+
 ## Start here
 
 Choose the path that matches what you are doing:
@@ -28,6 +34,15 @@ The project provides separate Arduino downloads for:
   built-in isolated `DI1`–`DI8` terminals.
 
 PoE changes how the board is powered, not which firmware download it uses.
+
+PixLite Mk3 SHOWTime media playback requires an industrial-grade microSD
+installed in the PixLite Mk3. The ESP32 boards' own TF/microSD slots are not
+used by this firmware.
+
+Third-party hardware references are compatibility examples, not Advatek
+endorsements. Integrators must follow local electrical codes, applicable
+standards, manufacturer instructions, and requirements for qualified
+electrical work.
 
 ## Keep a copy
 

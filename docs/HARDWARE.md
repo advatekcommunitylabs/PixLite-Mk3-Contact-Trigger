@@ -14,11 +14,10 @@ the same firmware download.
 - [Waveshare ESP32-S3-ETH product page](https://www.waveshare.com/esp32-s3-eth.htm)
 - [Waveshare setup and reference wiki](https://www.waveshare.com/wiki/ESP32-S3-ETH)
 - [Official schematic](https://files.waveshare.com/wiki/ESP32-S3-ETH/ESP32-S3-ETH-Schematic.pdf)
-- [Amazon UK board search](https://www.amazon.co.uk/s?k=Waveshare+ESP32-S3-POE-ETH)
 
-Choose a board **with pre-soldered headers** unless you are comfortable
-soldering both 20-pin rows. For a one-cable installation, choose the kit that
-includes the Waveshare PoE module. Do not buy a camera kit for this project.
+Pre-soldered headers avoid the need to solder both 20-pin rows. A kit with the
+Waveshare PoE module permits a one-cable network and power installation. Camera
+hardware is not used by this project.
 
 ### Industrial isolated-input option
 
@@ -50,34 +49,39 @@ field wiring to ESP32 GPIO headers.
 | Ethernet patch cable | Connects power and the local network |
 | Data-capable USB-C cable | Required for the first firmware upload and recovery |
 | PixLite Mk3 controller | Receives scene, playlist, live/test, and intensity actions |
+| Industrial-grade microSD for the PixLite Mk3 | Required by PixLite Mk3 SHOWTime for scene and playlist storage/playback |
 | Volt-free push button, maintained switch, or relay contact | The physical trigger |
 | Twisted-pair hookup cable | One pair per contact for short field runs |
 | Enclosure, stripboard, headers, and terminal blocks | Keeps wiring secure and serviceable |
 
-The firmware and web interface need no camera, microSD card, display, or
-separate 5 V plug-pack. Begin the first upload and electrical checks on USB
-power, then move to PoE.
+The ESP32 firmware and web interface need no camera, display, or card in the
+ESP32 board's own TF/microSD slot. That unused slot is separate from the
+industrial-grade microSD required inside the PixLite Mk3 for SHOWTime. Begin
+the first upload and electrical checks on USB power, then move to PoE.
+See the
+[official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
+for the PixLite Mk3 requirement.
 
 ## Which button connection should I build?
 
 The firmware works with either connection below. The choice is about electrical
 protection, not software:
 
-| Installation | Recommended connection |
+| Installation | Suitable connection to evaluate |
 | --- | --- |
 | Temporary bench test or a button inside the same enclosure | Bare dry contact from GPIO to GND |
 | Short, fixed indoor cable entirely belonging to this controller | Protected direct input with two resistors, capacitor, clamps, and TVS |
 | Small immersive event, public interaction, movable buttons, or a few metres of cable | **Group-isolated optocoupler input board** |
 | Outdoor cable, another building, 12/24 V signals, or unknown equipment | Certified industrial isolated input—not this stripboard design |
 
-For small immersive events, build the **group-isolated route as the default**.
-It costs little more once several channels are required and keeps cable
-handling, static discharge, and field ground faults away from the ESP32. It
-isolates all field buttons as one group; it does not isolate each button from
-the other buttons.
+For small immersive events, the **group-isolated route** is the more protected
+of the two community prototype arrangements. It keeps cable handling, static
+discharge, and field ground faults away from the ESP32, but isolates all field
+buttons as one group rather than isolating each button from every other
+button.
 
 Editable public-guide assets are available as
-[diagrams.net masters, SVG/PNG exports, and a native PowerPoint deck](assets/hardware-schematics/README.md).
+[diagrams.net masters and SVG/PNG exports](assets/hardware-schematics/README.md).
 
 ## Project pinout
 
@@ -181,7 +185,8 @@ use the group-isolated input arrangement in
 [Protected contact inputs](PROTECTED-CONTACT-INPUTS.md). It keeps the field
 switch common separate from ESP32 ground.
 
-The prototype parts selected during development are:
+The prototype parts used during development are listed only as reproducible
+examples:
 
 | Part | Example UK source |
 | --- | --- |
@@ -191,8 +196,10 @@ The prototype parts selected during development are:
 | 100 nF ceramic capacitors | [Amazon UK listing](https://www.amazon.co.uk/dp/B0BPWPP6DZ) |
 | 220 Ω, 0.5 W preload resistor | [Amazon UK search](https://www.amazon.co.uk/s?k=220+ohm+0.5W+through+hole+resistor) |
 
-Amazon listings and module circuitry can change without changing the product
-photo. Before connecting the ESP32, verify the module terminal diagram,
+These links are not product or supplier endorsements. Listings and module
+circuitry can change without changing the product photo. Equivalent parts that
+meet the documented electrical requirements may be used. Before connecting
+the ESP32, verify the module terminal diagram,
 converter pinout, isolated output voltage, and that each logic output is no
 higher than 3.3 V. The linked PC817 board must be configured for a 5 V
 active-low input and 3.3 V output; do not use a 24 V PNP arrangement.
@@ -228,7 +235,7 @@ their output ground to Waveshare GND, and verify every open output is at or
 below 3.3 V before connecting it to a GPIO. If the module does not provide
 3.3 V output pull-ups, add one 10 kΩ pull-up from each output to 3.3 V.
 
-### Recommended event arrangement
+### Example group-isolated event arrangement
 
 ![Group-isolated event-button arrangement](assets/hardware-schematics/03-isolated-event-buttons.svg)
 
@@ -258,6 +265,11 @@ still produces multiple accepted edges.
 This is a low-voltage community project, not certified industrial safety
 equipment. Use an enclosed, strain-relieved assembly. Keep it indoors and on a
 trusted local network.
+
+Third-party products and supplier links in this guide are compatibility
+examples, not Advatek endorsements. Integrators must check local electrical
+codes, applicable standards, manufacturer instructions, and whether the work
+must be undertaken or inspected by a qualified person.
 
 Use a certified isolated digital-input product instead of the stripboard design
 for outdoor cable, cabling between buildings, mains-related contacts,

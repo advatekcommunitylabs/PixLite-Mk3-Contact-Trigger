@@ -32,6 +32,9 @@ Connect Ethernet to the same local network as the PixLite Mk3, then try:
 2. The numeric address printed in Arduino Serial Monitor at `115200` baud.
 
 The web interface guides PixLite Mk3 discovery and adding the first contact.
+PixLite Mk3 SHOWTime scene and playlist playback requires an industrial-grade
+microSD installed in the PixLite Mk3; the ESP32 board's own TF/microSD slot is
+unused.
 It does not automatically fall back between Wi-Fi and Ethernet. If the
 configured network cannot be reached, hold **BOOT for 5–14 seconds** and
 release to start the recovery method previously selected in the web interface.
@@ -55,4 +58,6 @@ contact edge. Every new input defaults to 100 ms debounce, adjustable in the
 web interface.
 
 This release remains a community beta. Bench-test the complete installation
-before relying on it in a live environment.
+before relying on it in a live environment. Third-party hardware references
+are compatibility examples, not Advatek endorsements. Follow local electrical
+codes, applicable standards, and manufacturer instructions.

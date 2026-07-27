@@ -48,14 +48,19 @@ Before making the repository public:
 
 ## Project status
 
-**Community beta—bench bring-up passed; full hardware acceptance pending.**
+**Community beta—both board profiles have passed physical bring-up; extended
+hardware acceptance remains pending.**
 
 The modular firmware and per-board Arduino sketches compile with Arduino-ESP32
 3.3.10 and meet the current flash, static-RAM, and embedded-interface budgets.
-A real Waveshare ESP32-S3-ETH and PixLite A4-S Mk3 have passed the initial
-bench flow. The Waveshare ESP32-S3-(POE)-ETH-8DI-8RO profile is
-compile-supported and awaits ordered-hardware validation. The project must not
-be described as hardware-ready until every remaining gate in
+A real Waveshare ESP32-S3-ETH, a Waveshare
+ESP32-S3-POE-ETH-8DI-8RO, and a PixLite A4-S Mk3 have passed initial physical
+bring-up. The industrial board has passed PoE Ethernet, complete DI1–DI8
+passive-contact sweeps, and 25 consecutive PoE-only cold boots. Both boards
+have run simultaneously against the same PixLite Mk3, and the final
+header-board artifact has passed a real USB upload plus Ethernet/media
+regression. The project must not be described as hardware-ready until every
+remaining gate in
 [HARDWARE-TESTS.md](HARDWARE-TESTS.md) is complete.
 
 ## What it does
@@ -95,6 +100,12 @@ cards.
 The web interface is local HTTP, not TLS. Deploy it only on a trusted local
 network or an appropriately isolated control VLAN.
 
+This is an Advatek Labs community beta rather than an Advatek
+Lighting-supported production product. Supported-board entries and supplier
+links document compatibility; they are not product endorsements. Integrators
+must check local electrical codes, applicable standards, manufacturer
+instructions, and requirements for qualified electrical work.
+
 ## Supported hardware
 
 | Component | Supported configuration |
@@ -130,10 +141,13 @@ Read [WIRING.md](WIRING.md) before connecting switches or relay contacts.
 - The optional Waveshare PoE module or a suitable USB-C power supply.
 - A data-capable USB-C cable for the initial flash.
 - A PixLite Mk3 on the same local network.
+- A suitable industrial-grade microSD installed in the PixLite Mk3 for
+  SHOWTime scene and playlist playback.
 - Arduino IDE with internet access for installing the ESP32 board package.
 - Volt-free push buttons, switches, or relay contacts.
 
-Do not connect external voltage to a contact input.
+Do not connect external voltage to a contact input. The ESP32 board's own
+TF/microSD slot is not used by this firmware.
 
 ### 1. Install Arduino support
 
@@ -148,7 +162,7 @@ For an end-user release, use the prominent **Download latest Arduino build**
 link in the repository README. It resolves to the newest release without
 requiring a user to browse source folders. Download one of:
 
-- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`—recommended; extract it and open
+- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`—extract it and open
   the contained sketch.
 - `AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino`—place it inside a folder with the
   same base name before opening it in Arduino IDE.
@@ -281,7 +295,8 @@ Before publishing a release:
 4. Confirm at least 25 PoE-only cold boots.
 5. Confirm all eight permitted GPIOs, BOOT recovery, DHCP/static Ethernet,
    operational Wi-Fi Station, ADAR discovery, authenticated PixLite Mk3 connection,
-   playback, intensity, backup restoration, and the 24-hour burn-in.
+   playback, intensity, backup restoration, and the eight-hour unattended
+   beta burn-in.
 6. Record the Waveshare revision, PoE module, PixLite Mk3 model/firmware, memory
    watermarks, timings, and evidence.
 7. Update `compatibility.json`, release notes, and known limitations.
@@ -312,7 +327,7 @@ The workflow:
 The workflow can also be run manually from **Actions → Release artifacts →
 Run workflow** to inspect artifacts without creating a tagged release.
 
-### Recommended release notes
+### Release-note contents
 
 Each release should state:
 

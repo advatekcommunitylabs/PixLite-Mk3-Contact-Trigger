@@ -64,10 +64,20 @@ describe('repository contracts', () => {
 
   it('keeps memory-heavy operations bounded and PSRAM-backed', () => {
     const source = readFileSync('firmware/AdvatekTrigger/src/platform/MemoryResources.h', 'utf8');
+    const client = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
     expect(source).toContain('CONFIG_REQUEST_LIMIT = 12U * 1024U');
     expect(source).toContain('PIXLITE_RESPONSE_LIMIT = 32U * 1024U');
     expect(source).toContain('MALLOC_CAP_SPIRAM');
     expect(source).toContain('if (!ready) release()');
+    expect(client).toContain('RESPONSE_TOO_LARGE = -1002');
+    expect(client).toContain('RESPONSE_INCOMPLETE = -1003');
+    expect(client).toContain('RESPONSE_MEMORY_UNAVAILABLE = -1004');
+    expect(client.match(/memory_\.pixliteResponse\[0\] = '\\0';/g))
+      .toHaveLength(3);
+    expect(client).toContain('error += ": transport error "');
   });
 
   it('uses a bounded W5500 startup retry state', () => {
@@ -259,6 +269,9 @@ describe('repository contracts', () => {
     expect(directDiagram).toContain('Button 8');
     expect(directDiagram).toContain('GPIO40');
     expect(hardware).toContain('GND-return wire are the pair');
+    expect(readme).toContain('industrial-grade microSD card must be installed in the PixLite Mk3');
+    expect(readme).toContain('not Advatek endorsements');
+    expect(hardware).toMatch(/local electrical\s+codes/);
   });
 
   it('never serializes known secret fields into redacted config code paths', () => {
