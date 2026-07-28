@@ -1,0 +1,21 @@
+---
+import StarlightSearch from '@astrojs/starlight/components/Search.astro';
+---
+
+<div class="docs-search-persist" transition:persist="docs-search">
+  <StarlightSearch {...Astro.props} />
+</div>
+
+<script>
+  document.addEventListener('astro:before-swap', (event) => {
+    document
+      .querySelector<HTMLDialogElement>(
+        '[data-astro-transition-persist="docs-search"] dialog[open]',
+      )
+      ?.close();
+
+    event.newDocument
+      .querySelector('[data-astro-transition-persist="docs-search"]')
+      ?.replaceChildren();
+  });
+</script>

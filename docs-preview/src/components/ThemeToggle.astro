@@ -1,0 +1,53 @@
+<docs-theme-toggle>
+  <button
+    class="docs-header-action docs-theme-button"
+    type="button"
+    aria-label="Change colour theme"
+  >
+    <span aria-hidden="true">◐</span>
+  </button>
+</docs-theme-toggle>
+
+<script>
+  const syncThemeButtons = () => {
+    const current =
+      document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    const label = `Use ${next} theme`;
+
+    document.querySelectorAll<HTMLButtonElement>('.docs-theme-button')
+      .forEach((button) => {
+        button.setAttribute('aria-label', label);
+        button.title = label;
+      });
+  };
+
+  class DocsThemeToggle extends HTMLElement {
+    connectedCallback() {
+      const button =
+        this.querySelector<HTMLButtonElement>('.docs-theme-button');
+      if (!button || button.dataset.themeToggleReady) return;
+
+      button.dataset.themeToggleReady = 'true';
+      button.addEventListener('click', () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+        root.dataset.theme = next;
+        localStorage.setItem('starlight-theme', next);
+        syncThemeButtons();
+      });
+      syncThemeButtons();
+    }
+  }
+
+  if (!customElements.get('docs-theme-toggle')) {
+    customElements.define('docs-theme-toggle', DocsThemeToggle);
+  }
+
+  document.addEventListener('astro:before-swap', (event) => {
+    const theme = document.documentElement.dataset.theme;
+    if (theme === 'light' || theme === 'dark') {
+      event.newDocument.documentElement.dataset.theme = theme;
+    }
+  });
+</script>

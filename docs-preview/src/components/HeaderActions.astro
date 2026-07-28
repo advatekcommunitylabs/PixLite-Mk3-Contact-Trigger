@@ -1,0 +1,38 @@
+---
+const pageIds = new Set([
+  'index',
+  'contributing',
+  'support',
+  'security',
+  'guide-home',
+  'user-guide',
+  'flashing-with-arduino',
+  'getting-started',
+  'getting-started-8di',
+  'hardware',
+  'wiring',
+  'protected-inputs',
+  'hardware-tests',
+  'api',
+  'architecture',
+  'porting',
+]);
+const routeId = Astro.locals.starlightRoute.id || 'index';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const downloadHref = pageIds.has(routeId)
+  ? `${base}/downloads/${routeId}.md`
+  : null;
+---
+
+{downloadHref && (
+  <a class="docs-header-action docs-download" href={downloadHref} download>
+    Download Markdown
+  </a>
+)}
+<button
+  class="docs-header-action docs-print"
+  type="button"
+  onclick="window.print()"
+>
+  Print / Save PDF
+</button>

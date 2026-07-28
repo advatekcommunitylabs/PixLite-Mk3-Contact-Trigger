@@ -17,12 +17,17 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check:docs": "node tools/check-docs.mjs",
+    "dev:docs-preview": "pnpm build:docs-preview && vite preview --config docs-preview/vite.config.mjs --host 127.0.0.1 --port 4321 --outDir .build/docs-preview/dist",
+    "build:docs-preview": "node tools/stage-docs-preview.mjs && astro build --root .build/docs-preview",
     "build:docs-site": "node tools/build-docs-site.mjs",
     "check:docs-site": "node tools/build-docs-site.mjs --check",
     "check:generated": "node tools/build-sketch.mjs --check"
   },
   "devDependencies": {
+    "@astrojs/starlight": "^0.41.4",
     "@types/node": "^24.0.0",
+    "astro": "^7.1.4",
+    "cookie": "^2.0.1",
     "marked": "^18.0.7",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",

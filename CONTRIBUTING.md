@@ -50,6 +50,21 @@ pnpm check:generated
 PlatformIO is provided as a maintainer convenience, but Arduino CLI is the
 release compilation reference.
 
+### Preview documentation locally
+
+Documentation remains authored in the existing Markdown files at the repository
+root and under `docs/`. To stage those files into the experimental Starlight
+site and serve the static result at `http://127.0.0.1:4321`:
+
+```sh
+pnpm dev:docs-preview
+```
+
+Use `pnpm build:docs-preview` to validate the Starlight build without starting a
+server. The generated preview lives under `.build/docs-preview/` and is not
+committed. The existing GitHub Pages generator remains the production deployment
+path while the Starlight preview is evaluated.
+
 ## Architecture rules
 
 Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing firmware.

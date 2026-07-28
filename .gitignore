@@ -4,9 +4,11 @@ web/dist/
 site/
 build/
 .build/
+.astro/
 .pio/
 .cache/
 coverage/
+test-results/
 .idea/
 .vscode/
 .DS_Store
