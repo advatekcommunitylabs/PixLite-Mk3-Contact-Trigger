@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#202020" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cpath fill='%23f15a2c' d='M0 0v1l1-.5z'/%3E%3C/svg%3E">
     <title>Advatek Labs · Contact Trigger</title>
   </head>
   <body>
@@ -111,7 +112,7 @@
           </label>
           <label>Addressing<select id="ip-mode"><option value="dhcp">Automatic (DHCP)</option><option value="static">Static IPv4</option></select></label>
         </div>
-        <details class="advanced">
+        <details id="network-advanced" class="advanced">
           <summary>Advanced network settings</summary>
           <div class="form-grid">
             <label>Operational Wi-Fi SSID<input id="wifi-ssid" /></label>
@@ -121,11 +122,10 @@
             <label>Gateway<input id="ip-gateway" inputmode="decimal" /></label>
             <label>DNS server<input id="ip-dns" inputmode="decimal" /></label>
             <label>Interface password<input id="web-password" type="password" placeholder="Optional" /></label>
-            <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP — unplug LAN first</option></select></label>
+            <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP (unplug LAN first)</option></select></label>
           </div>
         </details>
-        <p class="notice"><b>Wi-Fi recovery — no automatic Ethernet fallback</b><br>Hold BOOT 5–14 seconds. <b>Wi-Fi AP:</b> join <code>Advatek-Trigger-XXXXXX</code>. <b>Direct Ethernet:</b> unplug LAN, connect one computer, and use separate power; its port provides no PoE. Open <code>http://192.168.4.1/</code> within 15 minutes.</p>
-        <p class="notice">If .local fails, use Device IP. Use a unique local name. Local HTTP only.</p>
+        <p class="notice"><b>Wi-Fi has no wired fallback.</b> BOOT: 5–14s recovery, 15–19s reset, 20s cancel. Wi-Fi recovery opens setup; direct Ethernet needs separate power and no LAN.</p>
         <button id="apply-network" class="primary">Save network and restart</button>
       </section>
 
@@ -135,7 +135,7 @@
           <button id="export">Export redacted backup</button>
           <label class="file-button">Import backup<input id="import" type="file" accept="application/json" /></label>
         </div>
-        <p class="muted">Backups omit passwords. Hold BOOT 5–14 seconds for recovery, 15–19 for factory reset, or 20 seconds to cancel.</p>
+        <p class="muted">Backups omit passwords.</p>
       </section>
 
       <section id="diagnostics" class="wide">

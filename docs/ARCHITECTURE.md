@@ -43,9 +43,9 @@ server, FreeRTOS, or UI behavior.
 - web API, authentication, diagnostics, and PSRAM resources.
 
 Large device, media, diagnostic, token, and response buffers are allocated in
-PSRAM. If the required PSRAM workspace cannot be created, the device enters a
-degraded recovery mode instead of moving those allocations into scarce
-internal networking heap.
+PSRAM. If the required PSRAM workspace cannot be created, the device enters
+degraded recovery mode. Large allocations never use the internal networking
+heap.
 
 ### Board profiles
 
@@ -89,7 +89,13 @@ There is no automatic fallback between them. BOOT recovery is time-limited and
 uses the configured Wi-Fi AP or direct-Ethernet DHCP connection; normal
 commissioning uses Ethernet and `advatrigger.local`. Direct-Ethernet recovery
 is refused while the W5500 has link, preventing a DHCP server from being
-started on an installed LAN.
+started on an installed LAN. A confirmed direct-Ethernet request uses a
+one-time RTC marker and software restart, then starts its temporary DHCP service
+on lwIP's TCP/IP thread when the directly connected computer creates physical
+link. The low-level server receives the subnet option and required lease
+callback normally supplied by an ESP-NETIF server interface. The marker is
+consumed immediately. A failed recovery boot returns to the configured uplink.
+
 PixLite Mk3 HTTP is intentionally serialized through one client and one reusable
 32 KB response buffer, keeping socket and memory use predictable with up to 16
 saved controllers.
@@ -115,11 +121,11 @@ unassigned and require an installer decision.
 
 `web/` is editable Vite/TypeScript source. It is built as one minified HTML
 document, compressed with deterministic gzip settings, and emitted to
-`src/web/WebAsset.h`. Large API reads are streamed rather than assembled as
-one temporary response string.
+`src/web/WebAsset.h`. Large API reads use chunked streaming to control temporary
+memory use.
 
-The local API contract is documented in [API.md](API.md). It is local HTTP, not
-TLS, and is intended for a trusted LAN or control VLAN.
+The local API contract is documented in [API.md](API.md). It uses local HTTP
+without TLS and is intended for a trusted LAN or control VLAN.
 
 ## Generated Arduino sketch
 
@@ -138,9 +144,11 @@ generated sketch directly; change canonical source and regenerate it.
 - `tests/native/` exercises portable C++ policy with a host compiler.
 - Vitest repository contracts verify manifests, memory bounds, API vocabulary,
   UI affordances, and migration expectations.
-- Arduino CI compiles canonical firmware and every generated board sketch; the
-  original Waveshare target also retains its hardware canary.
-- [HARDWARE-TESTS.md](../HARDWARE-TESTS.md) records evidence that cannot be
-  established by compilation or mocks.
+- Arduino CI compiles canonical firmware, every generated board sketch, both
+  board canaries, and the credential-free Wi-Fi diagnostic probe used to
+  distinguish RF/configuration failures without changing release fallback
+  behaviour.
+- [HARDWARE-TESTS.md](../HARDWARE-TESTS.md) records post-public physical
+  validation for later hardware-affecting modifications.
 
 Automated success is necessary but does not confer hardware-ready status.

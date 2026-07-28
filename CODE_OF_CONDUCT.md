@@ -22,5 +22,5 @@ protocol material is not acceptable.
 
 Repository maintainers may edit or remove content, close interactions, or
 restrict participation when necessary to protect the community. Serious
-conduct concerns should be raised privately with the repository maintainers
-rather than debated in a public issue.
+conduct concerns should be raised privately with the repository maintainers.
+Public issues are reserved for project work.

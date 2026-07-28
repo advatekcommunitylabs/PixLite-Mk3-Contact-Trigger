@@ -58,14 +58,15 @@ class PixLiteClient {
 
   bool refreshMedia(uint8_t index) {
     if (!validIndex(index) || !memory_.media || !memory_.mediaCounts ||
-        !memory_.tokens || !memory_.pixliteResponse) {
+        !memory_.pixliteTokens || !memory_.pixliteResponse) {
       return requestFailed(index, RESPONSE_MEMORY_UNAVAILABLE, "", "file list");
     }
     const int code = post(index, pixLiteFileListRequest(nextId()));
     if (!responseAccepted(index, code, "file list")) return false;
     uint8_t &count = memory_.mediaCounts[index];
     count = 0;
-    JsonDocument document(response(), memory_.tokens, CONFIG_TOKEN_CAPACITY);
+    JsonDocument document(
+        response(), memory_.pixliteTokens, CONFIG_TOKEN_CAPACITY);
     if (!document.parse()) {
       return requestFailed(index, code, response(), "file list JSON");
     }
@@ -392,11 +393,16 @@ class PixLiteClient {
 
   bool responseAccepted(uint8_t index, int code, const char *operation) {
     if (code != 200) return requestFailed(index, code, response(), operation);
-    if (!memory_.tokens) return requestFailed(index, -4, "", operation);
+    if (!memory_.pixliteTokens) {
+      return requestFailed(index, -4, "", operation);
+    }
 
     PixLiteApiError apiError;
     if (!inspectPixLiteResponse(
-            response(), memory_.tokens, CONFIG_TOKEN_CAPACITY, apiError)) {
+            response(),
+            memory_.pixliteTokens,
+            CONFIG_TOKEN_CAPACITY,
+            apiError)) {
       return requestFailed(index, code, "invalid JSON response", operation);
     }
     if (!apiError.present) {
@@ -439,8 +445,9 @@ class PixLiteClient {
   }
 
   void parseStatus(uint8_t index, const char *responseBody) {
-    if (!memory_.tokens) return;
-    JsonDocument document(responseBody, memory_.tokens, CONFIG_TOKEN_CAPACITY);
+    if (!memory_.pixliteTokens) return;
+    JsonDocument document(
+        responseBody, memory_.pixliteTokens, CONFIG_TOKEN_CAPACITY);
     if (!document.parse()) return;
     PixLiteStatus &current = status(index);
     current.outputCount = 0;

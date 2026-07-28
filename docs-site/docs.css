@@ -223,14 +223,25 @@ button:focus-visible, a:focus-visible {
 }
 .article h3 { margin: 1.8em 0 .5em; font-size: 18px; }
 .article h4 { margin: 1.5em 0 .4em; color: var(--orange); font-size: 15px; }
-.article p, .article li { max-width: 76ch; }
+.article > p,
+.article > ul,
+.article > ol,
+.article > blockquote,
+.article > pre,
+.article > h2,
+.article > h3,
+.article > h4 {
+  width: min(100%, 82ch);
+  margin-right: auto;
+  margin-left: auto;
+}
 .article img {
   display: block;
   max-width: 100%;
   height: auto;
   margin: 22px auto;
   border-radius: 7px;
-  background: #fff;
+  background: transparent;
   box-shadow: 0 8px 28px rgb(0 0 0 / 20%);
 }
 .article table {
@@ -262,6 +273,7 @@ button:focus-visible, a:focus-visible {
   border-radius: 4px;
   background: var(--code);
   font: .9em ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
 }
 .article pre {
   overflow: auto;
@@ -272,6 +284,14 @@ button:focus-visible, a:focus-visible {
 }
 .article pre code { padding: 0; border: 0; background: none; }
 .article li + li { margin-top: 5px; }
+.article li.task-list-item,
+.article li:has(> input[type="checkbox"]) {
+  list-style: none;
+}
+.article li > input[type="checkbox"] {
+  margin: 0 .55em 0 -1.45em;
+  accent-color: var(--orange);
+}
 .article hr { border: 0; border-top: 1px solid var(--line); }
 .page-footer {
   display: flex;
@@ -327,7 +347,18 @@ button:focus-visible, a:focus-visible {
   .hero p { color: #555; }
   .article h2 { break-after: avoid; color: #222; border-color: #bbb; }
   .article h3, .article h4 { break-after: avoid; color: #222; }
-  .article p, .article li { max-width: none; }
+  .article > p,
+  .article > ul,
+  .article > ol,
+  .article > blockquote,
+  .article > pre,
+  .article > h2,
+  .article > h3,
+  .article > h4 {
+    width: auto;
+    margin-right: 0;
+    margin-left: 0;
+  }
   .article a { color: #222; text-decoration: underline; }
   .article table, .article pre, .article blockquote, .article img { break-inside: avoid; }
   .article th, .article td { border-color: #aaa; }

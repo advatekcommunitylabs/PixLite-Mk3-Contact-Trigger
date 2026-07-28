@@ -15,5 +15,13 @@ Source:
 | `digital-input-wiring.jpg` | [`ESP32-S3-ETH-8DI-8RO-details-9.jpg`](https://www.waveshare.com/img/devkit/accBoard/ESP32-S3-ETH-8DI-8RO/ESP32-S3-ETH-8DI-8RO-details-9.jpg) |
 
 The photographs remain copyright Waveshare and are not covered by this
-repository's MIT licence. The two annotated SVGs add project-specific vector
-callouts without altering the underlying product photographs.
+repository's MIT licence.
+
+`poe-board-front-cutout.png` is a background-cleaned guide image derived from
+the attributed product photograph; the original `poe-board-front.jpg` remains
+unchanged. `poe-board-front-cutout.svg` is retained as an editable manual-crop
+reference.
+
+The editable `poe-board-ports-annotated.svg` and
+`poe-dry-contact-wiring.svg` files are the sources for their matching,
+self-contained PNG guide renders.

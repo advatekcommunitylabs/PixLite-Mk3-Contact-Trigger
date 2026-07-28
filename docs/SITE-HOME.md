@@ -3,14 +3,15 @@
 Configure physical buttons, switches, and relay contacts to control PixLite Mk3
 scenes, playlists, output modes, and intensity.
 
-> **Advatek Labs community beta:** review the hardware acceptance record before
-> using this project in a production installation.
+> **Advatek Labs community beta:** follow the board-specific guide and evaluate
+> the installation for its intended environment before use.
 
-Both supported board downloads have passed real-board flashing and Ethernet
-bring-up. The industrial PoE board has also passed all eight isolated inputs
-and 25 consecutive PoE-only cold boots. See
-[Hardware acceptance](../HARDWARE-TESTS.md) for the live beta status and
-remaining recovery, Wi-Fi, static-addressing, and burn-in gates.
+Advatek Technical Support does not cover this third-party hardware or Advatek
+Labs community projects. Use the repository's GitHub Issues for reproducible
+community support requests.
+
+The [hardware change log](../HARDWARE-TESTS.md) begins at public launch and
+records physical validation for later hardware-affecting contributions.
 
 ## Start here
 
@@ -33,14 +34,15 @@ The project provides separate Arduino downloads for:
 - **Waveshare ESP32-S3-(POE)-ETH-8DI-8RO** industrial boards, using the
   built-in isolated `DI1`–`DI8` terminals.
 
-PoE changes how the board is powered, not which firmware download it uses.
+PoE changes only the power source. Each standard-Ethernet and PoE pair uses the
+same firmware download.
 
 PixLite Mk3 SHOWTime media playback requires an industrial-grade microSD
 installed in the PixLite Mk3. The ESP32 boards' own TF/microSD slots are not
 used by this firmware.
 
-Third-party hardware references are compatibility examples, not Advatek
-endorsements. Integrators must follow local electrical codes, applicable
+Third-party hardware references document compatibility. Advatek does not
+endorse the listed products. Integrators must follow local electrical codes, applicable
 standards, manufacturer instructions, and requirements for qualified
 electrical work.
 

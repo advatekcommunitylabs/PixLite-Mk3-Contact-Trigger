@@ -93,3 +93,8 @@ jobs:
           arduino-cli compile
           --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
           tools/hardware-bringup/WaveshareEsp32S3Eth8Di8RoCanary
+      - name: Compile Waveshare Wi-Fi diagnostic probe
+        run: >-
+          arduino-cli compile
+          --fqbn "esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=huge_app,PSRAM=opi,USBMode=hwcdc,CDCOnBoot=cdc"
+          tools/hardware-bringup/WaveshareEsp32S3EthWifiProbe

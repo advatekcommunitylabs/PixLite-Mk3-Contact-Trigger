@@ -38,10 +38,15 @@ unused.
 It does not automatically fall back between Wi-Fi and Ethernet. If the
 configured network cannot be reached, hold **BOOT for 5–14 seconds** and
 release to start the recovery method previously selected in the web interface.
-For **Wi-Fi AP**, join `Advatek-Trigger-XXXXXX`. For **Direct Ethernet**, unplug
-the normal LAN before holding BOOT, then connect one computer directly and
-power the board separately over USB-C because a computer Ethernet port does not
-provide PoE. Open `http://192.168.4.1/` within 15 minutes.
+For **Wi-Fi AP**, join `Advatek-Trigger-XXXXXX`; a phone should open setup
+automatically. If it does not, use a full browser at `http://192.168.4.1/`.
+For **Direct Ethernet**, unplug
+the normal LAN before holding BOOT, wait through the solid-white restart
+indication until the controller pulses cyan, then connect one computer
+directly. Power the board separately over
+USB-C because a computer Ethernet port does not provide PoE. Open
+`http://192.168.4.1/` within 15 minutes. Network saving uses two taps so it
+works inside phone captive portals.
 
 ## Contact wiring
 
@@ -59,5 +64,5 @@ web interface.
 
 This release remains a community beta. Bench-test the complete installation
 before relying on it in a live environment. Third-party hardware references
-are compatibility examples, not Advatek endorsements. Follow local electrical
+document compatibility. Advatek does not endorse the listed products. Follow local electrical
 codes, applicable standards, and manufacturer instructions.

@@ -125,7 +125,7 @@ function renderStatus() {
     ['Inputs', `${enabled} configured${state.pinRemappingRequired ? ' · remap required' : ''}`, ''],
     ['Ethernet', state.ethernet?.linkUp ? `${state.ethernet.linkSpeedMbps} Mbps ${state.ethernet.fullDuplex ? 'full duplex' : 'half duplex'}` : state.ethernet?.failureReason || 'Link down', ''],
     ['Memory', state.degradedMode ? 'Degraded recovery mode' : `${Math.round((state.memory?.internalFree || 0) / 1024)} KB internal free`, ''],
-    ['Firmware', state.firmwareVersion || '—', ''],
+    ['Firmware', state.firmwareVersion || 'Unavailable', ''],
     ['Uptime', `${Math.floor((state.memory?.uptimeMs || 0) / 60000)} minutes`, ''],
   ];
   $('status-grid').innerHTML = cards.map(([label, content, href]) =>
@@ -166,8 +166,9 @@ function updateInputActivity(inputs: Json[] = []) {
     const sequence = Number(live.eventSequence || 0) >>> 0;
     const previous = inputEventSequences[index];
     inputEventSequences[index] = sequence;
-    // A lower value means the controller restarted; establish a new baseline
-    // instead of replaying old events as a large unsigned wraparound.
+    // A lower value means the controller restarted; establish a new baseline.
+    // Signed delta arithmetic prevents old events from appearing as a large
+    // unsigned wraparound.
     if (previous === undefined || sequence < previous) return;
     const pulses = Math.min(sequence - previous, 4);
     if (led && pulses) {
@@ -499,8 +500,10 @@ function renderConfig() {
   setValue('uplink', config.network.uplink);
   setValue('hostname', config.network.hostname);
   setValue('wifi-ssid', config.network.wifiSsid);
+  setValue('wifi-password', '');
   setValue('recovery-connection', config.network.recoveryConnection || 'wifi');
   renderIpFields();
+  updateNetworkValidation();
   updateHostname();
   renderSavedPixLites();
   renderInputs();
@@ -542,6 +545,14 @@ function renderIpFields() {
   const settings = config.network[value('uplink')];
   setValue('ip-mode', settings.mode); setValue('ip-address', settings.address);
   setValue('ip-netmask', settings.netmask); setValue('ip-gateway', settings.gateway); setValue('ip-dns', settings.dns);
+}
+
+// Changing uplinks restarts the controller, so validate the complete Wi-Fi
+// handoff before enabling the action that could make the current page vanish.
+function updateNetworkValidation() {
+  const invalid = value('uplink') === 'wifi' && !value('wifi-ssid').trim();
+  $<HTMLButtonElement>('apply-network').disabled = invalid;
+  return invalid;
 }
 
 $('theme-toggle').onclick = () => {
@@ -613,20 +624,45 @@ $('save-status-led').onclick = async () => {
 
 $<HTMLInputElement>('hostname').oninput = updateHostname;
 $<HTMLInputElement>('hostname').onblur = () => { setValue('hostname', normalizeHostname(value('hostname'))); updateHostname(); };
-$<HTMLSelectElement>('uplink').onchange = renderIpFields;
+$<HTMLSelectElement>('uplink').onchange = () => {
+  renderIpFields();
+  if (value('uplink') === 'wifi') $<HTMLDetailsElement>('network-advanced').open = true;
+  updateNetworkValidation();
+};
+$<HTMLInputElement>('wifi-ssid').oninput = updateNetworkValidation;
 $('apply-network').onclick = async () => {
-  if (!confirm('Save network settings and restart this controller?')) return;
+  const button = $<HTMLButtonElement>('apply-network');
   try {
     const uplink = value('uplink');
     const hostname = normalizeHostname(value('hostname'));
     if (!hostname) throw new Error('Enter a local name using letters, numbers or hyphens');
+    if (updateNetworkValidation()) {
+      throw new Error('Enter the operational Wi-Fi network name before switching to Wi-Fi.');
+    }
+    // iOS and Android captive-portal browsers can suppress native confirm()
+    // dialogs. Keep confirmation inside the page so the first-run recovery
+    // flow works without asking the installer to know the controller IP.
+    if (!button.dataset.confirm) {
+      button.dataset.confirm = '1';
+      button.textContent = 'Tap again to save and restart';
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Settings accepted - restarting';
     const addressing = {mode: value('ip-mode'), address: value('ip-address'), netmask: value('ip-netmask'), gateway: value('ip-gateway'), dns: value('ip-dns')};
-    await api('/api/network/apply', {method: 'POST', body: JSON.stringify({network: {
-      uplink, hostname, wifiSsid: value('wifi-ssid'), wifiPassword: value('wifi-password'),
-      recoveryConnection: value('recovery-connection'), apPassword: value('web-password'), [uplink]: addressing,
-    }})});
-    toast('Saved; the controller is restarting');
-  } catch (error) { toast(error, true); }
+    const network: Json = {
+      uplink, hostname, wifiSsid: value('wifi-ssid').trim(),
+      recoveryConnection: value('recovery-connection'), apPassword: value('web-password'),
+      [uplink]: addressing,
+    };
+    if (value('wifi-password')) network.wifiPassword = value('wifi-password');
+    await api('/api/network/apply', {method: 'POST', body: JSON.stringify({network})});
+  } catch (error) {
+    delete button.dataset.confirm;
+    button.textContent = 'Save network and restart';
+    updateNetworkValidation();
+    toast(error, true);
+  }
 };
 
 $('export').onclick = async () => {

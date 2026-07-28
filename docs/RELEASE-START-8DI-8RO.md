@@ -44,15 +44,18 @@ contact between `DGND` and its chosen `DI1`–`DI8` terminal. Remove power befor
 changing terminal wiring.
 
 BOOT recovery can temporarily provide Wi-Fi or direct-Ethernet access at
-`http://192.168.4.1/`; follow the full guide before using recovery mode.
+`http://192.168.4.1/`. Wi-Fi recovery should open setup automatically on a
+phone; otherwise use that address in a full browser. Direct Ethernet restarts
+once; keep the normal LAN
+unplugged until the status LED pulses cyan, then connect one computer directly.
+Follow the full guide before using recovery mode. Power-cycle the enclosed
+controller to leave direct-Ethernet recovery after reconnecting normal LAN.
 
 The input selector shows `DI1`–`DI8`. Use the isolated input screw terminals,
 not ESP32 header pins. Relays, RS485, buzzer, and TF card are intentionally
 unused by this release.
 
-The eight inputs and 25 consecutive PoE-only cold boots have passed real-board
-testing. This target remains a community beta until the recovery, operational
-Wi-Fi, static-addressing, stress, and burn-in gates in `HARDWARE-TESTS.md` are
-complete. Third-party hardware references are compatibility examples, not
-Advatek endorsements. Follow local electrical codes, applicable standards, and
-manufacturer instructions.
+This target is an Advatek Labs community beta. Third-party hardware references
+document compatibility. Advatek does not endorse the listed products. Follow local electrical
+codes, applicable standards, and manufacturer instructions. Hardware-affecting
+modifications made after public launch are recorded in `HARDWARE-TESTS.md`.

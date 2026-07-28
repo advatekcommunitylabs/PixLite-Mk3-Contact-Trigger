@@ -322,6 +322,34 @@ static void testMdnsHostnameValidation() {
   assert(!validMdnsHostname("abcdefghijklmnopqrstuvwxyz123456"));
 }
 
+static void testOperationalWifiValidation() {
+  NetworkConfig network{};
+  network.uplink = UplinkMode::Ethernet;
+  assert(validOperationalWifi(network));
+  network.uplink = UplinkMode::WifiStation;
+  assert(!validOperationalWifi(network));
+  strcpy(network.wifiSsid, "Venue-WiFi");
+  assert(validOperationalWifi(network));
+}
+
+static void testJsonObjectKeysDoNotMatchStringValues() {
+  const char *json =
+      "{\"network\":{\"uplink\":\"ethernet\",\"hostname\":\"advatrigger\","
+      "\"recoveryConnection\":\"wifi\",\"ethernet\":{\"mode\":\"static\","
+      "\"address\":\"192.0.2.88\",\"netmask\":\"255.255.255.0\","
+      "\"gateway\":\"192.0.2.1\",\"dns\":\"192.0.2.1\"}}}";
+  JsonToken tokens[40]{};
+  JsonDocument document(json, tokens, 40);
+  assert(document.parse());
+  const int16_t network = document.objectValue(document.root(), "network");
+  const int16_t ethernet = document.objectValue(network, "ethernet");
+  assert(ethernet >= 0);
+  assert(document.token(ethernet).type == JsonTokenType::Object);
+  assert(document.equals(document.objectValue(ethernet, "mode"), "static"));
+  assert(document.equals(
+      document.objectValue(ethernet, "gateway"), "192.0.2.1"));
+}
+
 static void testBoundedEthernetRetries() {
   BoundedRetryState retry{3, 0, false};
   assert(retry.canAttempt());
@@ -390,6 +418,8 @@ int main() {
   testConfigurationSchemaGate();
   testMemoryAndBoundedPayloadPolicy();
   testMdnsHostnameValidation();
+  testOperationalWifiValidation();
+  testJsonObjectKeysDoNotMatchStringValues();
   testBoundedEthernetRetries();
   testPixLiteProgramPriority();
   testPixLiteApiErrorResponse();

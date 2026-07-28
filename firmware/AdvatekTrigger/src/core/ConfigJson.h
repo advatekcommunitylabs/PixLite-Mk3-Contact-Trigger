@@ -297,7 +297,22 @@ inline bool applyConfigJson(
     }
     updateString(doc, network, "hostname", config.network.hostname, sizeof(config.network.hostname));
     updateString(doc, network, "wifiSsid", config.network.wifiSsid, sizeof(config.network.wifiSsid));
-    updateString(doc, network, "wifiPassword", config.network.wifiPassword, sizeof(config.network.wifiPassword));
+    const bool clearWifiPassword = doc.booleanValue(
+        doc.objectValue(network, "clearWifiPassword"), false);
+    char wifiPassword[64]{};
+    if (clearWifiPassword) {
+      config.network.wifiPassword[0] = '\0';
+    } else if (
+        updateString(
+            doc, network, "wifiPassword", wifiPassword, sizeof(wifiPassword)) &&
+        wifiPassword[0]) {
+      // A blank password means "keep the stored password", matching the SPA
+      // placeholder and allowing redacted configuration updates.
+      copyText(
+          config.network.wifiPassword,
+          sizeof(config.network.wifiPassword),
+          wifiPassword);
+    }
     updateString(
         doc, network, "apPassword", config.network.accessPointPassword,
         sizeof(config.network.accessPointPassword));

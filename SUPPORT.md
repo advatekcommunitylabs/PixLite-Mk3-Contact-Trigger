@@ -1,12 +1,15 @@
 # Support
 
-This is an Advatek Labs community project. Community issues are the right place
-for reproducible firmware, interface, documentation, and hardware-integration
-problems. They are not a substitute for urgent show-critical support.
+This is an Advatek Labs community project. **Advatek Technical Support does not
+cover this third-party hardware or any Advatek Labs community project.**
 
-Third-party products mentioned by the project are compatibility examples, not
-Advatek endorsements. Installation and electrical-code compliance remain the
-integrator's responsibility.
+GitHub Issues are the right place for reproducible firmware, interface,
+documentation, and hardware-integration problems. Community assistance is not
+a substitute for urgent or show-critical support.
+
+Third-party products mentioned by the project document compatibility. Advatek
+does not endorse the listed products. Installation and electrical-code
+compliance remain the integrator's responsibility.
 
 ## Before opening an issue
 

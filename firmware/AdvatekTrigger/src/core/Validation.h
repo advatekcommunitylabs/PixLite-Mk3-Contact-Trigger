@@ -42,6 +42,10 @@ inline bool validMdnsHostname(const char *hostname) {
   return true;
 }
 
+inline bool validOperationalWifi(const NetworkConfig &network) {
+  return network.uplink != UplinkMode::WifiStation || network.wifiSsid[0];
+}
+
 inline ValidationResult validateConfig(const AppConfig &config, const BoardProfile &board) {
   ValidationResult result{true, ""};
   if (strcmp(config.hardware.boardId, board.id) != 0) {
@@ -54,6 +58,12 @@ inline ValidationResult validateConfig(const AppConfig &config, const BoardProfi
     validationMessage(
         result,
         "Hostname must be 1-31 letters, numbers or hyphens, and cannot start or end with a hyphen.");
+    return result;
+  }
+  if (!validOperationalWifi(config.network)) {
+    validationMessage(
+        result,
+        "Operational Wi-Fi requires a network name (SSID).");
     return result;
   }
   if (config.pixliteCount > MAX_PIXLITES) {

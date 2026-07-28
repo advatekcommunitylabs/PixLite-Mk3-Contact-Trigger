@@ -32,7 +32,7 @@
     <circle cx="29" cy="133" r="9" fill="#f15a2c"/>
     <text x="48" y="139" class="body">Approved contact GPIO</text>
     <circle cx="29" cy="159" r="9" fill="#4a4a4c"/>
-    <text x="48" y="165" class="body">GND / isolated-board output GND</text>
+    <text x="48" y="165" class="body">Board GND for direct dry contacts</text>
   </g>
 
   <!-- Board body -->
@@ -59,47 +59,47 @@
   <rect x="446" y="326" width="24" height="444" rx="10" fill="#ad8b42"/>
   <rect x="930" y="326" width="24" height="444" rx="10" fill="#ad8b42"/>
 
-  <!-- Left project pins: header physical pin numbers from the official schematic -->
+  <!-- Left project pins: use the GPIO/GND names printed on the board -->
   <g>
     <line x1="458" y1="387" x2="410" y2="387" stroke="#4a4a4c" stroke-width="4"/>
     <circle cx="458" cy="387" r="10" fill="#4a4a4c" stroke="#d8d5d2" stroke-width="2"/>
     <rect x="188" y="365" width="222" height="44" rx="9" fill="#4a4a4c"/>
-    <text x="209" y="393" class="pin">GND</text><text x="382" y="393" text-anchor="end" class="pinNo">header 33</text>
+    <text x="209" y="393" class="pin">GND</text>
 
     <line x1="458" y1="432" x2="410" y2="432" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="458" cy="432" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="188" y="410" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="209" y="438" class="pin">GPIO16</text><text x="382" y="438" text-anchor="end" class="pinNo">header 32</text>
+    <text x="209" y="438" class="pin">GPIO16</text>
 
     <line x1="458" y1="477" x2="410" y2="477" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="458" cy="477" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="188" y="455" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="209" y="483" class="pin">GPIO18</text><text x="382" y="483" text-anchor="end" class="pinNo">header 31</text>
+    <text x="209" y="483" class="pin">GPIO18</text>
 
     <line x1="458" y1="522" x2="410" y2="522" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="458" cy="522" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="188" y="500" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="209" y="528" class="pin">GPIO15</text><text x="382" y="528" text-anchor="end" class="pinNo">header 29</text>
+    <text x="209" y="528" class="pin">GPIO15</text>
 
     <line x1="458" y1="567" x2="410" y2="567" stroke="#4a4a4c" stroke-width="4"/>
     <circle cx="458" cy="567" r="10" fill="#4a4a4c" stroke="#d8d5d2" stroke-width="2"/>
     <rect x="188" y="545" width="222" height="44" rx="9" fill="#4a4a4c"/>
-    <text x="209" y="573" class="pin">GND</text><text x="382" y="573" text-anchor="end" class="pinNo">header 28</text>
+    <text x="209" y="573" class="pin">GND</text>
 
     <line x1="458" y1="612" x2="410" y2="612" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="458" cy="612" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="188" y="590" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="209" y="618" class="pin">GPIO2</text><text x="382" y="618" text-anchor="end" class="pinNo">header 26</text>
+    <text x="209" y="618" class="pin">GPIO2</text>
 
     <line x1="458" y1="657" x2="410" y2="657" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="458" cy="657" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="188" y="635" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="209" y="663" class="pin">GPIO1</text><text x="382" y="663" text-anchor="end" class="pinNo">header 25</text>
+    <text x="209" y="663" class="pin">GPIO1</text>
 
     <line x1="458" y1="702" x2="410" y2="702" stroke="#4a4a4c" stroke-width="4"/>
     <circle cx="458" cy="702" r="10" fill="#4a4a4c" stroke="#d8d5d2" stroke-width="2"/>
     <rect x="188" y="680" width="222" height="44" rx="9" fill="#4a4a4c"/>
-    <text x="209" y="708" class="pin">GND</text><text x="382" y="708" text-anchor="end" class="pinNo">header 23</text>
+    <text x="209" y="708" class="pin">GND</text>
   </g>
 
   <!-- Right project pins -->
@@ -107,27 +107,27 @@
     <line x1="942" y1="432" x2="990" y2="432" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="942" cy="432" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="990" y="410" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="1011" y="438" class="pin">GPIO40</text><text x="1184" y="438" text-anchor="end" class="pinNo">header 11</text>
+    <text x="1011" y="438" class="pin">GPIO40</text>
 
     <line x1="942" y1="477" x2="990" y2="477" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="942" cy="477" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="990" y="455" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="1011" y="483" class="pin">GPIO39</text><text x="1184" y="483" text-anchor="end" class="pinNo">header 12</text>
+    <text x="1011" y="483" class="pin">GPIO39</text>
 
     <line x1="942" y1="522" x2="990" y2="522" stroke="#4a4a4c" stroke-width="4"/>
     <circle cx="942" cy="522" r="10" fill="#4a4a4c" stroke="#d8d5d2" stroke-width="2"/>
     <rect x="990" y="500" width="222" height="44" rx="9" fill="#4a4a4c"/>
-    <text x="1011" y="528" class="pin">GND</text><text x="1184" y="528" text-anchor="end" class="pinNo">header 13</text>
+    <text x="1011" y="528" class="pin">GND</text>
 
     <line x1="942" y1="567" x2="990" y2="567" stroke="#f15a2c" stroke-width="4"/>
     <circle cx="942" cy="567" r="10" fill="#f15a2c" stroke="#ffffff" stroke-width="2"/>
     <rect x="990" y="545" width="222" height="44" rx="9" fill="#f15a2c"/>
-    <text x="1011" y="573" class="pin">GPIO38</text><text x="1184" y="573" text-anchor="end" class="pinNo">header 14</text>
+    <text x="1011" y="573" class="pin">GPIO38</text>
 
     <line x1="942" y1="612" x2="990" y2="612" stroke="#4a4a4c" stroke-width="4"/>
     <circle cx="942" cy="612" r="10" fill="#4a4a4c" stroke="#d8d5d2" stroke-width="2"/>
     <rect x="990" y="590" width="222" height="44" rx="9" fill="#4a4a4c"/>
-    <text x="1011" y="618" class="pin">GND</text><text x="1184" y="618" text-anchor="end" class="pinNo">header 18</text>
+    <text x="1011" y="618" class="pin">GND</text>
   </g>
 
   <!-- Wiring reminder -->

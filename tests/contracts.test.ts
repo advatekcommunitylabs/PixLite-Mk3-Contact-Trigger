@@ -137,6 +137,9 @@ describe('repository contracts', () => {
     expect(memory).toContain('MAX_PIXLITES * MAX_MEDIA_FILES');
     const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
     expect(webApi).toContain('pixLiteIndexById(config_, candidate) < 0');
+    expect(webApi).toContain(
+      'requestedId[0] ? pixLiteIndexById(config_, requestedId) : -1',
+    );
     expect(webApi).toContain('if (!config_.inputs[i].enabled) continue');
     expect(webApi).toContain('requestedPassword[0]');
     expect(webApi).toContain('\\",\\"via\\":\\"');
@@ -268,9 +271,10 @@ describe('repository contracts', () => {
     const hardware = readFileSync('docs/HARDWARE.md', 'utf8');
     expect(directDiagram).toContain('Button 8');
     expect(directDiagram).toContain('GPIO40');
-    expect(hardware).toContain('GND-return wire are the pair');
+    expect(hardware).toContain('one pair per remote switch');
+    expect(hardware).toContain('other its matching return');
     expect(readme).toContain('industrial-grade microSD card must be installed in the PixLite Mk3');
-    expect(readme).toContain('not Advatek endorsements');
+    expect(readme).toContain('Advatek does not endorse the listed products');
     expect(hardware).toMatch(/local electrical\s+codes/);
   });
 
@@ -298,20 +302,73 @@ describe('repository contracts', () => {
     expect(validation).toContain('input.debounceMs < 10 || input.debounceMs > 2000');
   });
 
+  it('keeps web configuration and PixLite response tokenizers task-local', () => {
+    const memory = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/MemoryResources.h',
+      'utf8',
+    );
+    const webApi = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/WebApi.h',
+      'utf8',
+    );
+    const pixlite = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
+    expect(memory).toContain('JsonToken *configTokens');
+    expect(memory).toContain('JsonToken *pixliteTokens');
+    expect(webApi).toContain('memory_.configTokens');
+    expect(webApi).not.toContain('memory_.pixliteTokens');
+    expect(pixlite).toContain('memory_.pixliteTokens');
+    expect(pixlite).not.toContain('memory_.configTokens');
+  });
+
   it('commissions over Ethernet and reserves the uniquely named AP for recovery', () => {
     const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
     const defaults = readFileSync('firmware/AdvatekTrigger/src/core/Defaults.h', 'utf8');
     const network = readFileSync('firmware/AdvatekTrigger/src/platform/NetworkManager.h', 'utf8');
+    const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
     const validation = readFileSync('firmware/AdvatekTrigger/src/core/Validation.h', 'utf8');
     expect(app).toContain('const char *hostname = "advatrigger"');
     expect(app).toContain('"Advatek-Trigger-%s"');
+    expect(app).toContain(
+      'uplinkConnected && !network_.ethernetRecoveryRunning()',
+    );
+    expect(webApi).toContain(
+      'PixLite operations unavailable during direct Ethernet recovery',
+    );
     expect(defaults).toContain('accessPointMode = AccessPointMode::Disabled');
     expect(network).not.toContain('config_.sequence <= 1');
     expect(network).not.toContain('ethernetFailed');
     expect(network).toContain('openRecoveryNetwork()');
     expect(network).toContain('WIFI_MODE_STA');
+    expect(network).toContain('IPAddress leaseStart(192, 168, 4, 2)');
+    expect(network).toContain(
+      'WiFi.AP.config(ip, ip, mask, leaseStart, ip)',
+    );
+    expect(network).toContain('Recovery access point did not start or advertise correctly');
+    expect(network).toContain('Recovery Wi-Fi AP interface attempt %u failed');
+    expect(network).toContain(
+      'Wi-Fi recovery radio initialized idle; Ethernet remains the only operational uplink',
+    );
     expect(network).toContain('Direct Ethernet recovery refused');
+    expect(network).toContain('RTC_NOINIT_ATTR uint32_t directEthernetRecoveryBootMarker');
+    expect(network).toContain('esp_reset_reason() == ESP_RST_SW');
+    expect(network).toContain('Starting one-time direct Ethernet recovery boot');
+    expect(network).toContain('startDhcpOnTcpipThread');
+    expect(network).toContain('tcpip_callback_with_block(');
     expect(network).toContain('dhcps_start(');
+    expect(network).not.toContain('dhcps_stop(');
+    const tcpipCallbackStart = network.indexOf(
+      'static void startDhcpOnTcpipThread',
+    );
+    const tcpipCallbackEnd = network.indexOf(
+      'bool startDirectEthernetDhcp',
+      tcpipCallbackStart,
+    );
+    const rawDhcpStart = network.indexOf('dhcps_start(');
+    expect(rawDhcpStart).toBeGreaterThan(tcpipCallbackStart);
+    expect(rawDhcpStart).toBeLessThan(tcpipCallbackEnd);
     expect(network).toContain('ETH.config(address, address, mask, address)');
     expect(validation).toContain('validMdnsHostname');
     expect(validation).toContain('cannot start or end with a hyphen');

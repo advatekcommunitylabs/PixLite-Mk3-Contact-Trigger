@@ -21,6 +21,8 @@ describe('compact commissioning UI contracts', () => {
     expect(css).toContain('--orange:#f15a2c');
     expect(html).toContain('ADVATEK LABS');
     expect(html).not.toContain('class="brand-mark"');
+    expect(html).toContain('rel="icon" href="data:image/svg+xml');
+    expect(html).toContain("fill='%23f15a2c'");
     expect(html).toContain('id="status-led-enabled"');
     expect(html).toContain('aria-label="Status LED brightness"');
     expect(script).toContain("JSON.stringify({statusLed})");
@@ -32,12 +34,19 @@ describe('compact commissioning UI contracts', () => {
     expect(html).toContain('Operational Wi-Fi SSID');
     expect(html).not.toContain('id="ap-mode"');
     expect(html).toContain('id="recovery-connection"');
-    expect(html).toContain('Direct Ethernet DHCP — unplug LAN first');
-    expect(html).toContain('no automatic Ethernet fallback');
-    expect(html).toContain('Hold BOOT 5–14 seconds');
-    expect(html).toContain('port provides no PoE');
-    expect(html).toContain('http://192.168.4.1/');
+    expect(html).toContain('Direct Ethernet DHCP (unplug LAN first)');
+    expect(html).toContain('Wi-Fi has no wired fallback');
+    expect(html).toContain('5–14s recovery');
+    expect(html).toContain('Wi-Fi recovery opens setup');
+    expect(html).toContain('direct Ethernet needs separate power and no LAN');
     expect(script).toContain("recoveryConnection: value('recovery-connection')");
+    expect(script).toContain('Enter the operational Wi-Fi network name before switching to Wi-Fi.');
+    expect(script).toContain("$<HTMLButtonElement>('apply-network').disabled = invalid");
+    expect(script).toContain("if (value('wifi-password')) network.wifiPassword");
+    expect(script).not.toContain("confirm('Save network settings");
+    expect(script).toContain("button.textContent = 'Tap again to save and restart'");
+    expect(script).toContain("button.textContent = 'Settings accepted - restarting'");
+    expect(script).toContain('iOS and Android captive-portal browsers');
   });
 
   it('handles authentication, discovery empty states, and cross-board remapping', () => {
@@ -46,7 +55,7 @@ describe('compact commissioning UI contracts', () => {
     expect(html).toContain('id="devices" class="device-list empty-state" hidden');
     expect(html).toContain('id="close-media"');
     expect(script).toContain('remapRequired');
-    expect(html).toContain('or 20 seconds to cancel');
+    expect(html).toContain('20s cancel');
     expect(script).toContain('let pins = [1, 2, 15, 16, 18, 38, 39, 40]');
     expect(script).toContain('config.boardCapabilities?.allowedInputPins');
     expect(script).toContain("config.boardCapabilities?.inputHardware === 'isolated'");

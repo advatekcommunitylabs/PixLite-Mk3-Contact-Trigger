@@ -4,30 +4,15 @@ This short guide covers normal software use after the controller has been
 flashed, wired, and connected to the same local network as its PixLite Mk3
 controllers.
 
-## Current beta validation
+## Community-beta status
 
-The following workflow has been exercised on physical Waveshare hardware and a
-PixLite A4-S Mk3 running firmware 3.14.2 with API v1.9:
+Use the firmware version and board-specific download shown in the web
+interface and release notes. Advatek Technical Support does not cover
+third-party hardware or Advatek Labs community projects.
 
-- both supported Arduino downloads compile, upload, and report the expected
-  16 MB flash and 8 MB PSRAM;
-- the industrial PoE board completed 25 consecutive PoE-only cold boots, each
-  restoring Ethernet, DHCP, and its PixLite Mk3 connection;
-- all eight industrial `DI1`–`DI8` terminals detected contact close and open
-  without crosstalk or false startup events;
-- the development board runs from USB with ordinary Ethernet and reconnects to
-  its saved PixLite Mk3 automatically;
-- discovery, media refresh, alphabetic scene lists, scene and playlist
-  once/loop playback, Live, Blank, scene stepping, Test modes, and intensity
-  actions have passed bench tests;
-- input autosave, configurable debounce, normally-open/normally-closed
-  operation, momentary/maintained modes, Hold-to-test, status LED feedback, and
-  desktop/mobile layouts have been exercised.
-
-An eight-hour dual-board network and memory burn-in is in progress. Operational
-Wi-Fi, static addressing, and every BOOT recovery duration remain release
-gates. See the versioned [hardware acceptance record](../HARDWARE-TESTS.md) for
-measurements, limitations, and the current release decision.
+The [public hardware change log](../HARDWARE-TESTS.md) records physical
+validation for hardware-affecting modifications merged after public launch. It
+is not a certification or warranty record.
 
 ## Open the controller
 
@@ -120,12 +105,12 @@ New playback actions default to **Loop until stopped**. A common momentary
 setup is **Play scene** on Press and **Live mode** on Release. A common
 maintained setup is a looping scene on Latch on and **Live mode** on Latch off.
 
-The web interface configures intensity behaviour; normal intensity changes are
-then driven by the connected button or switch rather than an on-screen slider.
+The web interface configures intensity behaviour. The connected button or
+switch controls intensity during operation.
 
 ![Input action configured to step through PixLite Mk3 scenes with a selected playback repeat mode](assets/user-guide/04-scene-stepping.png)
 
-![Solid-colour and RGB Fade Test mode choices with a configurable test colour](assets/user-guide/05-test-colour-fade.png)
+![RGB colour-fade Test mode selected as a physical input action](assets/user-guide/05-test-colour-fade.png)
 
 ![GPIO-driven intensity action showing output target, step size, repeat timing, and fade](assets/user-guide/06-intensity-action.png)
 
@@ -133,8 +118,16 @@ then driven by the connected button or switch rather than an on-screen slider.
 
 - **Steady orange:** the controller is running.
 - **White pulse:** a debounced contact edge was accepted.
-- **Flashing during a BOOT hold:** authentication recovery is ready.
-- **Red during a BOOT hold:** factory reset is pending.
+- **Alternating orange and white during a BOOT hold:** authentication recovery
+  is ready; release BOOT between 5 and 14 seconds.
+- **Steady white after BOOT is released:** recovery is starting. Wait for blue
+  or cyan before connecting to the recovery network.
+- **Slow blue pulse:** the temporary Wi-Fi recovery access point is active.
+- **Slow cyan pulse:** direct-Ethernet recovery is active.
+- **Flashing red after release:** the selected recovery connection could not
+  start. The controller returns to steady orange after five seconds.
+- **Steady red during a BOOT hold:** factory reset is pending; continue holding
+  for 20 seconds to cancel without resetting.
 
 Under **System**, the status LED can be dimmed or switched off. Select
 **Apply LED setting** to save the change.
@@ -148,7 +141,9 @@ give each installed controller a unique **Local name**, for example
 `http://foh-trigger.local/`
 
 Changing the uplink, local name, or IP settings restarts the controller. Keep a
-note of the new address before selecting **Save network and restart**.
+note of the new address before saving. Select **Save network and restart**
+once, then select **Tap again to save and restart**. The button changes to
+**Settings accepted - restarting** before the page disconnects.
 
 ![Network settings showing the operational connection, editable local name, addressing, and BOOT recovery method](assets/user-guide/07-network-and-recovery.png)
 
@@ -156,9 +151,13 @@ Wi-Fi does not automatically fall back to Ethernet if its configured network
 is unavailable. To recover access, hold **BOOT for 5–14 seconds** and release:
 
 - If **Wi-Fi AP** is selected under **Network → Advanced network settings**,
-  join `Advatek-Trigger-XXXXXX` and open `http://192.168.4.1/`.
+  join `Advatek-Trigger-XXXXXX`. A phone should open the captive setup page
+  automatically. If it does not, open `http://192.168.4.1/` in the phone's
+  full browser.
 - If **Direct Ethernet DHCP** is selected, unplug the normal LAN before holding
-  BOOT, then connect one computer directly and open `http://192.168.4.1/`.
+  BOOT. The controller restarts once and holds the LED white while recovery
+  starts. Wait for the LED to pulse cyan, then connect one computer directly
+  and open `http://192.168.4.1/`.
   Power the controller separately because a normal computer Ethernet port does
   not provide PoE.
 

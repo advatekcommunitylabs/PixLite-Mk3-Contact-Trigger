@@ -1,9 +1,9 @@
 # Getting started
 
 This guide takes a new Waveshare ESP32-S3-ETH from an empty board to one tested
-dry-contact input. The firmware is a community beta; review
-[the current hardware acceptance record](../HARDWARE-TESTS.md) before a live
-installation.
+dry-contact input. The firmware is a community beta. Follow this guide and
+evaluate the completed installation for its intended environment before live
+use.
 
 For the DIN-rail ESP32-S3-(POE)-ETH-8DI-8RO with built-in isolated inputs, use
 the separate [industrial 8DI getting-started guide](GETTING-STARTED-8DI-8RO.md)
@@ -129,11 +129,11 @@ address. A controller can also be entered manually by IP.
 7. Wait for the input status to show **Saved**.
 
 **Next scene** and **Previous scene** move through the selected PixLite Mk3's
-`.scn` list, skip playlists, and wrap at the ends. Choose Once or Loop just as
-you would for a directly selected scene.
+`.scn` list, skip playlists, and wrap at the ends. Choose Once or Loop for these
+actions.
 
-Use the action-test control before wiring a live switch. Intensity controls in
-normal operation are GPIO actions, not a general-purpose web slider.
+Use the action-test control before wiring a live switch. Normal-operation
+intensity controls use GPIO actions.
 
 ## 8. Wire and test
 
@@ -144,7 +144,7 @@ Assigned GPIO ───── dry contact ───── GND
 ```
 
 For the first bench test, GPIO16 is a convenient known-tested choice. Confirm
-Press and Release—or Latch On and Latch Off—while watching both the PixLite Mk3 and
+Press and Release, or Latch On and Latch Off, while watching the PixLite Mk3 and
 diagnostics. The status LED should pulse white once for each accepted,
 debounced edge.
 
@@ -160,6 +160,11 @@ interference.
 - Set a unique local name.
 - Keep Ethernet selected, or deliberately choose Wi-Fi and enter the
   operational network SSID and password. Uplinks never change automatically.
+  Ethernet and Wi-Fi DHCP/static addressing have been validated on this
+  target. The tested board maintained Wi-Fi at -64 to -74 dBm without an
+  optional external antenna in the bench location. RF conditions vary, so
+  installers should verify signal margin at the final position and fit a
+  manufacturer-compatible antenna when the installation requires it.
 - Add an optional interface password if the local network requires it.
 - Export a redacted backup.
 - Reboot and confirm the PixLite Mk3, GPIO mapping, hostname, and LED preference
@@ -167,6 +172,10 @@ interference.
 - Record device IPs, MAC addresses, firmware versions, and wiring labels.
 
 Backups deliberately omit Wi-Fi, PixLite Mk3, recovery, and interface passwords.
+
+If a `.local` address does not resolve, open the numeric device IP displayed at
+the top of the interface. This fallback is particularly important on Windows
+networks where mDNS is unavailable or unreliable.
 
 For normal operation after commissioning, continue with the short
 [software user guide](USER-GUIDE.md).
@@ -180,11 +189,14 @@ network settings**:
 
 - Hold **BOOT** for 5–14 seconds and release while the LED flashes to clear
   local authentication and start the selected 15-minute recovery connection.
-- **Wi-Fi recovery AP:** join `Advatek-Trigger-XXXXXX` and open
+- **Wi-Fi recovery AP:** join `Advatek-Trigger-XXXXXX`. The setup page should
+  open automatically. If it does not, use a full browser and open
   `http://192.168.4.1/`.
 - **Direct Ethernet:** disconnect the board from the network before holding
-  BOOT. After releasing BOOT, connect one computer directly to the board. Its
-  DHCP server assigns the computer an address; open `http://192.168.4.1/`.
+  BOOT. Releasing BOOT restarts the controller once into isolated recovery
+  mode. The LED stays white while recovery starts. Wait for it to pulse cyan,
+  then connect one computer directly to the board. Its DHCP server assigns the
+  computer an address; open `http://192.168.4.1/`.
   Power the board separately over USB-C or its supported DC input because a
   normal computer Ethernet port does not provide PoE.
   Firmware refuses this mode if Ethernet already has link, protecting the
@@ -193,7 +205,18 @@ network settings**:
   configuration.
 - Keep holding for 20 seconds to cancel the pending recovery/reset operation.
 
+The status LED alternates orange and white while authentication recovery is
+armed. After release it stays white while recovery starts, then pulses blue
+for Wi-Fi recovery or cyan for direct Ethernet recovery. A flashing red
+indication means the selected recovery
+connection could not start; normal steady orange returns after five seconds.
+
 Factory reset is destructive. Export a backup before testing it.
+
+Network changes use an in-page confirmation that also works in phone captive
+portals: select **Save network and restart**, then select **Tap again to save
+and restart**. Wait for **Settings accepted - restarting** before leaving the
+page.
 
 ## Common problems
 

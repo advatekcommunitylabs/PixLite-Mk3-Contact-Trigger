@@ -3,14 +3,15 @@
   <desc id="desc">Eight optional dry-contact switches connect between the shared isolated DGND terminal and DI1 through DI8. The adjacent input COM terminal, relay terminals, ESP32 ground and protective earth are not used.</desc>
   <style>
     .bg{fill:#202020}.panel{fill:#2c2c2e;stroke:#555;stroke-width:2}.term{fill:#f15a2c}.unused{fill:#58585a}
-    .wire{fill:none;stroke:#e6e3df;stroke-width:5}.pair{fill:none;stroke:#7abf45;stroke-width:4;stroke-dasharray:9 7}
-    .contact{stroke:#f15a2c;stroke-width:6;stroke-linecap:round}.title{font:700 32px Arial,sans-serif;fill:#fff}
+    .wire{fill:none;stroke:#e6e3df;stroke-width:5}
+    .blade{fill:none;stroke:#f15a2c;stroke-width:6;stroke-linecap:round}.node{fill:#2c2c2e;stroke:#f15a2c;stroke-width:5}
+    .title{font:700 32px Arial,sans-serif;fill:#fff}
     .sub{font:17px Arial,sans-serif;fill:#cbc8c5}.label{font:700 17px Arial,sans-serif;fill:#fff}
     .note{font:700 18px Arial,sans-serif;fill:#f15a2c}.ok{font:700 18px Arial,sans-serif;fill:#7abf45}
   </style>
   <rect class="bg" width="1200" height="760"/>
-  <text class="title" x="54" y="58">Passive switches: DGND to DI1–DI8</text>
-  <text class="sub" x="54" y="88">The PoE cable powers and networks the controller. Each field button uses only the isolated digital-input terminal group.</text>
+  <text class="title" x="54" y="58">Eight dry-contact switches: DGND to DI1–DI8</text>
+  <text class="sub" x="54" y="88">Each circuit symbol is a normally-open switch. Closing it connects one DI terminal to the shared isolated DGND return.</text>
 
   <rect class="panel" x="54" y="120" width="1092" height="500" rx="18"/>
   <text class="label" x="88" y="160">WAVESHARE ISOLATED INPUT TERMINALS</text>
@@ -34,20 +35,22 @@
   <path class="wire" d="M234 242 V540 H1080"/>
   <text class="ok" x="88" y="580">Shared DGND return</text>
 
-  <!-- Eight normally-open switches. Each closes a DI terminal to DGND. -->
+  <!--
+    Eight IEC-style normally-open switch symbols. The orange blade pivots from
+    the left contact and remains visibly separated from the right contact.
+  -->
   <g>
-    <path class="wire" d="M334 242 V372"/><line class="contact" x1="318" y1="372" x2="350" y2="372"/><line class="contact" x1="318" y1="420" x2="350" y2="420"/><line class="contact" x1="320" y1="372" x2="347" y2="410"/><path class="wire" d="M334 420 V540"/>
-    <path class="wire" d="M434 242 V372"/><line class="contact" x1="418" y1="372" x2="450" y2="372"/><line class="contact" x1="418" y1="420" x2="450" y2="420"/><line class="contact" x1="420" y1="372" x2="447" y2="410"/><path class="wire" d="M434 420 V540"/>
-    <path class="wire" d="M534 242 V372"/><line class="contact" x1="518" y1="372" x2="550" y2="372"/><line class="contact" x1="518" y1="420" x2="550" y2="420"/><line class="contact" x1="520" y1="372" x2="547" y2="410"/><path class="wire" d="M534 420 V540"/>
-    <path class="wire" d="M634 242 V372"/><line class="contact" x1="618" y1="372" x2="650" y2="372"/><line class="contact" x1="618" y1="420" x2="650" y2="420"/><line class="contact" x1="620" y1="372" x2="647" y2="410"/><path class="wire" d="M634 420 V540"/>
-    <path class="wire" d="M734 242 V372"/><line class="contact" x1="718" y1="372" x2="750" y2="372"/><line class="contact" x1="718" y1="420" x2="750" y2="420"/><line class="contact" x1="720" y1="372" x2="747" y2="410"/><path class="wire" d="M734 420 V540"/>
-    <path class="wire" d="M834 242 V372"/><line class="contact" x1="818" y1="372" x2="850" y2="372"/><line class="contact" x1="818" y1="420" x2="850" y2="420"/><line class="contact" x1="820" y1="372" x2="847" y2="410"/><path class="wire" d="M834 420 V540"/>
-    <path class="wire" d="M934 242 V372"/><line class="contact" x1="918" y1="372" x2="950" y2="372"/><line class="contact" x1="918" y1="420" x2="950" y2="420"/><line class="contact" x1="920" y1="372" x2="947" y2="410"/><path class="wire" d="M934 420 V540"/>
-    <path class="wire" d="M1034 242 V372"/><line class="contact" x1="1018" y1="372" x2="1050" y2="372"/><line class="contact" x1="1018" y1="420" x2="1050" y2="420"/><line class="contact" x1="1020" y1="372" x2="1047" y2="410"/><path class="wire" d="M1034 420 V540"/>
+    <path class="wire" d="M334 242 V360 H322"/><circle class="node" cx="322" cy="360" r="6"/><circle class="node" cx="350" cy="360" r="6"/><path class="blade" d="M322 360 L344 344"/><path class="wire" d="M350 360 V540"/>
+    <path class="wire" d="M434 242 V360 H422"/><circle class="node" cx="422" cy="360" r="6"/><circle class="node" cx="450" cy="360" r="6"/><path class="blade" d="M422 360 L444 344"/><path class="wire" d="M450 360 V540"/>
+    <path class="wire" d="M534 242 V360 H522"/><circle class="node" cx="522" cy="360" r="6"/><circle class="node" cx="550" cy="360" r="6"/><path class="blade" d="M522 360 L544 344"/><path class="wire" d="M550 360 V540"/>
+    <path class="wire" d="M634 242 V360 H622"/><circle class="node" cx="622" cy="360" r="6"/><circle class="node" cx="650" cy="360" r="6"/><path class="blade" d="M622 360 L644 344"/><path class="wire" d="M650 360 V540"/>
+    <path class="wire" d="M734 242 V360 H722"/><circle class="node" cx="722" cy="360" r="6"/><circle class="node" cx="750" cy="360" r="6"/><path class="blade" d="M722 360 L744 344"/><path class="wire" d="M750 360 V540"/>
+    <path class="wire" d="M834 242 V360 H822"/><circle class="node" cx="822" cy="360" r="6"/><circle class="node" cx="850" cy="360" r="6"/><path class="blade" d="M822 360 L844 344"/><path class="wire" d="M850 360 V540"/>
+    <path class="wire" d="M934 242 V360 H922"/><circle class="node" cx="922" cy="360" r="6"/><circle class="node" cx="950" cy="360" r="6"/><path class="blade" d="M922 360 L944 344"/><path class="wire" d="M950 360 V540"/>
+    <path class="wire" d="M1034 242 V360 H1022"/><circle class="node" cx="1022" cy="360" r="6"/><circle class="node" cx="1050" cy="360" r="6"/><path class="blade" d="M1022 360 L1044 344"/><path class="wire" d="M1050 360 V540"/>
   </g>
 
-  <path class="pair" d="M300 274 C270 310 268 474 302 518"/>
-  <text class="ok" x="88" y="655">Cable tip: use one twisted pair per remote switch — one conductor to DIx, the other to DGND.</text>
+  <text class="ok" x="88" y="655">Longer/noisy run: pair each DIx with DGND where practical. Short multicore cable is also suitable.</text>
   <text class="note" x="88" y="690">Leave input COM unused. Do not use relay COM, ESP32 GND, protective earth, or external voltage for passive contacts.</text>
   <text class="sub" x="88" y="722">The eight relay terminals on the opposite side are unused by Advatek Trigger.</text>
 </svg>

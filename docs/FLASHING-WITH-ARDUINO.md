@@ -6,8 +6,8 @@ download the folder for your hardware, open its `.ino` file, select the options
 shown below, and choose **Upload**.
 
 > **Choose the exact hardware download.** The two boards use different
-> Ethernet and input pins. Uploading the wrong build may compile successfully
-> but will not operate the hardware correctly.
+> Ethernet and input pins. The wrong build may compile successfully and fail
+> when uploaded to the hardware.
 
 ## Before you start
 
@@ -23,7 +23,8 @@ You need:
 | ESP32-S3-ETH or ESP32-S3-POE-ETH Pico-header development board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) |
 | ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) |
 
-PoE changes how the board is powered, not which firmware ZIP it uses.
+PoE changes only the power source. Each standard-Ethernet and PoE pair uses the
+same firmware ZIP.
 The screenshots below use the Pico-header development-board download. The
 industrial download has a longer filename, but the Arduino settings and upload
 controls are the same.
@@ -54,9 +55,9 @@ readable modular source is maintained in the repository, while the generated
 file makes releases easy to flash.
 
 On Windows, extract near the top of a normal user folder, such as
-`Documents\AdvatekTrigger`, rather than several folders deep. Arduino's
-toolchain can fail without a useful error when the industrial board's longer
-filename is placed inside an excessively long path.
+`Documents\AdvatekTrigger`. Arduino's toolchain can fail without a useful error
+when the industrial board's longer filename is placed inside an excessively
+long path.
 
 ![Generated Advatek Trigger sketch open in Arduino IDE](assets/arduino-flash-guide/01-open-sketch.png)
 

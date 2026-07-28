@@ -11,13 +11,11 @@ See the
 [official Waveshare product page](https://www.waveshare.com/esp32-s3-eth-8di-8ro.htm?sku=30838)
 for the manufacturer's complete electrical specification.
 
-![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front.jpg)
+![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front-cutout.png)
 
-The PoE target has passed USB flashing, Ethernet, PixLite Mk3 discovery,
-complete DI1–DI8 contact-input sweeps, and 25 consecutive PoE-only cold boots.
-Full release acceptance still requires the recovery, Wi-Fi, static-addressing,
-and longer-duration checks listed in
-[HARDWARE-TESTS.md](../HARDWARE-TESTS.md).
+This is an Advatek Labs community-beta installation guide. Use the exact
+board-specific download, follow the manufacturer's electrical specification,
+and evaluate the completed installation for its intended environment.
 
 PixLite Mk3 SHOWTime scene and playlist playback also requires a suitable
 industrial-grade microSD installed in the PixLite Mk3. The industrial ESP32
@@ -40,8 +38,8 @@ ESP32-S3 board settings and upload process with real Arduino IDE screenshots.
    unused.
 4. **BOOT and RESET:** use these only if the board does not enter download mode
    automatically.
-5. **Alternative DC power / RS485:** the board may be powered from its 7–36 V
-   DC input instead of PoE. RS485 is not used by Advatek Trigger.
+5. **Other terminal group:** the labelled 7–36 V input and RS485 terminals are
+   manufacturer features. They are not used or covered by this project guide.
 
 The eight large relay-output terminal groups on the opposite edge are also
 unused by Advatek Trigger.
@@ -77,11 +75,10 @@ Install `esp32` by Espressif Systems version **3.3.10**, select
 
 Use a USB data connection for the first controlled upload:
 
-1. Disconnect the PoE cable and any 7–36 V supply. Leave the field-input and
-   relay terminals unwired.
+1. Disconnect the PoE cable and any external DC supply. Leave the field-input
+   and relay terminals unwired.
 2. Connect a **data-capable USB-C cable** from the board's USB socket to the
-   computer. A charge-only cable will power the board but will not create a
-   serial port.
+   computer. A charge-only cable supplies power and provides no serial port.
 3. In Arduino IDE, select the new COM port on Windows or
    `/dev/cu.usbmodem...` port on macOS.
 4. Confirm **ESP32S3 Dev Module** and every build option in the table above.
@@ -97,17 +94,14 @@ board with two power sources. If automatic download mode fails:
 
 ## Choose operational power and connect Ethernet
 
-- Disconnect USB-C after the successful first upload, then choose one normal
-  operating power method:
-  - **PoE:** connect the RJ45 socket to an IEEE 802.3af PoE switch or suitable
-    802.3af injector. This carries power and network data in one cable.
-  - **7–36 V DC:** connect a suitable regulated DC supply to the labeled
-    `7–36V` positive and negative screw terminals, observing the polarity
-    printed on the enclosure. Connect RJ45 separately to a normal Ethernet
-    switch or router for network data.
-- Do not intentionally power the board from PoE, 7–36 V and USB-C at the same
-  time. The first hardware test will verify source-change behaviour before the
-  project recommends any dual-connected service arrangement.
+- For the PoE model covered by this guide, disconnect USB-C after the successful
+  first upload, then connect the RJ45 socket to an IEEE 802.3af PoE switch or
+  suitable 802.3af injector. This carries power and network data in one cable.
+- The board also exposes manufacturer-provided external-DC terminals. Selecting,
+  wiring, and validating that power arrangement is outside this project's v1
+  scope; follow Waveshare's electrical documentation if evaluating it.
+- Do not intentionally combine power sources unless the manufacturer's
+  documentation explicitly permits the proposed arrangement.
 - Connect the PixLite Mk3 and computer to the same LAN. The computer can use
   another switch/router port or Wi-Fi, provided it remains on the same local
   network.
@@ -118,23 +112,40 @@ board with two power sources. If automatic download mode fails:
 
 Waveshare's example switch is illustrative only; any correctly configured
 IEEE 802.3af PoE switch or injector with Ethernet data passthrough is suitable.
-The alternative 7–36 V input is useful when a suitable local DC supply already
-exists or PoE is unavailable.
 
 At a healthy boot, Serial Monitor at `115200` reports 16 MB flash, 8 MB PSRAM,
 W5500 initialization, and the DHCP address. Open `http://advatrigger.local/`,
 or the displayed numeric address. Ethernet is the commissioning connection;
 Wi-Fi Station can be selected later as the operational uplink.
 
+Ethernet DHCP/static and Wi-Fi Station DHCP/static were validated on the PoE
+industrial-board sample using its supplied antenna. If the `.local` address
+does not resolve after switching, open the numeric address reported over USB
+Serial or shown by the router.
+
 Wi-Fi and Ethernet are explicit operating modes; failed Wi-Fi does not
 automatically fall back to the wired port. The SPA selects the BOOT recovery
 connection. Hold BOOT for 5–14 seconds and release, then either join the
-temporary `Advatek-Trigger-XXXXXX` Wi-Fi network or use direct Ethernet. For
+temporary `Advatek-Trigger-XXXXXX` Wi-Fi network or use direct Ethernet. A
+phone should open the Wi-Fi setup page automatically; if it does not, open
+`http://192.168.4.1/` in its full browser. Select **Save network and restart**,
+then **Tap again to save and restart**. For
 direct-Ethernet recovery, unplug the installed network before holding BOOT and
-only then connect one computer directly. A normal computer Ethernet port will
-not provide PoE, so power the controller from USB-C or 7–36 V during this
-direct-cable recovery. Open `http://192.168.4.1/`; recovery expires after
-15 minutes.
+release it while the LED alternates orange and white. The controller restarts
+once into isolated recovery mode and holds the LED white while it starts. Wait
+for the LED to pulse cyan and only then connect one computer directly. A
+normal computer Ethernet port will not
+provide PoE, so power the controller from USB-C during this direct-cable
+recovery. Open `http://192.168.4.1/`; recovery expires after 15 minutes.
+To leave direct-Ethernet recovery early, reconnect the normal LAN and
+power-cycle the enclosed controller; access to the internal RESET button is
+not required.
+
+The status LED alternates orange and white while authentication recovery is
+armed. After release it stays white while recovery starts, then pulses blue
+for Wi-Fi recovery or cyan for direct Ethernet recovery. A flashing red
+indication means the selected recovery
+connection could not start; normal steady orange returns after five seconds.
 
 ## Isolated input terminals
 
@@ -157,18 +168,19 @@ For the passive buttons and contact closures used by this project:
 
 1. Remove PoE and USB power before changing terminal wiring.
 2. Leave the first input terminal, **COM**, empty. It is used only by
-   Waveshare's active/wet-input arrangements.
+   Waveshare's active/wet-input arrangements, which are outside this project's
+   contact-closure scope.
 3. Connect one side of the dry contact to the board's isolated **DGND**
    terminal.
 4. Connect the other side to the chosen **DI1–DI8** terminal.
-5. For a switch several metres away, carry `DGND` and its `DIx` signal together
-   as one twisted pair. The two conductors of that pair go to the two sides of
-   the switch.
+5. For a switch several metres away, preferably carry `DGND` and its `DIx`
+   signal together as one twisted pair. The two conductors of that pair go to
+   the two sides of the switch. Ordinary low-voltage multicore cable is also
+   suitable for short, quiet installations.
 6. If several switch cables need a DGND connection, use a suitable insulated
-   distribution terminal instead of forcing multiple conductors into one screw
-   terminal.
+   distribution terminal. Fit one conductor to each screw terminal.
 
-![Eight optional dry contacts wired between isolated DGND and DI1 through DI8](assets/waveshare-official/poe-dry-contact-wiring.svg)
+![Eight optional dry contacts wired between isolated DGND and DI1 through DI8](assets/waveshare-official/poe-dry-contact-wiring.png)
 
 The input terminals read `COM`, `DGND`, `DI1`, `DI2` … from left to right.
 For a passive contact, the second screw (`DGND`) is the shared return; the first
@@ -189,18 +201,3 @@ debounce.
 
 The current firmware deliberately leaves the eight relays, RS485, buzzer, and
 TF-card slot inactive. No extra Arduino libraries are required.
-
-## First acceptance checks
-
-1. Confirm the boot banner names `waveshare-esp32-s3-eth-8di-8ro`.
-2. Confirm 16 MB flash, 8 MB PSRAM, Ethernet link, and DHCP.
-3. Verify the orange RGB LED on GPIO38 and BOOT recovery on GPIO0.
-4. Add one PixLite Mk3 and confirm its media list.
-5. Configure DI1 with 100 ms debounce and a harmless test action.
-6. Operate DI1 as a passive dry contact and confirm one LED flash per edge.
-7. Repeat for DI2–DI8 to verify the wiring and terminals in this installation.
-
-Do not connect loads to the relay terminals for this bring-up.
-
-After commissioning, use the short [software user guide](USER-GUIDE.md) for
-normal operation, input editing, backups, and diagnostics.

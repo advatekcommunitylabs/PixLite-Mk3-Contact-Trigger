@@ -30,8 +30,8 @@ TLS. JSON is UTF-8. When UI protection is enabled, send the password in
 | POST | `/factory-reset` | Erase configuration; body must contain `FACTORY RESET` |
 
 The network object uses `recoveryConnection: "wifi"` or `"ethernet"`.
-Ethernet recovery is a 15-minute DHCP service at `192.168.4.1` and is refused
-when the W5500 already has link.
+Ethernet recovery restarts once into a 15-minute DHCP service at
+`192.168.4.1` and is refused when the W5500 already has link.
 
 `/connect` accepts `targetId`, `name`, `mac`, `host`, `username` (`oper` or
 explicit `admin`) and `password`. A known ID, MAC, or host updates an existing
@@ -98,6 +98,8 @@ letters, numbers and interior hyphens; the `.local` suffix is added by clients.
 internal block, total/free PSRAM, network-task stack watermark, reset reason,
 and uptime. `/state.ethernet` reports W5500 initialization attempts, link,
 DHCP/static selection, link speed, duplex, and the last initialization failure.
+`/state.wifi` reports the Arduino Station status/code, last disconnect
+reason/code, and RSSI in dBm while connected. Credentials are never returned.
 Both `/state.inputs` and `/inputs` include `active` and the monotonically
 increasing `eventSequence`. Clients can use the sequence difference to retain
 make and break events that occur between HTTP polls.

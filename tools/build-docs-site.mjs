@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {
   copyFileSync,
   cpSync,
@@ -16,15 +17,35 @@ const checkOnly = process.argv.includes('--check');
 const output = resolve(root, checkOnly ? '.build/docs-site-check' : 'site');
 const repositoryUrl =
   'https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger';
+const docsCssSource = resolve(root, 'docs-site/docs.css');
+const docsJsSource = resolve(root, 'docs-site/docs.js');
+const docsAssetVersion = createHash('sha256')
+  .update(readFileSync(docsCssSource))
+  .update(readFileSync(docsJsSource))
+  .digest('hex')
+  .slice(0, 10);
 
 // The manifest is the documentation site's information architecture. Adding a
 // guide here publishes the existing Markdown without creating a second source
 // of truth for its content.
 const groups = [
   {
+    label: 'Project',
+    pages: [
+      ['README.md', 'index', 'Project overview',
+        'Project scope, supported hardware, downloads, and support status.'],
+      ['CONTRIBUTING.md', 'contributing', 'Contributing',
+        'Development workflow and contribution requirements.'],
+      ['SUPPORT.md', 'support', 'Support',
+        'Collect diagnostics and report reproducible problems.'],
+      ['SECURITY.md', 'security', 'Security',
+        'Deployment boundaries and private vulnerability reporting.'],
+    ],
+  },
+  {
     label: 'Start here',
     pages: [
-      ['docs/SITE-HOME.md', 'index', 'Guide home',
+      ['docs/SITE-HOME.md', 'guide-home', 'Guide home',
         'Choose the correct route for installing, commissioning, or operating the controller.'],
       ['docs/USER-GUIDE.md', 'user-guide', 'Software user guide',
         'Normal operation of a flashed and commissioned controller.'],
@@ -47,10 +68,10 @@ const groups = [
       ['WIRING.md', 'wiring', 'Wiring guide',
         'Connect dry contacts to the supported inputs.'],
       ['docs/PROTECTED-CONTACT-INPUTS.md', 'protected-inputs',
-        'Protected contact inputs',
-        'Add isolation and protection for field wiring.'],
-      ['HARDWARE-TESTS.md', 'hardware-tests', 'Hardware acceptance',
-        'Recorded validation status and outstanding release gates.'],
+        'Isolated input modules',
+        'Select a complete off-the-shelf module for field wiring.'],
+      ['HARDWARE-TESTS.md', 'hardware-tests', 'Hardware change log',
+        'Post-public validation for hardware-affecting modifications.'],
     ],
   },
   {
@@ -62,21 +83,6 @@ const groups = [
         'Firmware, board-profile, task, storage, and web design.'],
       ['PORTING.md', 'porting', 'Board porting',
         'Add another ESP32-family target without forking shared logic.'],
-    ],
-  },
-  {
-    label: 'Project',
-    pages: [
-      ['README.md', 'project-overview', 'Project overview',
-        'Repository quick start, scope, and support status.'],
-      ['PROJECT-SUMMARY.md', 'project-summary', 'Project summary',
-        'Advatek Labs release and deployment overview.'],
-      ['CONTRIBUTING.md', 'contributing', 'Contributing',
-        'Development workflow and contribution requirements.'],
-      ['SUPPORT.md', 'support', 'Support',
-        'Collect diagnostics and report reproducible problems.'],
-      ['SECURITY.md', 'security', 'Security',
-        'Deployment boundaries and private vulnerability reporting.'],
     ],
   },
 ];
@@ -257,7 +263,13 @@ function renderMarkdown(markdown, page) {
   };
 
   const marked = new Marked({gfm: true, renderer});
-  return marked.parse(markdown);
+  // Marked emits task-list checkboxes but does not add a class to the list
+  // item. Add one here so older embedded browsers can suppress the ordinary
+  // bullet without relying on the newer :has() selector.
+  return marked.parse(markdown).replace(
+    /<li><input disabled="" type="checkbox"/g,
+    '<li class="task-list-item"><input disabled="" type="checkbox"',
+  );
 }
 
 function renderPage(page) {
@@ -287,11 +299,12 @@ function renderPage(page) {
     <meta name="theme-color" content="#202020">
     <meta name="description" content="${escapeHtml(page.description)}">
     <title>${escapeHtml(title)} · Advatek Labs</title>
-    <link rel="stylesheet" href="assets/docs.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cpath fill='%23f15a2c' d='M0 0v1l1-.5z'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/docs.css?v=${docsAssetVersion}">
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Advatek Labs Contact Trigger guide home">
+      <a class="brand" href="index.html" aria-label="Advatek Labs Contact Trigger project overview">
         <span><b>ADVATEK LABS</b><small>PixLite Mk3 Contact Trigger</small></span>
       </a>
       <span class="top-context">${escapeHtml(page.group)} · Community beta</span>
@@ -318,7 +331,7 @@ function renderPage(page) {
       </main>
       ${toc}
     </div>
-    <script src="assets/docs.js"></script>
+    <script src="assets/docs.js?v=${docsAssetVersion}"></script>
   </body>
 </html>`;
 
@@ -332,8 +345,8 @@ if (!pathInsideWorkspace(output)) {
 }
 rmSync(output, {recursive: true, force: true});
 mkdirSync(join(output, 'assets'), {recursive: true});
-cpSync(resolve(root, 'docs-site/docs.css'), join(output, 'assets/docs.css'));
-cpSync(resolve(root, 'docs-site/docs.js'), join(output, 'assets/docs.js'));
+cpSync(docsCssSource, join(output, 'assets/docs.css'));
+cpSync(docsJsSource, join(output, 'assets/docs.js'));
 
 for (const page of pages) renderPage(page);
 writeFileSync(join(output, '.nojekyll'), '', 'utf8');

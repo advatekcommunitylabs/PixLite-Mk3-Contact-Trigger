@@ -9,7 +9,15 @@ const css = await readFile(resolve(dist, 'app.css'), 'utf8');
 const javascript = await readFile(resolve(dist, 'app.js'), 'utf8');
 // Vite minifies scripts and styles but preserves template indentation. Remove
 // whitespace between HTML tags before embedding to protect the flash budget.
-html = html.replace(/>\s+</g, '><').trim()
+html = html
+  .replace(/>\s+</g, '><')
+  // HTML void elements do not need XHTML-style closing slashes. Removing them
+  // here keeps source readable while saving a few embedded-flash bytes.
+  .replace(/\s*\/>/g, '>')
+  // Quotes are optional around these conservative, whitespace-free HTML
+  // attribute values. Leave paths, data URLs and prose attributes untouched.
+  .replace(/="([A-Za-z0-9._:-]+)"/g, '=$1')
+  .trim()
   // Vite may reorder attributes between versions, so match the fixed asset name
   // instead of depending on a particular serialization of the element.
   .replace(/<link[^>]*app\.css[^>]*>/, () => `<style>${css}</style>`)

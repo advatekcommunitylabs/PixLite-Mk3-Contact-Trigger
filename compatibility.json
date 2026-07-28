@@ -9,7 +9,7 @@
   "controllers": [
     {
       "family": "PixLite Mk3",
-      "status": "bench-validated, full-hardware-acceptance-pending"
+      "status": "community-beta"
     }
   ],
   "boards": [
@@ -17,14 +17,22 @@
       "id": "waveshare-esp32-s3-eth",
       "profileVersion": "1.2.0",
       "arduinoEsp32": "3.3.10",
-      "status": "bench-validated, full-hardware-acceptance-pending"
+      "status": "community-beta",
+      "ethernetStatus": "dhcp-and-static-tested",
+      "wifiStatus": "dhcp-and-static-tested-without-optional-external-antenna",
+      "bootRecoveryStatus": "wifi-ap-and-direct-ethernet-tested",
+      "inputStatus": "all-eight-approved-gpios-and-boot-held-input-tested"
     },
     {
       "id": "waveshare-esp32-s3-eth-8di-8ro",
       "profileVersion": "1.1.0",
       "arduinoEsp32": "3.3.10",
-      "status": "physical-bring-up-passed, extended-acceptance-pending",
-      "inputs": "8 isolated digital inputs"
+      "status": "community-beta",
+      "inputs": "8 isolated digital inputs",
+      "ethernetStatus": "dhcp-and-static-tested",
+      "wifiStatus": "dhcp-and-static-tested-with-supplied-antenna",
+      "bootRecoveryStatus": "wifi-ap-and-direct-ethernet-tested",
+      "inputStatus": "all-eight-isolated-inputs-tested"
     }
   ]
 }

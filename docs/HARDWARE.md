@@ -1,11 +1,12 @@
 # Hardware and wiring guide
 
-This page is the short hardware companion to the
-[getting-started guide](GETTING-STARTED.md). It covers the currently supported
-Waveshare boards, the parts needed for a first installation, and their project
-pinouts. Read the more detailed [wiring notes](../WIRING.md) before soldering.
+This page covers the supported Waveshare boards, the equipment needed for a
+first installation, and the project pinouts. Read the
+[board-specific wiring notes](../WIRING.md) before connecting hardware.
 
-## Supported controller
+## Supported controllers
+
+### Pico-header development board
 
 Use the **Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH** based on ESP32-S3R8. The
 PoE version is the same controller with a power-only daughterboard, so both use
@@ -15,11 +16,10 @@ the same firmware download.
 - [Waveshare setup and reference wiki](https://www.waveshare.com/wiki/ESP32-S3-ETH)
 - [Official schematic](https://files.waveshare.com/wiki/ESP32-S3-ETH/ESP32-S3-ETH-Schematic.pdf)
 
-Pre-soldered headers avoid the need to solder both 20-pin rows. A kit with the
-Waveshare PoE module permits a one-cable network and power installation. Camera
-hardware is not used by this project.
+A kit with fitted headers and the Waveshare PoE module permits a one-cable
+network and power installation. Camera hardware is not used by this project.
 
-### Industrial isolated-input option
+### Industrial isolated-input board
 
 The **Waveshare ESP32-S3-ETH-8DI-8RO** and
 **ESP32-S3-POE-ETH-8DI-8RO** use a second board profile and one shared
@@ -30,68 +30,67 @@ digital inputs, a rail enclosure, 16 MB flash, 8 MB PSRAM, and W5500 Ethernet.
 - [Official Waveshare wiki](https://www.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO)
 - [Illustrated industrial PoE setup and wiring guide](GETTING-STARTED-8DI-8RO.md)
 
-Both versions accept their labeled 7–36 V DC input. The PoE version additionally
-accepts IEEE 802.3af through RJ45, allowing power and data in one cable. Both
-use the same sketch because the power option does not change the ESP32 pin map.
+The PoE version accepts IEEE 802.3af through RJ45. Both products also expose
+manufacturer-provided external-DC terminals, but external-DC selection and
+wiring are outside this project's v1 installation scope. The firmware download
+is unchanged by the product's power option.
 
 ![Waveshare industrial board input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
 
-Use the isolated `DI1`–`DI8` screw terminals. Do not add the external
-optocoupler assembly intended for the Pico-header board, and do not connect
-field wiring to ESP32 GPIO headers.
+Use the isolated `DI1`–`DI8` screw terminals. Do not add an external
+optocoupler module to this board, and do not connect field switches to its
+ESP32 GPIO headers.
 
-## First-build shopping list
+## First-installation equipment
 
 | Item | Why it is needed |
 | --- | --- |
-| Waveshare ESP32-S3-ETH with PoE module | Runs the firmware and receives network plus power |
-| IEEE 802.3af PoE switch or injector | Powers the Waveshare PoE module |
-| Ethernet patch cable | Connects power and the local network |
+| One supported Waveshare controller | Runs the firmware |
+| Correct board-specific Arduino download | Matches the selected input hardware |
+| IEEE 802.3af PoE switch or injector when using PoE | Provides network and power |
+| Ethernet patch cable | Connects the controller to the local network |
 | Data-capable USB-C cable | Required for the first firmware upload and recovery |
 | PixLite Mk3 controller | Receives scene, playlist, live/test, and intensity actions |
 | Industrial-grade microSD for the PixLite Mk3 | Required by PixLite Mk3 SHOWTime for scene and playlist storage/playback |
-| Volt-free push button, maintained switch, or relay contact | The physical trigger |
-| Twisted-pair hookup cable | One pair per contact for short field runs |
-| Enclosure, stripboard, headers, and terminal blocks | Keeps wiring secure and serviceable |
+| Volt-free push button, maintained switch, or relay contact | Provides the physical trigger |
+| Low-voltage control cable | Connects remote contacts to the selected input hardware |
+| Enclosure, suitable connectors, and strain relief | Keeps wiring secure and serviceable |
+| Documented off-the-shelf isolated input module | Recommended when Pico-header-board switches leave the enclosure |
 
-The ESP32 firmware and web interface need no camera, display, or card in the
-ESP32 board's own TF/microSD slot. That unused slot is separate from the
-industrial-grade microSD required inside the PixLite Mk3 for SHOWTime. Begin
-the first upload and electrical checks on USB power, then move to PoE.
+The ESP32 board's own TF/microSD slot is unused. It is separate from the
+industrial-grade microSD required inside the PixLite Mk3 for SHOWTime.
+
+Twisted pair is not mandatory for a short, quiet installation. Where practical,
+use one pair per remote switch: one conductor carries the input signal and the
+other its matching return. This can reduce noise pickup on longer runs. A short
+multicore control cable may use a suitable shared return when permitted by the
+selected input hardware and installation requirements.
+
 See the
 [official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
 for the PixLite Mk3 requirement.
 
-## Which button connection should I build?
+## Choose the input approach
 
-The firmware works with either connection below. The choice is about electrical
-protection, not software:
+For wiring outside an enclosure, use complete, documented hardware:
 
-| Installation | Suitable connection to evaluate |
+| Installation | Suitable approach |
 | --- | --- |
-| Temporary bench test or a button inside the same enclosure | Bare dry contact from GPIO to GND |
-| Short, fixed indoor cable entirely belonging to this controller | Protected direct input with two resistors, capacitor, clamps, and TVS |
-| Small immersive event, public interaction, movable buttons, or a few metres of cable | **Group-isolated optocoupler input board** |
-| Outdoor cable, another building, 12/24 V signals, or unknown equipment | Certified industrial isolated input—not this stripboard design |
+| Temporary bench test or a button fully inside the controller enclosure | Direct volt-free contact from an approved GPIO to GND |
+| Short field cable, public button, portable prop, or small immersive event | **Supported industrial 8DI board or documented off-the-shelf isolated input module** |
+| Existing 12/24 V controls, outdoor cable, another building, or unknown equipment | Certified industrial digital-input equipment selected and installed by a suitably qualified integrator |
 
-For small immersive events, the **group-isolated route** is the more protected
-of the two community prototype arrangements. It keeps cable handling, static
-discharge, and field ground faults away from the ESP32, but isolates all field
-buttons as one group rather than isolating each button from every other
-button.
+The [off-the-shelf isolated-input guide](PROTECTED-CONTACT-INPUTS.md) explains
+how to select a complete module without asking users to design or assemble a
+PCB.
 
-Editable public-guide assets are available as
-[diagrams.net masters and SVG/PNG exports](assets/hardware-schematics/README.md).
-
-## Project pinout
+## Pico-header project pinout
 
 The drawing is viewed from the component side, with USB-C and the PoE module at
-the top. Orange pins are the only GPIOs offered by this board profile. The
-nearby dark pins are ground.
+the top. Orange pins are the only GPIOs offered by this board profile. Nearby
+dark pins are ground.
 
 ![Waveshare ESP32-S3-ETH project pinout](waveshare-esp32-s3-eth-project-pinout.svg)
-
-The eight available contact GPIOs are:
 
 | Left header | Right header |
 | --- | --- |
@@ -102,24 +101,19 @@ Every configured input must use a different GPIO. Pins not highlighted in the
 drawing are unavailable to this project even if they appear on the board.
 
 The drawing is a project-specific simplification based on the Waveshare
-schematic and interface definition. Use the official schematic when designing
-another expansion board.
+schematic and interface definition. Use the official schematic when developing
+another board profile.
 
-## A safe first bench contact
+## Direct same-enclosure contact
 
-No external resistor is required for a temporary bench test because the
+No external interface is required for a temporary bench test because the
 firmware enables the ESP32's internal pull-up. Turn off all power and connect a
-genuinely volt-free switch between one approved GPIO and a nearby GND:
+genuinely volt-free switch between one approved GPIO and a nearby GND.
 
-```text
-GPIO16 ─────────── push button ─────────── GND
-```
+![Up to eight direct dry-contact buttons connected to the Waveshare ESP32-S3-ETH](assets/hardware-schematics/01-direct-buttons.svg)
 
-![Eight direct dry-contact buttons connected to the Waveshare ESP32-S3-ETH](assets/hardware-schematics/01-direct-buttons.svg)
-
-The firmware provides the pull-up. Closing the switch pulls the input low. Do
-not connect 5 V, 12 V, 24 V, a PoE conductor, or another device's powered
-output to the GPIO.
+Closing the switch pulls the input low. Never connect 5 V, 12 V, 24 V, a PoE
+conductor, or another device's powered output to a GPIO.
 
 After uploading the firmware:
 
@@ -127,151 +121,47 @@ After uploading the firmware:
 2. Select **Add input**.
 3. Choose the wired GPIO.
 4. Leave debounce at its 100 ms default.
-5. Assign a harmless PixLite Mk3 test action.
-6. Save, then operate the contact.
+5. Assign a harmless PixLite Mk3 action.
+6. Operate the contact.
 
-The underside LED stays Advatek orange and flashes white for every accepted,
-debounced edge. If one physical operation produces two flashes, increase that
-input's debounce in the web interface.
+The status LED flashes white for every accepted, debounced edge. If one
+physical operation produces two flashes, increase that input's debounce in the
+web interface.
 
-Do not use the bare connection for a public-facing button cable. The internal
-pull-up and software debounce provide logic behavior, not ESD or cable-fault
-protection.
+Use this direct connection only for bench tests or buttons inside the controller
+enclosure. Internal pull-ups and software debounce provide logic behaviour.
+They do not provide cable-fault, transient, or surge protection.
 
-## Protected direct button wiring
+## Off-the-shelf isolated input module
 
-This non-isolated circuit is a reasonable compact option when the buttons,
-cable, and controller are all part of one fixed indoor prop. Build one channel
-per button at the controller end:
+Use a commercially assembled module when a Pico-header-board button cable
+leaves the enclosure.
 
-```text
-3V3 ─────────────── 10 kΩ ────────┐
-                                   ├──── GPIO
-GND ─────────────── 100 nF ───────┤
-                                   │
-button cable signal ── 1 kΩ ──────┘
-button cable return ──────────────────── GND
+![Illustrative off-the-shelf eight-channel optocoupler module](assets/hardware-schematics/off-the-shelf-8-channel-optocoupler.png)
 
-At the cable terminal: SA5.0CA TVS between signal and return.
-At the GPIO: 1N5817 clamps to 3V3 and GND as shown in the detailed guide.
-```
+This image illustrates the module category. It provides no supplier
+recommendation or wiring reference. Terminal layouts vary. Select a module whose manufacturer
+explicitly documents passive dry-contact inputs, galvanic isolation where
+required, and 3.3 V-compatible ESP32 outputs.
 
-The external 10 kΩ resistor gives the open input a stronger, defined pull-up;
-the 1 kΩ resistor limits fault and clamp current; and the 100 nF capacitor
-filters short electrical spikes. These parts supplement the firmware's 100 ms
-default debounce.
-
-Here, **twisted pair** means two insulated conductors twisted around each
-other inside one cable. For each button, one conductor carries its assigned
-GPIO signal and the other is that button's GND return. Yes: the GPIO wire and
-GND-return wire are the pair in the same two-core cable. It does not mean
-twisting several GND wires together.
-
-Use one of those pairs per button. Returns may meet at the controller GND, but
-do not use one long shared return conductor between several button boxes. Keep these cables away
-from mains leads, loudspeaker cables, motors, and switched loads. Add strain
-relief and a labelled, pluggable terminal for every pair.
-
-This route still shares ESP32 ground with the cable. If the buttons will be
-handled by the public, moved between events, or placed a few metres away, use
-the isolated route below instead.
-
-![Protected direct-input channel](assets/hardware-schematics/02-protected-direct-input.svg)
-
-## Medium-protection isolated input board
-
-For the planned PoE-powered stripboard build and a few metres of switch cable,
-use the group-isolated input arrangement in
-[Protected contact inputs](PROTECTED-CONTACT-INPUTS.md). It keeps the field
-switch common separate from ESP32 ground.
-
-The prototype parts used during development are listed only as reproducible
-examples:
-
-| Part | Example UK source |
-| --- | --- |
-| Eight-channel PC817 optocoupler module | [Amazon UK listing](https://www.amazon.co.uk/dp/B08LVXX6MV) |
-| B0505S-1W-class isolated 5 V-to-5 V converter | [Amazon UK listing](https://www.amazon.co.uk/dp/B09F3SR6W7) |
-| 10 µF electrolytic capacitors | [Amazon UK listing](https://www.amazon.co.uk/dp/B07PKR4D31) |
-| 100 nF ceramic capacitors | [Amazon UK listing](https://www.amazon.co.uk/dp/B0BPWPP6DZ) |
-| 220 Ω, 0.5 W preload resistor | [Amazon UK search](https://www.amazon.co.uk/s?k=220+ohm+0.5W+through+hole+resistor) |
-
-These links are not product or supplier endorsements. Listings and module
-circuitry can change without changing the product photo. Equivalent parts that
-meet the documented electrical requirements may be used. Before connecting
-the ESP32, verify the module terminal diagram,
-converter pinout, isolated output voltage, and that each logic output is no
-higher than 3.3 V. The linked PC817 board must be configured for a 5 V
-active-low input and 3.3 V output; do not use a 24 V PNP arrangement.
-
-One isolated converter may supply all eight optocoupler input channels as a
-group:
-
-```text
-Waveshare VSYS/5V ── B0505S input ──┐
-Waveshare GND ────── B0505S input ──┘
-
-B0505S isolated 5V ── optocoupler input VCC
-B0505S isolated 0V ── ISO COM and every switch return
-
-optocoupler output VCC ── Waveshare 3V3
-optocoupler output GND ── Waveshare GND
-OUT1…OUT8 ─────────────── selected GPIOs
-```
-
-Never join `ISO COM` to Waveshare GND. Fit the 100 nF and 10 µF capacitors plus
-the preload resistor exactly as described in the detailed protected-input
-guide. Power and meter-test the circuit over USB before attaching PoE.
-
-Run one twisted pair to each button: one conductor is that channel's isolated
-input and the other returns to `ISO COM`. All returns terminate at the
-controller-side `ISO COM`; they remain completely separate from Waveshare GND.
-The exact input polarity depends on the optocoupler board's NPN/PNP selector,
-so follow its terminal markings and prove one channel with a meter before
-wiring the remaining buttons.
-
-On the ESP32 side, power the optocoupler outputs from **3.3 V only**, connect
-their output ground to Waveshare GND, and verify every open output is at or
-below 3.3 V before connecting it to a GPIO. If the module does not provide
-3.3 V output pull-ups, add one 10 kΩ pull-up from each output to 3.3 V.
-
-### Example group-isolated event arrangement
-
-![Group-isolated event-button arrangement](assets/hardware-schematics/03-isolated-event-buttons.svg)
-
-```text
-PoE Ethernet
-     │
-Waveshare ESP32-S3-ETH
-     │ 5 V + GND
-isolated B0505S converter
-     │ isolated 5 V + ISO COM
-8-channel optocoupler inputs
-     ├── twisted pair ── Button 1
-     ├── twisted pair ── Button 2
-     ├── twisted pair ── Button 3
-     └── twisted pair ── Button 4…8
-
-Optocoupler 3.3 V outputs ── GPIO1/2/15/16/18/38/39/40
-```
-
-Start with four populated buttons even if using an eight-channel board. Test
-each channel open and closed, then leave the input at 100 ms debounce. Increase
-an individual channel to roughly 150–250 ms only if its particular switch
-still produces multiple accepted edges.
+Follow the [off-the-shelf isolated-input guide](PROTECTED-CONTACT-INPUTS.md)
+and the selected product's manual. Verify one channel before connecting the
+remaining inputs.
 
 ## Installation boundaries
 
-This is a low-voltage community project, not certified industrial safety
-equipment. Use an enclosed, strain-relieved assembly. Keep it indoors and on a
-trusted local network.
+This low-voltage community project carries no certified industrial safety
+function. Use enclosed, strain-relieved hardware indoors on a trusted local network.
 
-Third-party products and supplier links in this guide are compatibility
-examples, not Advatek endorsements. Integrators must check local electrical
-codes, applicable standards, manufacturer instructions, and whether the work
-must be undertaken or inspected by a qualified person.
+Third-party products and suppliers document compatibility. Advatek does not
+endorse the listed products. Integrators must check local electrical codes, applicable
+standards, manufacturer instructions, and whether qualified personnel are
+required.
 
-Use a certified isolated digital-input product instead of the stripboard design
-for outdoor cable, cabling between buildings, mains-related contacts,
-12/24 V control signals, unknown third-party equipment, or environments with
-high-energy interference.
+Advatek Technical Support does not cover third-party hardware or Advatek Labs
+community projects. Use GitHub Issues for reproducible community support
+requests. No urgent or show-critical support is available through this project.
+
+Use certified industrial digital-input equipment for outdoor cable, cabling
+between buildings, mains-related contacts, 12/24 V control signals, unknown
+third-party equipment, or environments with high-energy interference.

@@ -8,7 +8,14 @@
     .chip{fill:#2c2c2e;stroke:#555;stroke-width:2}.num{font:700 20px Arial,sans-serif;fill:#202020}
   </style>
   <rect class="bg" width="1200" height="820"/>
-  <image class="photo" href="poe-board-top.jpg" x="0" y="0" width="1200" height="728" preserveAspectRatio="xMidYMid meet"/>
+  <defs>
+    <!-- Remove the official photograph's white studio surround while keeping
+         every board pixel and connection point unchanged. -->
+    <clipPath id="board-cutout">
+      <rect x="180" y="122" width="840" height="500" rx="5"/>
+    </clipPath>
+  </defs>
+  <image class="photo" href="poe-board-top.jpg" x="0" y="0" width="1200" height="728" preserveAspectRatio="xMidYMid meet" clip-path="url(#board-cutout)"/>
 
   <!-- Coordinates preserve the official product image; only vector callouts are added. -->
   <rect class="focus poe" x="302" y="546" width="103" height="108" rx="12"/>
@@ -54,8 +61,8 @@
   <g transform="translate(818 706)">
     <rect class="chip" width="354" height="86" rx="9"/>
     <circle cx="34" cy="43" r="19" fill="#ffd166"/><text class="num" x="34" y="50" text-anchor="middle">5</text>
-    <text class="label" x="66" y="36">Alternative DC power</text>
-    <text class="small" x="66" y="63">7–36 V optional · RS485 unused by firmware</text>
+    <text class="label" x="66" y="36">Other manufacturer terminals</text>
+    <text class="small" x="66" y="63">7–36 V / RS485 · outside project scope</text>
   </g>
   <path class="lead other" d="M915 706 L881 655"/>
 </svg>
