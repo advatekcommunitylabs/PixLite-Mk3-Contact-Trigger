@@ -47,7 +47,7 @@ inline constexpr PinReservation WAVESHARE_8DI_RESERVED_PINS[] = {
 inline const BoardProfile WAVESHARE_ESP32_S3_ETH_8DI_8RO = {
     "waveshare-esp32-s3-eth-8di-8ro",
     "Waveshare ESP32-S3-ETH-8DI-8RO",
-    "1.0.0",
+    "1.1.0",
     EthernetKind::W5500ArduinoSpi,
     {14, 13, 15, 16, 39, 12, 1},
     InputHardwareKind::IsolatedDigitalInput,
@@ -65,6 +65,7 @@ inline const BoardProfile WAVESHARE_ESP32_S3_ETH_8DI_8RO = {
     8,
     0,
     38,
+    StatusLedColorOrder::Rgb,
     true,
     16,
     8,

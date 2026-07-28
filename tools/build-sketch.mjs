@@ -9,6 +9,7 @@ const checkOnly = process.argv.includes('--check');
 const modules = [
   'src/core/Versions.h',
   'src/core/Types.h',
+  'src/core/MediaOrderPolicy.h',
   'src/core/SceneStepPolicy.h',
   'src/core/MediaRefreshPolicy.h',
   'src/core/Util.h',
@@ -69,7 +70,7 @@ for (const path of modules) {
 
 for (const board of manifest.boards) {
   const banner = `/*
-  Advatek PixLite Contact Closure Trigger
+  Advatek PixLite Mk3 Contact Closure Trigger
   Generated board artifact: ${board.name}
   Board profile: ${board.id}
   Arduino-ESP32 core: ${board.arduinoCore}

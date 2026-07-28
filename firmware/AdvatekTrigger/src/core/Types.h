@@ -42,6 +42,7 @@ enum class ActionKind : uint8_t {
   TestColor = 9,
   NextScene = 10,
   PreviousScene = 11,
+  TestColorFade = 12,
 };
 enum class PlaybackRepeat : uint8_t { Once = 0, Forever = 1 };
 enum class OutputSelection : uint8_t { Pixels = 0, Aux = 1, PixelsAndAllAux = 2 };
@@ -149,6 +150,9 @@ struct InputRuntime {
   bool lastRawActive;
   bool stableActive;
   uint32_t rawChangedAt;
+  // Monotonic edge counter lets slow web clients observe every debounced
+  // make/break transition without coupling GPIO scanning to HTTP polling.
+  uint32_t eventSequence;
   bool rampActive;
   uint32_t rampDueAt;
   uint8_t rampPercent;
@@ -190,6 +194,10 @@ struct PixLiteStatus {
   bool online;
   char mode[16];
   char currentFile[64];
+  // PixLite reports no current file after Live/Stop. Keep the last scene
+  // separately so Next/Previous continues from where the operator left off.
+  // Status records live in PSRAM, so this does not consume scarce static DRAM.
+  char lastScene[64];
   char lastError[128];
   uint16_t httpStatus;
   uint16_t latencyMs;

@@ -28,7 +28,12 @@ class MemoryResources {
     mediaCounts = allocate<uint8_t>(MAX_PIXLITES);
     pixliteStatuses = allocate<PixLiteStatus>(MAX_PIXLITES);
     logs = allocate<LogEntry>(DIAGNOSTIC_CAPACITY);
-    tokens = allocate<JsonToken>(CONFIG_TOKEN_CAPACITY);
+    // The web server and serialized PixLite network worker run on different
+    // tasks. They must never tokenize into the same scratch memory: otherwise
+    // a status poll can overwrite a configuration request while it is being
+    // validated, producing a partially applied form.
+    configTokens = allocate<JsonToken>(CONFIG_TOKEN_CAPACITY);
+    pixliteTokens = allocate<JsonToken>(CONFIG_TOKEN_CAPACITY);
     pixliteResponse = static_cast<char *>(heap_caps_calloc(
         PIXLITE_RESPONSE_LIMIT + 1,
         1,
@@ -36,7 +41,7 @@ class MemoryResources {
     ready = selectMemoryMode(
                 true,
                 devices && media && mediaCounts && pixliteStatuses &&
-                    logs && tokens && pixliteResponse) ==
+                    logs && configTokens && pixliteTokens && pixliteResponse) ==
             MemoryMode::Normal;
     if (!ready) release();
     return ready;
@@ -50,7 +55,8 @@ class MemoryResources {
   uint8_t *mediaCounts = nullptr;
   PixLiteStatus *pixliteStatuses = nullptr;
   LogEntry *logs = nullptr;
-  JsonToken *tokens = nullptr;
+  JsonToken *configTokens = nullptr;
+  JsonToken *pixliteTokens = nullptr;
   char *pixliteResponse = nullptr;
 
  private:
@@ -66,14 +72,16 @@ class MemoryResources {
     heap_caps_free(mediaCounts);
     heap_caps_free(pixliteStatuses);
     heap_caps_free(logs);
-    heap_caps_free(tokens);
+    heap_caps_free(configTokens);
+    heap_caps_free(pixliteTokens);
     heap_caps_free(pixliteResponse);
     devices = nullptr;
     media = nullptr;
     mediaCounts = nullptr;
     pixliteStatuses = nullptr;
     logs = nullptr;
-    tokens = nullptr;
+    configTokens = nullptr;
+    pixliteTokens = nullptr;
     pixliteResponse = nullptr;
     ready = false;
   }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#202020" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cpath fill='%23f15a2c' d='M0 0v1l1-.5z'/%3E%3C/svg%3E">
     <title>Advatek Labs · Contact Trigger</title>
   </head>
   <body>
@@ -13,7 +14,7 @@
       </a>
       <nav aria-label="Main sections">
         <a href="#status">Status</a>
-        <a href="#pixlites">PixLites</a>
+        <a href="#pixlites">PixLite Mk3 controllers</a>
         <a href="#inputs">Inputs</a>
         <a href="#network">Network</a>
       </nav>
@@ -35,36 +36,36 @@
 
       <section id="pixlites" class="wide">
         <div class="section-heading">
-          <div><p class="eyebrow">Destinations</p><h2>PixLites</h2></div>
+          <div><p class="eyebrow">Destinations</p><h2>PixLite Mk3 controllers</h2></div>
           <span id="pixlite-count" class="tag">0 of 16 configured</span>
         </div>
-        <p class="intro">Add the PixLite controllers this device can control. Their PixLite nicknames are used automatically, and each input can target a different controller.</p>
+        <p class="intro">Add up to 16 PixLite Mk3 controllers. Each input can target a different one.</p>
         <div class="toolbar">
-          <button id="discover" class="primary">Discover PixLites</button>
+          <button id="discover" class="primary">Discover PixLite Mk3 controllers</button>
           <button id="manual-pixlite">Add by IP</button>
-          <span id="discovery-message" class="muted">Searches this local network</span>
+          <span id="discovery-message" class="muted">Searches this network</span>
         </div>
         <div id="devices" class="device-list empty-state" hidden></div>
         <div id="saved-pixlites" class="saved-list"></div>
 
         <form id="pixlite-form" class="editor-panel" hidden>
           <div class="editor-title">
-            <div><p class="eyebrow">Connection</p><h3 id="pixlite-form-title">Add PixLite</h3></div>
+            <div><p class="eyebrow">Connection</p><h3 id="pixlite-form-title">Add PixLite Mk3</h3></div>
             <button type="button" id="cancel-pixlite" class="quiet">Cancel</button>
           </div>
           <input id="pix-target-id" type="hidden" />
           <input id="pix-mac" type="hidden" />
           <div class="form-grid">
-            <label>PixLite name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">You can give it a clearer local name here.</span></label>
+            <label>PixLite Mk3 name<input id="pix-name" maxlength="31" placeholder="Loaded from its nickname" /><span class="field-help">Optionally give it a clearer local name.</span></label>
             <label>IP address<input id="pix-host" inputmode="decimal" placeholder="192.168.1.100" /></label>
-            <label>PixLite account<select id="pix-user"><option value="oper">Operator</option><option value="admin">Administrator (needed for Test mode)</option></select></label>
+            <label>PixLite Mk3 account<select id="pix-user"><option value="oper">Operator</option><option value="admin">Administrator (needed for Test mode)</option></select></label>
             <label>Password<input id="pix-password" type="password" autocomplete="new-password" placeholder="Leave blank if unused" /></label>
           </div>
           <div class="form-actions"><button type="submit" class="primary">Connect and save</button></div>
         </form>
 
         <div id="media-panel" class="media-panel" hidden>
-          <div class="editor-title"><div><p class="eyebrow">Available media</p><h3 id="media-title">PixLite</h3></div><button id="close-media" class="quiet">Close</button></div>
+          <div class="editor-title"><div><p class="eyebrow">Available media</p><h3 id="media-title">PixLite Mk3</h3></div><button id="close-media" class="quiet">Close</button></div>
           <div class="media-grid">
             <div><h4>Scenes</h4><ul id="scenes"></ul></div>
             <div><h4>Playlists</h4><ul id="playlists"></ul></div>
@@ -81,10 +82,10 @@
               <button id="add-input">Add input</button>
             </div>
         </div>
-        <p class="intro">Add the inputs you need, choose an offered terminal, then configure its activate and release actions.</p>
+        <p class="intro">Add an input, choose its terminal, then configure its close and open actions.</p>
         <div id="input-empty" class="empty-state">
           <b>No inputs configured</b>
-          <span>Add a push button, relay contact or maintained switch to begin.</span>
+          <span>Add a button, relay contact or maintained switch.</span>
         </div>
         <div id="input-list"></div>
       </section>
@@ -92,7 +93,7 @@
       <section id="system">
         <div class="section-heading"><div><p class="eyebrow">Controller</p><h2>System</h2></div></div>
         <div class="setting-row">
-          <div><b>Status LED</b><small>Orange while running and flashes when an input triggers.</small></div>
+          <div><b>Status LED</b><small>Orange while running; flashes for input edges.</small></div>
           <label class="switch"><input id="status-led-enabled" type="checkbox" /><span></span></label>
         </div>
         <label>LED brightness
@@ -111,7 +112,7 @@
           </label>
           <label>Addressing<select id="ip-mode"><option value="dhcp">Automatic (DHCP)</option><option value="static">Static IPv4</option></select></label>
         </div>
-        <details class="advanced">
+        <details id="network-advanced" class="advanced">
           <summary>Advanced network settings</summary>
           <div class="form-grid">
             <label>Operational Wi-Fi SSID<input id="wifi-ssid" /></label>
@@ -121,10 +122,10 @@
             <label>Gateway<input id="ip-gateway" inputmode="decimal" /></label>
             <label>DNS server<input id="ip-dns" inputmode="decimal" /></label>
             <label>Interface password<input id="web-password" type="password" placeholder="Optional" /></label>
-            <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP — unplug LAN first</option></select></label>
+            <label>BOOT recovery<select id="recovery-connection"><option value="wifi">Wi-Fi AP</option><option value="ethernet">Direct Ethernet DHCP (unplug LAN first)</option></select></label>
           </div>
         </details>
-        <p class="notice">Open the current IP shown at the top if the .local address does not resolve. Give each trigger a unique local name. This local setup page uses HTTP, not TLS.</p>
+        <p class="notice"><b>Wi-Fi has no wired fallback.</b> BOOT: 5–14s recovery, 15–19s reset, 20s cancel. Wi-Fi recovery opens setup; direct Ethernet needs separate power and no LAN.</p>
         <button id="apply-network" class="primary">Save network and restart</button>
       </section>
 
@@ -134,7 +135,7 @@
           <button id="export">Export redacted backup</button>
           <label class="file-button">Import backup<input id="import" type="file" accept="application/json" /></label>
         </div>
-        <p class="muted">Backups omit passwords. Hold BOOT 5–14 seconds for 15-minute recovery, 15–19 seconds to factory reset, or 20 seconds to cancel.</p>
+        <p class="muted">Backups omit passwords.</p>
       </section>
 
       <section id="diagnostics" class="wide">

@@ -12,13 +12,13 @@ inline const char *actionKindName(ActionKind kind) {
   static const char *names[] = {
       "none", "playScene", "playPlaylist", "stop", "blank",
       "brighter", "darker", "setIntensity", "releaseIntensity", "testColor",
-      "nextScene", "previousScene"};
+      "nextScene", "previousScene", "testColorFade"};
   const uint8_t index = static_cast<uint8_t>(kind);
   return index < sizeof(names) / sizeof(names[0]) ? names[index] : "none";
 }
 
 inline ActionKind parseActionKind(const char *name) {
-  for (uint8_t i = 0; i <= static_cast<uint8_t>(ActionKind::PreviousScene); ++i) {
+  for (uint8_t i = 0; i <= static_cast<uint8_t>(ActionKind::TestColorFade); ++i) {
     if (strcmp(name, actionKindName(static_cast<ActionKind>(i))) == 0) {
       return static_cast<ActionKind>(i);
     }
@@ -297,7 +297,22 @@ inline bool applyConfigJson(
     }
     updateString(doc, network, "hostname", config.network.hostname, sizeof(config.network.hostname));
     updateString(doc, network, "wifiSsid", config.network.wifiSsid, sizeof(config.network.wifiSsid));
-    updateString(doc, network, "wifiPassword", config.network.wifiPassword, sizeof(config.network.wifiPassword));
+    const bool clearWifiPassword = doc.booleanValue(
+        doc.objectValue(network, "clearWifiPassword"), false);
+    char wifiPassword[64]{};
+    if (clearWifiPassword) {
+      config.network.wifiPassword[0] = '\0';
+    } else if (
+        updateString(
+            doc, network, "wifiPassword", wifiPassword, sizeof(wifiPassword)) &&
+        wifiPassword[0]) {
+      // A blank password means "keep the stored password", matching the SPA
+      // placeholder and allowing redacted configuration updates.
+      copyText(
+          config.network.wifiPassword,
+          sizeof(config.network.wifiPassword),
+          wifiPassword);
+    }
     updateString(
         doc, network, "apPassword", config.network.accessPointPassword,
         sizeof(config.network.accessPointPassword));

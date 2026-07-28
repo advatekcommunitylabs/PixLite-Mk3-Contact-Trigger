@@ -37,6 +37,7 @@ class InputEngine {
     if (rawActive != runtime.stableActive &&
         static_cast<uint32_t>(now - runtime.rawChangedAt) >= debounceMs) {
       runtime.stableActive = rawActive;
+      ++runtime.eventSequence;
       return {true, rawActive};
     }
     return {false, runtime.stableActive};

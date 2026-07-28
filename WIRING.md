@@ -11,6 +11,15 @@ The industrial board maps DI1–DI8 internally to GPIO4–GPIO11. Do not connect
 its field switches to ESP32 header ground. Its relays, RS485, buzzer, and
 TF card are unused by the current firmware.
 
+That unused TF card is on the ESP32 trigger board. PixLite Mk3 SHOWTime
+playback separately requires a suitable industrial-grade microSD installed in
+the PixLite Mk3 itself.
+
+Third-party hardware references document compatibility. Advatek does not
+endorse the listed products. Integrators must follow local electrical codes,
+applicable standards, manufacturer instructions, and requirements for qualified
+electrical personnel.
+
 ## Pico-header development board
 
 The inputs are for **volt-free/dry contacts only**.
@@ -65,18 +74,20 @@ and GPIO47 are excluded because the module obstructs practical field wiring.
 The onboard RGB LED is steady Advatek orange while firmware is running. Every
 debounced contact edge flashes it white for 120 ms before it returns to orange.
 
-The Stop Playback action explicitly returns the PixLite to live mode. PixLite's
+The Stop Playback action explicitly returns the PixLite Mk3 to live mode.
+PixLite Mk3's
 `modeCtrl/Stop` operation is not used because it does nothing when a loop is a
 continuous playback mode.
 
 Also keep USB/serial, strapping, and onboard-device pins unavailable. The
-profile allow-list—not a broad “all GPIOs” list—is the source of truth.
+profile allow-list is the source of truth for contact GPIOs.
 
 For long cables or electrically noisy installations, use appropriate isolated
 contact-input hardware and transient protection. The built-in debounce handles
 mechanical bounce; it is not electrical surge protection.
 
-For a PoE-powered installation, the repository includes both a buildable
-non-isolated protected stripboard design and a group-isolated optocoupler
-approach for field cabling. See
-[Protected and isolated contact-input options](docs/PROTECTED-CONTACT-INPUTS.md).
+For a PoE-powered installation with field cabling, use the industrial board's
+built-in isolated inputs or a documented, commercially assembled input module.
+The public guide intentionally does not provide component-level PCB or
+stripboard designs. See
+[Off-the-shelf isolated contact inputs](docs/PROTECTED-CONTACT-INPUTS.md).

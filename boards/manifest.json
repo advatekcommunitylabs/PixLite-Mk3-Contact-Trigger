@@ -46,7 +46,7 @@
     {
       "id": "waveshare-esp32-s3-eth-8di-8ro",
       "name": "Waveshare ESP32-S3-ETH-8DI-8RO",
-      "profileVersion": "1.0.0",
+      "profileVersion": "1.1.0",
       "artifact": "AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.ino",
       "buildMacro": "ADVATEK_BOARD_WAVESHARE_ESP32_S3_ETH_8DI_8RO",
       "fqbn": "esp32:esp32:esp32s3",
@@ -85,6 +85,7 @@
       "poeModule": "separate product variant; power-only to firmware",
       "recoveryButtonPin": 0,
       "statusLedPin": 38,
+      "statusLedColorOrder": "RGB",
       "inputHardware": "isolated-digital-input"
     }
   ]

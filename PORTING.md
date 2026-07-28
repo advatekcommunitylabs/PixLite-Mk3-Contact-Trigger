@@ -22,7 +22,7 @@ generator emits one raw `.ino` and same-named Arduino folder per manifest
 entry; end users must never need to edit a board-selection define.
 
 If the board uses a different Ethernet implementation, add an ESP32 platform
-adapter that exposes the same operational-uplink behaviour. Core GPIO, PixLite,
+adapter that exposes the same operational-uplink behaviour. Core GPIO, PixLite Mk3,
 ADAR, configuration, and web code must remain unchanged.
 
 ## Required checklist

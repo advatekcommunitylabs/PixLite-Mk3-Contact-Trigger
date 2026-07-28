@@ -15,11 +15,15 @@ let isolatedInputs = false;
 let inputSaveTimer: number | undefined;
 let inputSaveRevision = 0;
 let inputSaveActive = false;
+let inputPollActive = false;
+const inputEventSequences: number[] = [];
 const media = new Map<string, Json>();
+const inputTestQueues = new Map<number, Promise<void>>();
 const kinds = [
   ['none', 'No action'], ['playScene', 'Play scene'], ['playPlaylist', 'Play playlist'],
   ['nextScene', 'Next scene'], ['previousScene', 'Previous scene'],
   ['stop', 'Live mode (stop playback)'], ['blank', 'Blank outputs'], ['testColor', 'Test mode · solid colour'],
+  ['testColorFade', 'Test mode · RGB colour fade'],
   ['brighter', 'Intensity brighter'],
   ['darker', 'Intensity darker'], ['setIntensity', 'Set intensity'], ['releaseIntensity', 'Release override'],
 ];
@@ -28,6 +32,17 @@ const value = (id: string) => ($<HTMLInputElement | HTMLSelectElement>(id)).valu
 const setValue = (id: string, data: unknown) => ($<HTMLInputElement | HTMLSelectElement>(id)).value = String(data ?? '');
 const checked = (id: string) => $<HTMLInputElement>(id).checked;
 const escapeHtml = (data: unknown) => String(data ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
+
+// Chromium's native colour popup does not dismiss consistently on embedded
+// Windows browsers. Explicitly blur it when the installer clicks elsewhere.
+document.addEventListener('pointerdown', event => {
+  const active = document.activeElement;
+  if (active instanceof HTMLInputElement &&
+      active.type === 'color' &&
+      event.target !== active) {
+    active.blur();
+  }
+}, true);
 const inputLabel = (pin: number) => {
   const terminal = pins.indexOf(pin) + 1;
   return isolatedInputs && terminal > 0
@@ -78,7 +93,8 @@ function defaultAction(): Json {
 }
 
 function isGenericPixLiteName(name: string) {
-  return !name || name === 'Primary PixLite' || /^PixLite \d+$/.test(name);
+  return !name || name === 'Primary PixLite' || name === 'Primary PixLite Mk3' ||
+    /^PixLite(?: Mk3)? \d+$/.test(name);
 }
 
 function colorChannels(hex: string) {
@@ -93,7 +109,7 @@ function colorChannels(hex: string) {
 function targetOptions(selected: string) {
   const choices = (config.pixlites || []).map((p: Json) =>
     `<option value="${escapeHtml(p.id)}" ${selected === p.id ? 'selected' : ''}>${escapeHtml(p.name || p.host)}</option>`).join('');
-  return choices || '<option value="">Add a PixLite first</option>';
+  return choices || '<option value="">Add a PixLite Mk3 first</option>';
 }
 
 function renderStatus() {
@@ -105,11 +121,11 @@ function renderStatus() {
   const cards = [
     ['Device IP', state.uplinkOnline ? state.ip : 'Unavailable', state.uplinkOnline ? `http://${state.ip}/` : ''],
     ['Local address', address, state.hostname ? `http://${state.hostname}.local/` : ''],
-    ['PixLites', `${online} online · ${(config.pixlites || []).length} added`, ''],
+    ['PixLite Mk3 controllers', `${online} online · ${(config.pixlites || []).length} added`, ''],
     ['Inputs', `${enabled} configured${state.pinRemappingRequired ? ' · remap required' : ''}`, ''],
     ['Ethernet', state.ethernet?.linkUp ? `${state.ethernet.linkSpeedMbps} Mbps ${state.ethernet.fullDuplex ? 'full duplex' : 'half duplex'}` : state.ethernet?.failureReason || 'Link down', ''],
     ['Memory', state.degradedMode ? 'Degraded recovery mode' : `${Math.round((state.memory?.internalFree || 0) / 1024)} KB internal free`, ''],
-    ['Firmware', state.firmwareVersion || '—', ''],
+    ['Firmware', state.firmwareVersion || 'Unavailable', ''],
     ['Uptime', `${Math.floor((state.memory?.uptimeMs || 0) / 60000)} minutes`, ''],
   ];
   $('status-grid').innerHTML = cards.map(([label, content, href]) =>
@@ -118,7 +134,7 @@ function renderStatus() {
       : `<strong title="${escapeHtml(content)}">${escapeHtml(content)}</strong>`}</div>`).join('');
   const steps = [
     ['Connect the network', !!state.uplinkOnline, '#network'],
-    ['Add a PixLite', !!config.pixlites?.length, '#pixlites'],
+    ['Add a PixLite Mk3', !!config.pixlites?.length, '#pixlites'],
     ['Add an input', enabled > 0, '#inputs'],
   ];
   $('quick-start').innerHTML = steps.map(([label, done, href], index) =>
@@ -131,11 +147,52 @@ async function refreshState() {
   try {
     state = await api('/api/state');
     if (!state.pixlites) state.pixlites = state.pixlite?.host
-      ? [{id: 'primary', name: 'Primary PixLite', ...state.pixlite}]
+      ? [{id: 'primary', name: 'Primary PixLite Mk3', ...state.pixlite}]
       : [];
     renderStatus();
     renderSavedPixLites();
+    updateInputActivity(state.inputs);
   } catch (error) { toast(error, true); }
+}
+
+function updateInputActivity(inputs: Json[] = []) {
+  inputs.forEach((live: Json, index: number) => {
+    const led = document.getElementById(`i${index}-activity`);
+    if (led) {
+      led.classList.toggle('active', !!live.active);
+      led.title = live.active ? 'Contact active' : 'Contact inactive';
+    }
+
+    const sequence = Number(live.eventSequence || 0) >>> 0;
+    const previous = inputEventSequences[index];
+    inputEventSequences[index] = sequence;
+    // A lower value means the controller restarted; establish a new baseline.
+    // Signed delta arithmetic prevents old events from appearing as a large
+    // unsigned wraparound.
+    if (previous === undefined || sequence < previous) return;
+    const pulses = Math.min(sequence - previous, 4);
+    if (led && pulses) {
+      led.style.setProperty('--pulses', String(pulses));
+      led.classList.remove('flash');
+      void led.offsetWidth;
+      led.classList.add('flash');
+    }
+  });
+}
+
+async function refreshInputs() {
+  if (inputPollActive) return;
+  inputPollActive = true;
+  try {
+    const snapshot = await api('/api/inputs');
+    state.inputs = snapshot.inputs || [];
+    updateInputActivity(state.inputs);
+  } catch {
+    // The regular status poll reports connection errors. Keep this frequent,
+    // cosmetic poll quiet so a disconnected device cannot flood notifications.
+  } finally {
+    inputPollActive = false;
+  }
 }
 
 function renderSavedPixLites() {
@@ -148,7 +205,7 @@ function renderSavedPixLites() {
       <span class="device-info"><b>${escapeHtml(target.name || target.host)}</b><small>IP ${escapeHtml(target.host)} · MAC ${escapeHtml(target.mac || live.mac || 'unknown')}<br>${live.online ? `${escapeHtml(live.mode || 'Ready')} · ${live.latencyMs || 0} ms` : escapeHtml(live.error || 'Not connected')}</small></span>
       <span class="device-actions"><button data-media="${escapeHtml(target.id)}">View media</button><button data-edit="${escapeHtml(target.id)}">Edit</button><button class="danger" data-remove="${escapeHtml(target.id)}">Remove</button></span>
     </div>`;
-  }).join('') || '<div class="empty-state"><b>No PixLites saved</b><span>Discover one automatically or add its IP address.</span></div>';
+  }).join('') || '<div class="empty-state"><b>No PixLite Mk3 controllers saved</b><span>Discover one automatically or add its IP address.</span></div>';
   $('saved-pixlites').querySelectorAll<HTMLButtonElement>('[data-media]').forEach(button => button.onclick = () => loadMedia(button.dataset.media!));
   $('saved-pixlites').querySelectorAll<HTMLButtonElement>('[data-edit]').forEach(button => button.onclick = () => openPixLite(config.pixlites.find((p: Json) => p.id === button.dataset.edit)));
   $('saved-pixlites').querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(button => button.onclick = () => forgetPixLite(button.dataset.remove!));
@@ -156,7 +213,7 @@ function renderSavedPixLites() {
 
 function openPixLite(target: Json = {}) {
   $('pixlite-form').hidden = false;
-  $('pixlite-form-title').textContent = target.id ? 'Edit PixLite' : 'Add PixLite';
+  $('pixlite-form-title').textContent = target.id ? 'Edit PixLite Mk3' : 'Add PixLite Mk3';
   setValue('pix-target-id', target.id || '');
   setValue('pix-mac', target.mac || '');
   setValue('pix-name', target.name || '');
@@ -171,12 +228,34 @@ async function loadMedia(targetId: string) {
     const result = await api(`/api/media?targetId=${encodeURIComponent(targetId)}`);
     media.set(targetId, result);
     const target = config.pixlites.find((p: Json) => p.id === targetId);
-    $('media-title').textContent = target?.name || target?.host || 'PixLite';
+    $('media-title').textContent = target?.name || target?.host || 'PixLite Mk3';
     $('scenes').innerHTML = result.scenes.map((name: string) => `<li>${escapeHtml(name)}</li>`).join('') || '<li class="muted">No scenes</li>';
     $('playlists').innerHTML = result.playlists.map((name: string) => `<li>${escapeHtml(name)}</li>`).join('') || '<li class="muted">No playlists</li>';
     $('media-panel').hidden = false;
     renderInputs();
   } catch (error) { toast(error, true); }
+}
+
+async function primeMediaChoices() {
+  // A saved action must offer scenes immediately after a controller reboot.
+  // Fetch each bounded catalogue sequentially so a page containing many saved
+  // PixLite Mk3 controllers cannot overwhelm the ESP32 HTTP server with
+  // parallel requests.
+  let changed = false;
+  for (const target of config.pixlites || []) {
+    if (media.has(target.id)) continue;
+    try {
+      media.set(target.id, await api(`/api/media?targetId=${encodeURIComponent(target.id)}`));
+      changed = true;
+    } catch {
+      // The status poll reports offline controllers. Keep the rest of the
+      // input editor usable and allow View media to retry this target later.
+    }
+  }
+  if (changed) {
+    captureInputs();
+    renderInputs();
+  }
 }
 
 async function forgetPixLite(targetId: string) {
@@ -186,7 +265,7 @@ async function forgetPixLite(targetId: string) {
     await api('/api/pixlites/remove', {method: 'POST', body: JSON.stringify({targetId})});
     media.delete(targetId);
     await reloadConfig();
-    toast('PixLite forgotten');
+    toast('PixLite Mk3 forgotten');
   } catch (error) { toast(error, true); }
 }
 
@@ -202,11 +281,11 @@ function actionEditor(index: number, edge: Edge, title: string, action: Json) {
     <div class="action-title">${title}</div>
     <div class="action-grid">
       <label>Action<select id="${prefix}-kind">${kinds.map(([kind, label]) => `<option value="${kind}" ${action.kind === kind ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
-      <label data-field="target">Destination PixLite<select id="${prefix}-target">${targetOptions(action.targetId)}</select></label>
-      <label class="span-2" data-field="media">Scene or playlist<input id="${prefix}-media" value="${escapeHtml(action.mediaName)}" list="${prefix}-files" placeholder="Load media from the PixLite above" /><datalist id="${prefix}-files">${mediaList(action)}</datalist></label>
-      <span class="field-help span-2" data-field="sceneStep">Uses that PixLite's scene-list order and wraps at either end.</span>
+      <label data-field="target">Destination PixLite Mk3<select id="${prefix}-target">${targetOptions(action.targetId)}</select></label>
+      <label class="span-2" data-field="media">Scene or playlist<input id="${prefix}-media" value="${escapeHtml(action.mediaName)}" list="${prefix}-files" placeholder="Choose or type a media filename" /><datalist id="${prefix}-files">${mediaList(action)}</datalist></label>
+      <span class="field-help span-2" data-field="sceneStep">Uses alphabetical scene order and wraps at either end.</span>
       <label data-field="repeat">Play selected scene<select id="${prefix}-repeat"><option value="forever" ${action.repeat === 'forever' ? 'selected' : ''}>Loop until stopped</option><option value="once" ${action.repeat === 'once' ? 'selected' : ''}>Once</option></select></label>
-      <label class="span-2" data-field="color">Test colour<div class="color-row"><input id="${prefix}-color" type="color" value="${escapeHtml(action.testColor || '#ff0000')}" aria-label="${title} test colour" /><output id="${prefix}-color-value">${escapeHtml(String(action.testColor || '#ff0000').toUpperCase())}</output></div><span class="field-help">Applies to all pixel outputs until a Live mode action runs. The destination must use its Administrator account.</span></label>
+      <label class="span-2" data-field="color">Test colour<div class="color-row"><input id="${prefix}-color" type="color" value="${escapeHtml(action.testColor || '#ff0000')}" aria-label="${title} test colour" /><output id="${prefix}-color-value">${escapeHtml(String(action.testColor || '#ff0000').toUpperCase())}</output></div><span class="field-help">Applies to all pixels until Live mode. Requires the destination's Administrator account.</span></label>
       <label data-field="output">Output<select id="${prefix}-output"><option value="pixels">Pixels</option><option value="aux" ${action.output === 'aux' ? 'selected' : ''}>Aux output</option><option value="pixelsAndAux" ${action.output === 'pixelsAndAux' ? 'selected' : ''}>Pixels + configured Aux</option></select></label>
       <label data-field="aux">Aux output #<input id="${prefix}-aux" type="number" min="1" max="8" value="${action.auxOutput ?? 1}" /></label>
       <label data-field="intensity">Intensity %<input id="${prefix}-intensity" type="number" min="0" max="100" value="${action.intensityPercent ?? 100}" /></label>
@@ -229,7 +308,7 @@ function renderInputs() {
   $('add-input').toggleAttribute('disabled', active.length >= 8);
   $('input-list').innerHTML = active.map(({input, index}: Json) => `
     <details class="input-card" data-input="${index}" open>
-      <summary><span class="input-summary"><strong>${escapeHtml(input.name || `Input ${index + 1}`)}</strong><small>${input.gpio == null ? `Select ${isolatedInputs ? 'an input terminal' : 'a pin'}` : inputLabel(input.gpio)} · ${input.mode === 'maintained' ? 'Maintained switch' : 'Momentary button'}</small></span><span class="tag">${input.debounceMs || 100} ms debounce</span></summary>
+      <summary><span class="input-summary"><span class="input-title"><i id="i${index}-activity" class="input-activity" role="img" aria-label="Input activity; flashes white on contact make and break"></i><strong>${escapeHtml(input.name || `Input ${index + 1}`)}</strong></span><small>${input.gpio == null ? `Select ${isolatedInputs ? 'an input terminal' : 'a pin'}` : inputLabel(input.gpio)} · ${input.mode === 'maintained' ? 'Maintained switch' : 'Momentary button'}</small></span><span class="tag">${input.debounceMs || 100} ms debounce</span></summary>
       <div class="input-body">
         <div class="input-basics">
           <label>Name<input id="i${index}-name" maxlength="31" value="${escapeHtml(input.name || `Input ${index + 1}`)}" /></label>
@@ -237,7 +316,10 @@ function renderInputs() {
           <label>Contact type<select id="i${index}-mode"><option value="momentary">Momentary button</option><option value="maintained" ${input.mode === 'maintained' ? 'selected' : ''}>Maintained switch</option></select></label>
           <label>Debounce (ms)<input id="i${index}-debounce" type="number" min="10" max="2000" value="${input.debounceMs || 100}" /></label>
           <label class="polarity"><input id="i${index}-nc" type="checkbox" ${input.normallyClosed ? 'checked' : ''} /> Normally closed</label>
-          <button type="button" class="danger remove-input" data-remove-input="${index}">Remove input</button>
+          <span class="input-controls">
+            <button type="button" class="test-input" data-test-input="${index}">Hold to test</button>
+            <button type="button" class="danger remove-input" data-remove-input="${index}">Remove</button>
+          </span>
         </div>
         <div class="actions">${actionEditor(index, 'onAction', input.mode === 'maintained' ? 'Latch on · contact closes' : 'Press · contact closes', input.onAction)}${actionEditor(index, 'offAction', input.mode === 'maintained' ? 'Latch off · contact opens' : 'Release · contact opens', input.offAction)}</div>
       </div>
@@ -248,6 +330,24 @@ function renderInputs() {
     config.inputs[index] = {...config.inputs[index], enabled: false, gpio: null, debounceMs: 100, onAction: defaultAction(), offAction: defaultAction()};
     renderInputs();
     scheduleInputSave();
+  });
+  $('input-list').querySelectorAll<HTMLButtonElement>('[data-test-input]').forEach(button => {
+    const index = Number(button.dataset.testInput);
+    button.onpointerdown = event => {
+      if (event.button !== 0) return;
+      button.setPointerCapture(event.pointerId);
+      setInputTest(index, button, true);
+    };
+    const release = () => setInputTest(index, button, false);
+    button.onpointerup = release;
+    button.onpointercancel = release;
+    button.onlostpointercapture = release;
+    button.onkeydown = event =>
+      !event.repeat &&
+      [' ', 'Enter'].includes(event.key) &&
+      setInputTest(index, button, true);
+    button.onkeyup = release;
+    button.onblur = release;
   });
   active.forEach(({index}: Json) => {
     $<HTMLSelectElement>(`i${index}-mode`).onchange = () => { captureInputs(); renderInputs(); scheduleInputSave(); };
@@ -260,9 +360,10 @@ function renderInputs() {
       updateActionFields(index, edge);
     });
   });
+  updateInputActivity(state.inputs);
 }
 
-// Each action shows only parameters the selected PixLite API operation uses.
+// Each action shows only parameters the selected PixLite Mk3 API operation uses.
 function updateActionFields(index: number, edge: Edge) {
   const prefix = `i${index}-${edge}`;
   const kind = value(`${prefix}-kind`);
@@ -299,6 +400,30 @@ function readAction(index: number, edge: Edge, previous: Json) {
     testColor, ...colorChannels(testColor)};
 }
 
+function queueInputTest(index: number, active: boolean) {
+  // Preserve network ordering when a quick click releases before its press
+  // request has completed. The break action must always follow the make action.
+  captureInputs();
+  const input = config.inputs[index];
+  const action = {...(active ? input.onAction : input.offAction)};
+  const previous = inputTestQueues.get(index) ?? Promise.resolve();
+  const next = previous.catch(() => undefined).then(async () => {
+    await api('/api/action/test', {
+      method: 'POST',
+      body: JSON.stringify(action),
+    });
+  });
+  inputTestQueues.set(index, next);
+  next.catch(error => toast(error, true));
+}
+
+function setInputTest(index: number, button: HTMLButtonElement, active: boolean) {
+  if (button.classList.contains('testing') === active) return;
+  button.classList.toggle('testing', active);
+  button.textContent = active ? 'Testing… release' : 'Hold to test';
+  queueInputTest(index, active);
+}
+
 function captureInputs() {
   config.inputs.forEach((input: Json, index: number) => {
     if (!input.enabled || !document.getElementById(`i${index}-name`)) return;
@@ -318,7 +443,7 @@ function validateInputs() {
     used.add(input.gpio);
     if (input.debounceMs < 10 || input.debounceMs > 2000) throw new Error(`${input.name}: debounce must be 10–2000 ms`);
     for (const action of [input.onAction, input.offAction]) {
-      if (action.kind !== 'none' && !config.pixlites.some((p: Json) => p.id === action.targetId)) throw new Error(`${input.name}: choose a PixLite for each action`);
+      if (action.kind !== 'none' && !config.pixlites.some((p: Json) => p.id === action.targetId)) throw new Error(`${input.name}: choose a PixLite Mk3 for each action`);
       if ((action.kind === 'playScene' || action.kind === 'playPlaylist') && !action.mediaName) throw new Error(`${input.name}: choose a scene or playlist`);
     }
   }
@@ -375,8 +500,10 @@ function renderConfig() {
   setValue('uplink', config.network.uplink);
   setValue('hostname', config.network.hostname);
   setValue('wifi-ssid', config.network.wifiSsid);
+  setValue('wifi-password', '');
   setValue('recovery-connection', config.network.recoveryConnection || 'wifi');
   renderIpFields();
+  updateNetworkValidation();
   updateHostname();
   renderSavedPixLites();
   renderInputs();
@@ -394,7 +521,7 @@ async function reloadConfig() {
 function normalizeLegacyConfig() {
   if (!config.pixlites) {
     config.pixlites = config.pixlite?.host ? [{
-      id: 'primary', name: 'Primary PixLite', mac: config.pixlite.mac,
+      id: 'primary', name: 'Primary PixLite Mk3', mac: config.pixlite.mac,
       host: config.pixlite.host, port: config.pixlite.port, apiVersion: config.pixlite.apiVersion,
       username: config.pixlite.username,
     }] : [];
@@ -420,6 +547,14 @@ function renderIpFields() {
   setValue('ip-netmask', settings.netmask); setValue('ip-gateway', settings.gateway); setValue('ip-dns', settings.dns);
 }
 
+// Changing uplinks restarts the controller, so validate the complete Wi-Fi
+// handoff before enabling the action that could make the current page vanish.
+function updateNetworkValidation() {
+  const invalid = value('uplink') === 'wifi' && !value('wifi-ssid').trim();
+  $<HTMLButtonElement>('apply-network').disabled = invalid;
+  return invalid;
+}
+
 $('theme-toggle').onclick = () => {
   const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
   document.documentElement.dataset.theme = next;
@@ -434,7 +569,7 @@ $('discover').onclick = async () => {
     $('discovery-message').textContent = `${result.devices.length} found${result.truncated ? ' (list truncated)' : ''}`;
     $('devices').innerHTML = result.devices.map((device: Json) => `<div class="device">
       <span class="device-info"><b>${escapeHtml(device.nickname || device.name || device.ip)}</b><small>${escapeHtml(device.name)} · IP ${escapeHtml(device.ip)} · MAC ${escapeHtml(device.mac)} · firmware ${escapeHtml(device.firmware)}</small></span>
-      <button data-device="${escapeHtml(device.mac)}">${device.configuredId ? 'Edit' : 'Add'}</button></div>`).join('') || '<div class="empty-state"><b>No PixLites found</b><span>Check Ethernet and that the controller is on this network, or add its IP manually.</span></div>';
+      <button data-device="${escapeHtml(device.mac)}">${device.configuredId ? 'Edit' : 'Add'}</button></div>`).join('') || '<div class="empty-state"><b>No PixLite Mk3 controllers found</b><span>Check Ethernet and that the controller is on this network, or add its IP manually.</span></div>';
     $('devices').querySelectorAll<HTMLButtonElement>('[data-device]').forEach(button => button.onclick = () => {
       const device = result.devices.find((item: Json) => item.mac === button.dataset.device);
       const saved = config.pixlites.find((item: Json) => item.id === device.configuredId);
@@ -458,7 +593,7 @@ $<HTMLFormElement>('pixlite-form').onsubmit = async event => {
     $('pixlite-form').hidden = true;
     await reloadConfig();
     await loadMedia(result.targetId);
-    toast('PixLite connected and saved');
+    toast('PixLite Mk3 connected and saved');
   } catch (error) { toast(error, true); }
 };
 
@@ -489,20 +624,45 @@ $('save-status-led').onclick = async () => {
 
 $<HTMLInputElement>('hostname').oninput = updateHostname;
 $<HTMLInputElement>('hostname').onblur = () => { setValue('hostname', normalizeHostname(value('hostname'))); updateHostname(); };
-$<HTMLSelectElement>('uplink').onchange = renderIpFields;
+$<HTMLSelectElement>('uplink').onchange = () => {
+  renderIpFields();
+  if (value('uplink') === 'wifi') $<HTMLDetailsElement>('network-advanced').open = true;
+  updateNetworkValidation();
+};
+$<HTMLInputElement>('wifi-ssid').oninput = updateNetworkValidation;
 $('apply-network').onclick = async () => {
-  if (!confirm('Save network settings and restart this controller?')) return;
+  const button = $<HTMLButtonElement>('apply-network');
   try {
     const uplink = value('uplink');
     const hostname = normalizeHostname(value('hostname'));
     if (!hostname) throw new Error('Enter a local name using letters, numbers or hyphens');
+    if (updateNetworkValidation()) {
+      throw new Error('Enter the operational Wi-Fi network name before switching to Wi-Fi.');
+    }
+    // iOS and Android captive-portal browsers can suppress native confirm()
+    // dialogs. Keep confirmation inside the page so the first-run recovery
+    // flow works without asking the installer to know the controller IP.
+    if (!button.dataset.confirm) {
+      button.dataset.confirm = '1';
+      button.textContent = 'Tap again to save and restart';
+      return;
+    }
+    button.disabled = true;
+    button.textContent = 'Settings accepted - restarting';
     const addressing = {mode: value('ip-mode'), address: value('ip-address'), netmask: value('ip-netmask'), gateway: value('ip-gateway'), dns: value('ip-dns')};
-    await api('/api/network/apply', {method: 'POST', body: JSON.stringify({network: {
-      uplink, hostname, wifiSsid: value('wifi-ssid'), wifiPassword: value('wifi-password'),
-      recoveryConnection: value('recovery-connection'), apPassword: value('web-password'), [uplink]: addressing,
-    }})});
-    toast('Saved; the controller is restarting');
-  } catch (error) { toast(error, true); }
+    const network: Json = {
+      uplink, hostname, wifiSsid: value('wifi-ssid').trim(),
+      recoveryConnection: value('recovery-connection'), apPassword: value('web-password'),
+      [uplink]: addressing,
+    };
+    if (value('wifi-password')) network.wifiPassword = value('wifi-password');
+    await api('/api/network/apply', {method: 'POST', body: JSON.stringify({network})});
+  } catch (error) {
+    delete button.dataset.confirm;
+    button.textContent = 'Save network and restart';
+    updateNetworkValidation();
+    toast(error, true);
+  }
 };
 
 $('export').onclick = async () => {
@@ -544,7 +704,9 @@ async function start() {
     normalizeLegacyConfig();
     renderConfig();
     await refreshState();
+    void primeMediaChoices();
   } catch (error) { toast(error, true); }
   setInterval(refreshState, 2000);
+  setInterval(refreshInputs, 250);
 }
 start();

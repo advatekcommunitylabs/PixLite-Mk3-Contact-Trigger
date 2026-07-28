@@ -33,10 +33,12 @@ inline String pixLiteStopRequest(uint32_t id) {
 }
 
 inline String pixLiteTestColorRequest(const ActionConfig &action, uint32_t id) {
-  // This is the same v1.9 request emitted by the PixLite Mk3 Test Mode page
-  // for Custom Color. Zero port/pixel selectors apply the colour globally.
+  // These are the same v1.9 operations emitted by the PixLite Mk3 Test Mode
+  // page for Custom Color and RGB Fade. Zero selectors apply them globally.
+  const char *operation =
+      action.kind == ActionKind::TestColorFade ? "colorFade" : "setColor";
   return "{\"req\":\"modeTestData\",\"id\":" + String(id) +
-         ",\"params\":{\"op\":\"setColor\",\"color\":[" +
+         ",\"params\":{\"op\":\"" + operation + String("\",\"color\":[") +
          String(action.testRed) + "," + String(action.testGreen) + "," +
          String(action.testBlue) +
          "],\"colorRes\":\"8Bit\",\"pixPortNum\":0,\"pixNum\":0}}";

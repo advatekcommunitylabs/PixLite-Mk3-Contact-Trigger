@@ -21,9 +21,8 @@ details.
 
 ## Deployment model
 
-The device provides local HTTP, not TLS. Its optional password reduces
-accidental local access but does not turn an untrusted network into a safe
-deployment. Install it on a trusted LAN or isolated control VLAN and restrict
+The device provides local HTTP without TLS. Its optional password reduces
+accidental local access. Install it on a trusted LAN or isolated control VLAN and restrict
 access at the network boundary.
 
 Configuration exports omit known password and hash fields. Diagnostics must

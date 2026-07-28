@@ -47,6 +47,7 @@ describe('repository contracts', () => {
       miso: 14, mosi: 13, sclk: 15, cs: 16, reset: 39, interrupt: 12,
     });
     expect(board.statusLedPin).toBe(38);
+    expect(board.statusLedColorOrder).toBe('RGB');
     expect(board.recoveryButtonPin).toBe(0);
   });
 
@@ -63,10 +64,20 @@ describe('repository contracts', () => {
 
   it('keeps memory-heavy operations bounded and PSRAM-backed', () => {
     const source = readFileSync('firmware/AdvatekTrigger/src/platform/MemoryResources.h', 'utf8');
+    const client = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
     expect(source).toContain('CONFIG_REQUEST_LIMIT = 12U * 1024U');
     expect(source).toContain('PIXLITE_RESPONSE_LIMIT = 32U * 1024U');
     expect(source).toContain('MALLOC_CAP_SPIRAM');
     expect(source).toContain('if (!ready) release()');
+    expect(client).toContain('RESPONSE_TOO_LARGE = -1002');
+    expect(client).toContain('RESPONSE_INCOMPLETE = -1003');
+    expect(client).toContain('RESPONSE_MEMORY_UNAVAILABLE = -1004');
+    expect(client.match(/memory_\.pixliteResponse\[0\] = '\\0';/g))
+      .toHaveLength(3);
+    expect(client).toContain('error += ": transport error "');
   });
 
   it('uses a bounded W5500 startup retry state', () => {
@@ -78,11 +89,29 @@ describe('repository contracts', () => {
 
   it('keeps the status LED orange and pulses it without blocking input scans', () => {
     const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
+    const industrial = readFileSync(
+      'firmware/AdvatekTrigger/src/boards/WaveshareEsp32S3Eth8Di8Ro.h',
+      'utf8',
+    );
     expect(app).toContain('scaleStatusLedChannel(255)');
     expect(app).toContain('scaleStatusLedChannel(48)');
+    expect(app).toContain('rgbLedWriteOrdered');
+    expect(industrial).toContain('StatusLedColorOrder::Rgb');
     expect(app).toContain('if (!config_.statusLed.enabled)');
     expect(app).toContain('triggerFlashUntil_ = now + 120');
     expect(app).not.toContain('delay(120)');
+  });
+
+  it('exposes every debounced input edge to the lightweight SPA activity poll', () => {
+    const types = readFileSync('firmware/AdvatekTrigger/src/core/Types.h', 'utf8');
+    const engine = readFileSync('firmware/AdvatekTrigger/src/core/InputEngine.h', 'utf8');
+    const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
+    const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
+    expect(types).toContain('uint32_t eventSequence');
+    expect(engine).toContain('++runtime.eventSequence');
+    expect(app).toContain('String inputStateJson() override');
+    expect(app).toContain('\\"eventSequence\\"');
+    expect(webApi).toContain('server_.on("/api/inputs", HTTP_GET');
   });
 
   it('persists status LED controls and migrates the Test Color schema v5', () => {
@@ -108,6 +137,9 @@ describe('repository contracts', () => {
     expect(memory).toContain('MAX_PIXLITES * MAX_MEDIA_FILES');
     const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
     expect(webApi).toContain('pixLiteIndexById(config_, candidate) < 0');
+    expect(webApi).toContain(
+      'requestedId[0] ? pixLiteIndexById(config_, requestedId) : -1',
+    );
     expect(webApi).toContain('if (!config_.inputs[i].enabled) continue');
     expect(webApi).toContain('requestedPassword[0]');
     expect(webApi).toContain('\\",\\"via\\":\\"');
@@ -139,8 +171,10 @@ describe('repository contracts', () => {
     const web = readFileSync('web/src/main.ts', 'utf8');
     expect(types).toContain('NextScene');
     expect(types).toContain('PreviousScene');
+    expect(types).toContain('TestColorFade');
     expect(policy).toContain('previous ? lastScene : firstScene');
     expect(client).toContain('sceneStepIndex(');
+    expect(client).toContain('sortMediaFiles(targetMedia, count)');
     expect(client).toContain('ActionConfig playback = action');
     expect(web).toContain("['nextScene', 'Next scene']");
     expect(web).toContain("['previousScene', 'Previous scene']");
@@ -148,6 +182,7 @@ describe('repository contracts', () => {
       "repeat: ['playScene', 'playPlaylist', 'nextScene', 'previousScene'].includes(kind)",
     );
     expect(web).toContain('Play selected scene');
+    expect(web).toContain("alphabetical scene order");
   });
 
   it('defaults new playback actions to loop until explicitly stopped', () => {
@@ -160,6 +195,38 @@ describe('repository contracts', () => {
     expect(web).toContain("mediaName: '', repeat: 'forever'");
     expect(web.indexOf('<option value="forever"'))
       .toBeLessThan(web.indexOf('<option value="once"'));
+  });
+
+  it('keeps the ESP-IDF network stack measurement in bytes with hardware-tested headroom', () => {
+    const app = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/App.h',
+      'utf8',
+    );
+    expect(app).toContain(
+      'xTaskCreatePinnedToCore(networkTaskEntry, "network", 20480',
+    );
+    expect(app).toContain(
+      'networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) : 0',
+    );
+    expect(app).not.toContain(
+      'uxTaskGetStackHighWaterMark(networkTask_) * sizeof(StackType_t)',
+    );
+  });
+
+  it('retains the scene-step cursor when Live mode clears the current file', () => {
+    const types = readFileSync(
+      'firmware/AdvatekTrigger/src/core/Types.h',
+      'utf8',
+    );
+    const client = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
+    expect(types).toContain('char lastScene[64]');
+    expect(client).toContain('sceneStepReference(');
+    expect(client).toContain(
+      'copyText(current.lastScene, sizeof(current.lastScene), selectedScene)',
+    );
   });
 
   it('tracks the real PixLite A4-S status response shape', () => {
@@ -204,7 +271,11 @@ describe('repository contracts', () => {
     const hardware = readFileSync('docs/HARDWARE.md', 'utf8');
     expect(directDiagram).toContain('Button 8');
     expect(directDiagram).toContain('GPIO40');
-    expect(hardware).toContain('GND-return wire are the pair');
+    expect(hardware).toContain('one pair per remote switch');
+    expect(hardware).toContain('other its matching return');
+    expect(readme).toContain('industrial-grade microSD card must be installed in the PixLite Mk3');
+    expect(readme).toContain('Advatek does not endorse the listed products');
+    expect(hardware).toMatch(/local electrical\s+codes/);
   });
 
   it('never serializes known secret fields into redacted config code paths', () => {
@@ -231,20 +302,73 @@ describe('repository contracts', () => {
     expect(validation).toContain('input.debounceMs < 10 || input.debounceMs > 2000');
   });
 
+  it('keeps web configuration and PixLite response tokenizers task-local', () => {
+    const memory = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/MemoryResources.h',
+      'utf8',
+    );
+    const webApi = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/WebApi.h',
+      'utf8',
+    );
+    const pixlite = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/PixLiteClient.h',
+      'utf8',
+    );
+    expect(memory).toContain('JsonToken *configTokens');
+    expect(memory).toContain('JsonToken *pixliteTokens');
+    expect(webApi).toContain('memory_.configTokens');
+    expect(webApi).not.toContain('memory_.pixliteTokens');
+    expect(pixlite).toContain('memory_.pixliteTokens');
+    expect(pixlite).not.toContain('memory_.configTokens');
+  });
+
   it('commissions over Ethernet and reserves the uniquely named AP for recovery', () => {
     const app = readFileSync('firmware/AdvatekTrigger/src/platform/App.h', 'utf8');
     const defaults = readFileSync('firmware/AdvatekTrigger/src/core/Defaults.h', 'utf8');
     const network = readFileSync('firmware/AdvatekTrigger/src/platform/NetworkManager.h', 'utf8');
+    const webApi = readFileSync('firmware/AdvatekTrigger/src/platform/WebApi.h', 'utf8');
     const validation = readFileSync('firmware/AdvatekTrigger/src/core/Validation.h', 'utf8');
     expect(app).toContain('const char *hostname = "advatrigger"');
     expect(app).toContain('"Advatek-Trigger-%s"');
+    expect(app).toContain(
+      'uplinkConnected && !network_.ethernetRecoveryRunning()',
+    );
+    expect(webApi).toContain(
+      'PixLite operations unavailable during direct Ethernet recovery',
+    );
     expect(defaults).toContain('accessPointMode = AccessPointMode::Disabled');
     expect(network).not.toContain('config_.sequence <= 1');
     expect(network).not.toContain('ethernetFailed');
     expect(network).toContain('openRecoveryNetwork()');
     expect(network).toContain('WIFI_MODE_STA');
+    expect(network).toContain('IPAddress leaseStart(192, 168, 4, 2)');
+    expect(network).toContain(
+      'WiFi.AP.config(ip, ip, mask, leaseStart, ip)',
+    );
+    expect(network).toContain('Recovery access point did not start or advertise correctly');
+    expect(network).toContain('Recovery Wi-Fi AP interface attempt %u failed');
+    expect(network).toContain(
+      'Wi-Fi recovery radio initialized idle; Ethernet remains the only operational uplink',
+    );
     expect(network).toContain('Direct Ethernet recovery refused');
+    expect(network).toContain('RTC_NOINIT_ATTR uint32_t directEthernetRecoveryBootMarker');
+    expect(network).toContain('esp_reset_reason() == ESP_RST_SW');
+    expect(network).toContain('Starting one-time direct Ethernet recovery boot');
+    expect(network).toContain('startDhcpOnTcpipThread');
+    expect(network).toContain('tcpip_callback_with_block(');
     expect(network).toContain('dhcps_start(');
+    expect(network).not.toContain('dhcps_stop(');
+    const tcpipCallbackStart = network.indexOf(
+      'static void startDhcpOnTcpipThread',
+    );
+    const tcpipCallbackEnd = network.indexOf(
+      'bool startDirectEthernetDhcp',
+      tcpipCallbackStart,
+    );
+    const rawDhcpStart = network.indexOf('dhcps_start(');
+    expect(rawDhcpStart).toBeGreaterThan(tcpipCallbackStart);
+    expect(rawDhcpStart).toBeLessThan(tcpipCallbackEnd);
     expect(network).toContain('ETH.config(address, address, mask, address)');
     expect(validation).toContain('validMdnsHostname');
     expect(validation).toContain('cannot start or end with a hyphen');
@@ -252,7 +376,7 @@ describe('repository contracts', () => {
 
   it('keeps the required PixLite v1 operation vocabulary in the codec', () => {
     const protocol = readFileSync('firmware/AdvatekTrigger/src/core/PixLiteProtocol.h', 'utf8');
-    for (const operation of ['fileList', 'modePlayback', 'modeLive', 'modeTestData', 'setColor', 'Blank', 'progInt', 'HiSet', 'Lo', 'statusRead']) {
+    for (const operation of ['fileList', 'modePlayback', 'modeLive', 'modeTestData', 'setColor', 'colorFade', 'Blank', 'progInt', 'HiSet', 'Lo', 'statusRead']) {
       expect(protocol).toContain(operation);
     }
     expect(protocol).not.toContain('\\"req\\":\\"modeCtrl\\"');
@@ -275,6 +399,11 @@ describe('repository contracts', () => {
     expect(configJson).toContain('"testRed"');
     expect(configJson).toContain('"testGreen"');
     expect(configJson).toContain('"testBlue"');
+    const webApi = readFileSync(
+      'firmware/AdvatekTrigger/src/platform/WebApi.h',
+      'utf8',
+    );
+    expect(webApi).toContain('if (action.kind == ActionKind::None)');
     const responsePolicy = readFileSync(
       'firmware/AdvatekTrigger/src/core/PixLiteResponsePolicy.h',
       'utf8',
@@ -295,7 +424,7 @@ describe('repository contracts', () => {
     expect(policy).toContain('heldMs >= 15000');
     expect(policy).toContain('heldMs >= 5000');
     expect(app).toContain('RecoveryIntent::ClearAuthentication');
-    expect(app).toContain('rgbLedWrite(board_.statusLedPin, 255, 0, 0)');
+    expect(app).toContain('writeStatusLed(255, 0, 0)');
     expect(app).toContain('factoryResetDueAt_ = millis() + 750');
   });
 });

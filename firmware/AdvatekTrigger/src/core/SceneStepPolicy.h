@@ -18,6 +18,29 @@ inline bool sceneStepNameEquals(const char *left, const char *right) {
   return *left == '\0' && *right == '\0';
 }
 
+inline bool sceneStepIsSceneName(const char *name) {
+  if (!name) return false;
+  const char *end = name;
+  while (*end) ++end;
+  if (end - name < 4) return false;
+  const char *suffix = end - 4;
+  return suffix[0] == '.' &&
+         (suffix[1] == 's' || suffix[1] == 'S') &&
+         (suffix[2] == 'c' || suffix[2] == 'C') &&
+         (suffix[3] == 'n' || suffix[3] == 'N');
+}
+
+// Live mode intentionally has no current file. Retain the most recently
+// selected scene as the cursor so a Stop/Live action between button presses
+// does not make Next restart at the first file. A playing playlist is not a
+// scene cursor and therefore also falls back to the last scene.
+inline const char *sceneStepReference(
+    const char *currentFile,
+    const char *lastScene) {
+  if (sceneStepIsSceneName(currentFile)) return currentFile;
+  return lastScene ? lastScene : "";
+}
+
 // Returns an index into the controller's cached file-list order, skipping
 // playlists. If no scene is active, Next starts at the first scene and
 // Previous starts at the last. Both directions wrap at their respective end.

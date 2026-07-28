@@ -3,6 +3,7 @@
 #include <HTTPClient.h>
 
 #include "../core/JsonLite.h"
+#include "../core/MediaOrderPolicy.h"
 #include "../core/PixLiteProtocol.h"
 #include "../core/PixLiteResponsePolicy.h"
 #include "../core/SceneStepPolicy.h"
@@ -57,14 +58,15 @@ class PixLiteClient {
 
   bool refreshMedia(uint8_t index) {
     if (!validIndex(index) || !memory_.media || !memory_.mediaCounts ||
-        !memory_.tokens || !memory_.pixliteResponse) {
-      return requestFailed(index, -4, "", "file list");
+        !memory_.pixliteTokens || !memory_.pixliteResponse) {
+      return requestFailed(index, RESPONSE_MEMORY_UNAVAILABLE, "", "file list");
     }
     const int code = post(index, pixLiteFileListRequest(nextId()));
     if (!responseAccepted(index, code, "file list")) return false;
     uint8_t &count = memory_.mediaCounts[index];
     count = 0;
-    JsonDocument document(response(), memory_.tokens, CONFIG_TOKEN_CAPACITY);
+    JsonDocument document(
+        response(), memory_.pixliteTokens, CONFIG_TOKEN_CAPACITY);
     if (!document.parse()) {
       return requestFailed(index, code, response(), "file list JSON");
     }
@@ -84,6 +86,9 @@ class PixLiteClient {
         ++count;
       }
     }
+    // PixLite Mk3 presents media alphabetically. Cache the same deterministic
+    // order so the SPA, action choices, and GPIO scene stepping all agree.
+    sortMediaFiles(targetMedia, count);
     return true;
   }
 
@@ -97,8 +102,12 @@ class PixLiteClient {
     if (!validIndex(index)) return targetFailed("Action target is not configured");
     if (action.kind == ActionKind::None) return true;
     String request;
+    char selectedScene[64]{};
     switch (action.kind) {
       case ActionKind::PlayScene:
+        copyText(selectedScene, sizeof(selectedScene), action.mediaName);
+        request = pixLitePlaybackRequest(action, nextId());
+        break;
       case ActionKind::PlayPlaylist:
       case ActionKind::BlankOutputs:
         request = pixLitePlaybackRequest(action, nextId());
@@ -109,7 +118,9 @@ class PixLiteClient {
         const int16_t selected = sceneStepIndex(
             mediaSlice(index),
             mediaCount(index),
-            status(index).currentFile,
+            sceneStepReference(
+                status(index).currentFile,
+                status(index).lastScene),
             action.kind == ActionKind::PreviousScene);
         if (selected < 0) {
           char message[128];
@@ -125,6 +136,7 @@ class PixLiteClient {
             playback.mediaName,
             sizeof(playback.mediaName),
             media(index, static_cast<uint8_t>(selected)).name);
+        copyText(selectedScene, sizeof(selectedScene), playback.mediaName);
         log_.addf(
             LogLevel::Info,
             "%s scene step selected %s",
@@ -137,6 +149,7 @@ class PixLiteClient {
         request = pixLiteStopRequest(nextId());
         break;
       case ActionKind::TestColor:
+      case ActionKind::TestColorFade:
         request = pixLiteTestColorRequest(action, nextId());
         break;
       case ActionKind::IntensityBrighter:
@@ -159,6 +172,9 @@ class PixLiteClient {
     current.lastError[0] = '\0';
     clientError_[0] = '\0';
     if (strstr(response(), "\"status\"")) parseStatus(index, response());
+    if (selectedScene[0]) {
+      copyText(current.lastScene, sizeof(current.lastScene), selectedScene);
+    }
     return true;
   }
 
@@ -212,6 +228,13 @@ class PixLiteClient {
   }
 
  private:
+  // Keep client-side failures outside HTTPClient's negative error range. This
+  // prevents a transport error such as SEND_HEADER_FAILED from being reported
+  // as one of our bounded-buffer or degraded-memory conditions.
+  static constexpr int RESPONSE_TOO_LARGE = -1002;
+  static constexpr int RESPONSE_INCOMPLETE = -1003;
+  static constexpr int RESPONSE_MEMORY_UNAVAILABLE = -1004;
+
   bool validIndex(uint8_t index) const {
     return index < config_.pixliteCount && index < MAX_PIXLITES &&
            config_.pixlites[index].enabled && config_.pixlites[index].host[0];
@@ -253,7 +276,11 @@ class PixLiteClient {
   }
 
   int get(uint8_t index, const char *path) {
-    if (!memory_.pixliteResponse) return -4;
+    if (!memory_.pixliteResponse) return RESPONSE_MEMORY_UNAVAILABLE;
+    // A failed HTTP transaction may not call readResponse(). Clear the shared
+    // workspace here so diagnostics can never quote a previous successful
+    // PixLite Mk3 response as if it belonged to the current failure.
+    memory_.pixliteResponse[0] = '\0';
     HTTPClient http;
     http.setConnectTimeout(1500);
     http.setTimeout(1800);
@@ -269,7 +296,8 @@ class PixLiteClient {
   }
 
   int post(uint8_t index, const String &body) {
-    if (!memory_.pixliteResponse) return -4;
+    if (!memory_.pixliteResponse) return RESPONSE_MEMORY_UNAVAILABLE;
+    memory_.pixliteResponse[0] = '\0';
     HTTPClient http;
     http.setConnectTimeout(1500);
     http.setTimeout(1800);
@@ -288,7 +316,9 @@ class PixLiteClient {
   int readResponse(HTTPClient &http, int code) {
     memory_.pixliteResponse[0] = '\0';
     const int declared = http.getSize();
-    if (declared > static_cast<int>(PIXLITE_RESPONSE_LIMIT)) return -2;
+    if (declared > static_cast<int>(PIXLITE_RESPONSE_LIMIT)) {
+      return RESPONSE_TOO_LARGE;
+    }
     NetworkClient *stream = http.getStreamPtr();
     size_t used = 0;
     uint32_t lastDataAt = millis();
@@ -297,7 +327,7 @@ class PixLiteClient {
       const size_t available = stream->available();
       if (available) {
         const size_t room = PIXLITE_RESPONSE_LIMIT - used;
-        if (!room) return -2;
+        if (!room) return RESPONSE_TOO_LARGE;
         const size_t requested = available < room ? available : room;
         const int read = stream->readBytes(
             reinterpret_cast<uint8_t *>(memory_.pixliteResponse + used),
@@ -312,7 +342,9 @@ class PixLiteClient {
       }
     }
     memory_.pixliteResponse[used] = '\0';
-    if (declared >= 0 && used != static_cast<size_t>(declared)) return -3;
+    if (declared >= 0 && used != static_cast<size_t>(declared)) {
+      return RESPONSE_INCOMPLETE;
+    }
     return code;
   }
 
@@ -335,10 +367,20 @@ class PixLiteClient {
     current.online = false;
     current.httpStatus = code > 0 ? code : 0;
     String error = String("PixLite ") + operation + " failed";
-    if (code == -2) error += ": response exceeded 32 KB";
-    else if (code == -3) error += ": incomplete response";
-    else if (code == -4) error += ": degraded memory mode";
-    else if (responseBody && responseBody[0]) {
+    if (code == RESPONSE_TOO_LARGE) {
+      error += ": response exceeded 32 KB";
+    } else if (code == RESPONSE_INCOMPLETE) {
+      error += ": incomplete response";
+    } else if (code == RESPONSE_MEMORY_UNAVAILABLE) {
+      error += ": degraded memory mode";
+    } else if (code < 0) {
+      error += ": transport error ";
+      error += String(code);
+    } else if (code != 200) {
+      error += ": HTTP ";
+      error += String(code);
+    }
+    if (responseBody && responseBody[0]) {
       char excerpt[91];
       strlcpy(excerpt, responseBody, sizeof(excerpt));
       error += ": " + String(excerpt);
@@ -351,11 +393,16 @@ class PixLiteClient {
 
   bool responseAccepted(uint8_t index, int code, const char *operation) {
     if (code != 200) return requestFailed(index, code, response(), operation);
-    if (!memory_.tokens) return requestFailed(index, -4, "", operation);
+    if (!memory_.pixliteTokens) {
+      return requestFailed(index, -4, "", operation);
+    }
 
     PixLiteApiError apiError;
     if (!inspectPixLiteResponse(
-            response(), memory_.tokens, CONFIG_TOKEN_CAPACITY, apiError)) {
+            response(),
+            memory_.pixliteTokens,
+            CONFIG_TOKEN_CAPACITY,
+            apiError)) {
       return requestFailed(index, code, "invalid JSON response", operation);
     }
     if (!apiError.present) {
@@ -398,8 +445,9 @@ class PixLiteClient {
   }
 
   void parseStatus(uint8_t index, const char *responseBody) {
-    if (!memory_.tokens) return;
-    JsonDocument document(responseBody, memory_.tokens, CONFIG_TOKEN_CAPACITY);
+    if (!memory_.pixliteTokens) return;
+    JsonDocument document(
+        responseBody, memory_.pixliteTokens, CONFIG_TOKEN_CAPACITY);
     if (!document.parse()) return;
     PixLiteStatus &current = status(index);
     current.outputCount = 0;
@@ -413,6 +461,9 @@ class PixLiteClient {
         document.stringValue(i + 1, candidate, sizeof(candidate));
         if (mediaNameIsScene(candidate) || mediaNameIsPlaylist(candidate)) {
           copyText(current.currentFile, sizeof(current.currentFile), candidate);
+          if (mediaNameIsScene(candidate)) {
+            copyText(current.lastScene, sizeof(current.lastScene), candidate);
+          }
         }
       } else if (document.equals(i, "out") &&
                  document.token(i + 1).type == JsonTokenType::String &&

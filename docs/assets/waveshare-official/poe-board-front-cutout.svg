@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="650" viewBox="180 280 1260 650" role="img" aria-labelledby="title desc">
+  <title id="title">Waveshare ESP32-S3-POE-ETH-8DI-8RO product cutout</title>
+  <desc id="desc">The official Waveshare enclosure photograph clipped to remove its white studio background without altering the product.</desc>
+  <defs>
+    <!--
+      The path follows the enclosure's outside rails in the attributed source
+      photograph. Keeping the mask as SVG preserves the original product pixels
+      and makes future crop corrections reviewable.
+    -->
+    <clipPath id="enclosure">
+      <path clip-rule="evenodd" d="M337 314 L1265 314 L1394 884 L220 884 Z M400 314 H1210 V354 H400 Z"/>
+    </clipPath>
+  </defs>
+  <image href="poe-board-front.jpg" width="1600" height="1200" clip-path="url(#enclosure)"/>
+</svg>

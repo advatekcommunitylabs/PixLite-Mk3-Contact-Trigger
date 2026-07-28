@@ -21,6 +21,8 @@ describe('compact commissioning UI contracts', () => {
     expect(css).toContain('--orange:#f15a2c');
     expect(html).toContain('ADVATEK LABS');
     expect(html).not.toContain('class="brand-mark"');
+    expect(html).toContain('rel="icon" href="data:image/svg+xml');
+    expect(html).toContain("fill='%23f15a2c'");
     expect(html).toContain('id="status-led-enabled"');
     expect(html).toContain('aria-label="Status LED brightness"');
     expect(script).toContain("JSON.stringify({statusLed})");
@@ -32,17 +34,28 @@ describe('compact commissioning UI contracts', () => {
     expect(html).toContain('Operational Wi-Fi SSID');
     expect(html).not.toContain('id="ap-mode"');
     expect(html).toContain('id="recovery-connection"');
-    expect(html).toContain('Direct Ethernet DHCP — unplug LAN first');
+    expect(html).toContain('Direct Ethernet DHCP (unplug LAN first)');
+    expect(html).toContain('Wi-Fi has no wired fallback');
+    expect(html).toContain('5–14s recovery');
+    expect(html).toContain('Wi-Fi recovery opens setup');
+    expect(html).toContain('direct Ethernet needs separate power and no LAN');
     expect(script).toContain("recoveryConnection: value('recovery-connection')");
+    expect(script).toContain('Enter the operational Wi-Fi network name before switching to Wi-Fi.');
+    expect(script).toContain("$<HTMLButtonElement>('apply-network').disabled = invalid");
+    expect(script).toContain("if (value('wifi-password')) network.wifiPassword");
+    expect(script).not.toContain("confirm('Save network settings");
+    expect(script).toContain("button.textContent = 'Tap again to save and restart'");
+    expect(script).toContain("button.textContent = 'Settings accepted - restarting'");
+    expect(script).toContain('iOS and Android captive-portal browsers');
   });
 
   it('handles authentication, discovery empty states, and cross-board remapping', () => {
     expect(script).toContain("response.status === 401");
-    expect(script).toContain('No PixLites found');
+    expect(script).toContain('No PixLite Mk3 controllers found');
     expect(html).toContain('id="devices" class="device-list empty-state" hidden');
     expect(html).toContain('id="close-media"');
     expect(script).toContain('remapRequired');
-    expect(html).toContain('or 20 seconds to cancel');
+    expect(html).toContain('20s cancel');
     expect(script).toContain('let pins = [1, 2, 15, 16, 18, 38, 39, 40]');
     expect(script).toContain('config.boardCapabilities?.allowedInputPins');
     expect(script).toContain("config.boardCapabilities?.inputHardware === 'isolated'");
@@ -70,15 +83,47 @@ describe('compact commissioning UI contracts', () => {
     expect(script).toContain("setInputSaveStatus('Saved')");
   });
 
-  it('supports sixteen saved PixLites and targets every GPIO action explicitly', () => {
+  it('tests each input as an ordered held make and break action', () => {
+    expect(script).toContain('data-test-input="${index}"');
+    expect(script).toContain('Hold to test');
+    expect(script).toContain("api('/api/action/test'");
+    expect(script).toContain('inputTestQueues.get(index)');
+    expect(script).toContain('queueInputTest(index, active)');
+    expect(script).toContain('button.onpointercancel');
+    expect(script).toContain('button.onlostpointercapture');
+    expect(script).toContain('button.onblur');
+    expect(css).toContain('.test-input.testing');
+  });
+
+  it('mirrors debounced make and break events with a per-input virtual LED', () => {
+    expect(script).toContain('id="i${index}-activity"');
+    expect(script).toContain("api('/api/inputs')");
+    expect(script).toContain('setInterval(refreshInputs, 250)');
+    expect(script).toContain('sequence - previous');
+    expect(script).toContain("setProperty('--pulses'");
+    expect(css).toContain('.input-activity.flash');
+    expect(css).toContain('@keyframes input-activity-flash');
+    expect(css).toContain('background:#fff');
+  });
+
+  it('supports sixteen saved PixLite Mk3 controllers and targets every GPIO action explicitly', () => {
     expect(html).toContain('0 of 16 configured');
     expect(script).toContain('targetId:');
     expect(script).toContain('targetOptions(action.targetId)');
     expect(script).toContain('/api/pixlites/remove');
     expect(script).toContain('/api/media?targetId=');
+    expect(script).toContain('primeMediaChoices');
+    expect(script).toContain('Choose or type a media filename');
     expect(script).toContain('MAC ${escapeHtml(target.mac');
     expect(script).toContain("['testColor', 'Test mode · solid colour']");
+    expect(script).toContain("['testColorFade', 'Test mode · RGB colour fade']");
     expect(script).toContain('type="color"');
     expect(script).toContain('colorChannels(testColor)');
+    expect(script).toContain("document.addEventListener('pointerdown'");
+    expect(script).toContain("active.type === 'color'");
+    expect(html).toContain('PixLite Mk3 controllers');
+    expect(html).toContain('Discover PixLite Mk3 controllers');
+    expect(html).not.toContain('>PixLites<');
+    expect(html).not.toContain('>Add PixLite<');
   });
 });
