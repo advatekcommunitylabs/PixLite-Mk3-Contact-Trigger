@@ -1,33 +1,50 @@
-# Advatek Labs PixLite Contact Closure Trigger
+# Advatek Labs PixLite Mk3 Contact Closure Trigger
 
 An open-source ESP32 appliance that turns physical push buttons, maintained
 switches, and relay contacts into PixLite Mk3 playback and intensity actions.
 Installers configure it through a compact local web interface; no firmware
 editing is required after the initial Arduino upload.
 
-> **Community beta:** the Waveshare ESP32-S3-ETH and a PixLite A4-S Mk3 have
-> passed initial bench bring-up. The industrial
-> ESP32-S3-(POE)-ETH-8DI-8RO target is compile-supported and awaits real-board
-> electrical validation. See
-> [HARDWARE-TESTS.md](HARDWARE-TESTS.md) before using it in a production
-> installation.
+> **Community beta:** use the matching board-specific download and follow the
+> installation guide before connecting field hardware. Advatek Technical
+> Support does not cover third-party hardware or Advatek Labs community
+> projects. Hardware-affecting changes made after public launch are recorded in
+> the [public hardware change log](HARDWARE-TESTS.md).
 
 ## Quick start
 
 Choose the download that exactly matches the Waveshare hardware:
 
-| Hardware | Recommended Arduino download | Input connection |
+| Hardware | Matching Arduino download | Input connection |
 | --- | --- | --- |
-| ESP32-S3-ETH / ESP32-S3-POE-ETH Pico-header development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; external isolation recommended |
+| ESP32-S3-ETH / ESP32-S3-POE-ETH Pico-header development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
 | ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
 
-PoE changes the power path, not the firmware pin map, so the standard-Ethernet
-and PoE variants of each physical board share a download.
+PoE changes only the power path. The standard-Ethernet and PoE variants of each
+physical board share one firmware pin map and download.
 
-The zip is the recommended route for non-technical users: extract it, open the
+The zip is the simplest route for non-technical users: extract it, open the
 same-named folder, and double-click its `.ino`. No source files need to be
 copied or edited. Repository builds are also available under
 [`generated/`](generated/).
+
+### PixLite Mk3 SHOWTime prerequisite
+
+Scene and playlist playback uses PixLite Mk3 SHOWTime. A suitable
+**industrial-grade microSD card must be installed in the PixLite Mk3** before
+SHOWTime media can be stored or played. Follow the
+[official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
+for card preparation. The microSD/TF slot on either ESP32 trigger board is
+unrelated and is not used by this firmware.
+
+New to Arduino? Follow the
+[illustrated flashing guide](docs/FLASHING-WITH-ARDUINO.md) for screenshots of
+every board, port, build-option, and upload step.
+
+Prefer a formatted web guide? Open the
+[Advatek Labs Contact Trigger guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).
+Every page can be printed or saved as a clean PDF, and its editable Markdown
+source can be downloaded directly.
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software) and Espressif
    **Arduino-ESP32 3.3.10**.
@@ -44,13 +61,29 @@ copied or edited. Repository builds are also available under
 
 4. Select the board's COM/serial port and click **Upload**.
 5. Connect Ethernet and open `http://advatrigger.local/`.
-6. If that name is unavailable, use the IP printed at 115200 baud or join
-   `Advatek-Trigger-XXXXXX` and open `http://192.168.4.1`.
+6. If that name is unavailable, use the numeric IP printed at 115200 baud or
+   shown at the top of the web interface.
+
+The controller does not automatically fall back from Wi-Fi to Ethernet. If the
+configured Wi-Fi network is unavailable, hold **BOOT for 5–14 seconds** and
+release to start the recovery method selected in the web interface:
+
+- **Wi-Fi AP:** join `Advatek-Trigger-XXXXXX`. A phone should open the setup
+  page automatically; if it does not, use a full browser and open
+  `http://192.168.4.1/`.
+- **Direct Ethernet:** unplug the installed LAN first, enter BOOT recovery, and
+  wait through the solid-white restart indication until the controller pulses
+  cyan before connecting one computer directly. Power the controller
+  separately over USB-C or its
+  supported DC input because a normal computer Ethernet port does not provide
+  PoE. Open `http://192.168.4.1/`.
+
+Recovery access expires after 15 minutes.
 
 Continue with the [development-board guide](docs/GETTING-STARTED.md) or
 [industrial 8DI guide](docs/GETTING-STARTED-8DI-8RO.md). The
-[hardware and pinout guide](docs/HARDWARE.md) shows what to buy and exactly
-where each supported contact is connected.
+[hardware and pinout guide](docs/HARDWARE.md) describes compatible parts and
+exactly where each supported contact is connected.
 
 ## What it supports
 
@@ -60,12 +93,13 @@ where each supported contact is connected.
   New inputs default to 100 ms.
 - Momentary Press/Release and maintained Latch On/Latch Off actions.
 - Scene and playlist playback Once or Loop Forever, next/previous scene
-  stepping with wraparound, Live, Blank, and solid colour Test mode.
+  stepping with wraparound, Live, Blank, solid colour Test mode, and the
+  PixLite Mk3 RGB colour-fade test.
 - GPIO-driven Set/Release intensity and press-and-hold Brighter/Darker actions
   for Pixels, Aux, or combined outputs.
 - Up to 16 saved PixLite Mk3 controllers, identified by nickname and MAC
   address and selected independently by each GPIO action.
-- ADAR v1.1 discovery and PixLite API negotiation from v1.0 through v1.9.
+- ADAR v1.1 discovery and PixLite Mk3 API negotiation from v1.0 through v1.9.
 - Explicit Ethernet or Wi-Fi Station uplink with DHCP or static IPv4; there is
   no silent fallback between uplinks.
 - Ethernet-first commissioning, operational Wi-Fi Station, editable `.local`
@@ -74,7 +108,7 @@ where each supported contact is connected.
 - Persistent orange status LED with configurable brightness and a white pulse
   on each debounced contact edge.
 
-PixLite HTTP work is serialized on a separate FreeRTOS task so slow controller
+PixLite Mk3 HTTP work is serialized on a separate FreeRTOS task so slow controller
 requests cannot block GPIO debounce or release detection. Latest physical event
 wins, and actions that cannot be delivered expire after two seconds.
 
@@ -87,19 +121,25 @@ passive/active arrangements documented by Waveshare.
 
 For PoE-powered installations and switch cabling outside the enclosure, use
 the isolated-input approach described in
-[Protected contact inputs](docs/PROTECTED-CONTACT-INPUTS.md). The included
-stripboard circuits are prototype references, not certified safety designs.
-For a small immersive event, the recommended default is the group-isolated
-optocoupler route; direct GPIO-to-GND wiring is reserved for bench tests or
-buttons inside the controller enclosure. See the
-[hardware decision guide](docs/HARDWARE.md#which-button-connection-should-i-build).
+[Off-the-shelf isolated contact inputs](docs/PROTECTED-CONTACT-INPUTS.md).
+The public guides use complete, documented input modules for field wiring.
+Direct GPIO-to-GND wiring is intended for bench tests or buttons inside the
+controller enclosure. See the
+[hardware decision guide](docs/HARDWARE.md#choose-the-input-approach).
+
+Third-party boards, modules, suppliers, and product links document
+compatibility. Advatek does not endorse the listed products. Listings and
+product designs can change.
+Integrators are responsible for checking local electrical codes, applicable
+standards, manufacturer instructions, and whether qualified electrical
+personnel are required for their installation.
 
 Permitted contact pins on the Pico-header PoE-accessible board layout are:
 `GPIO1`, `GPIO2`, `GPIO15`, `GPIO16`, `GPIO18`, `GPIO38`, `GPIO39`, and
 `GPIO40`. The firmware allow-list is the source of truth.
 
-The industrial profile maps `DI1`–`DI8` to GPIO4–GPIO11 internally; installers
-use the labeled DI terminal block rather than those ESP32 pins.
+The industrial profile maps `DI1`–`DI8` to GPIO4–GPIO11 internally. Installers
+connect switches to the labeled DI terminal block.
 
 ## Project structure
 
@@ -118,8 +158,7 @@ tools/            deterministic web embedding and sketch generation
 
 The modular source is canonical. The large `.ino` is a deterministic,
 generated convenience artifact for Arduino IDE users and must not be edited by
-hand. New ESP32 boards are added as profiles rather than forks of the shared
-PixLite logic.
+hand. New ESP32 boards use profiles and the shared PixLite Mk3 logic.
 
 The earlier experimental v0.8 sketch was an unverified idea reference and is
 not part of this implementation or its architectural foundation.
@@ -129,7 +168,7 @@ See [Architecture](docs/ARCHITECTURE.md) for the runtime design and
 
 ## Maintainer validation
 
-Prerequisites are Node.js 22, pnpm 10.12.1, a C++17 compiler, Arduino CLI, and
+Prerequisites are Node.js 24, pnpm 10.12.1, a C++17 compiler, Arduino CLI, and
 Arduino-ESP32 3.3.10.
 
 ```sh
@@ -147,10 +186,16 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 
 ## Documentation
 
+The guides below are also published as a responsive
+[GitHub Pages documentation site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/)
+with dark/light themes and per-guide PDF/Markdown export controls.
+
 | Guide | Audience |
 | --- | --- |
+| [Illustrated Arduino flashing guide](docs/FLASHING-WITH-ARDUINO.md) | Non-technical users installing a release |
 | [Getting started](docs/GETTING-STARTED.md) | First-time Arduino and commissioning users |
 | [Industrial 8DI getting started](docs/GETTING-STARTED-8DI-8RO.md) | Users of the isolated-input DIN-rail board |
+| [Software user guide](docs/USER-GUIDE.md) | Operators using a flashed and commissioned controller |
 | [Hardware and project pinout](docs/HARDWARE.md) | First-time buyers and installers |
 | [Wiring](WIRING.md) | Installers wiring dry contacts |
 | [Protected contact inputs](docs/PROTECTED-CONTACT-INPUTS.md) | Builders adding cable and ground protection |
@@ -158,7 +203,7 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 | [Architecture](docs/ARCHITECTURE.md) | Firmware and web contributors |
 | [Contributing](CONTRIBUTING.md) | Community contributors |
 | [Board porting](PORTING.md) | Maintainers adding an ESP32 PCB |
-| [Hardware acceptance](HARDWARE-TESTS.md) | Testers and release maintainers |
+| [Hardware change validation](HARDWARE-TESTS.md) | Contributors modifying hardware-facing behaviour |
 | [Project and release summary](PROJECT-SUMMARY.md) | Advatek Labs repository and release maintainers |
 | [Support](SUPPORT.md) | Users reporting a problem |
 | [Security](SECURITY.md) | Installers and vulnerability reporters |
@@ -166,20 +211,24 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 ## Scope
 
 Version 1 does not support PixLite Mk2, synchronized multi-controller playback,
-scene upload, PixLite network reconfiguration, OTA, MQTT/cloud control, camera
-operation, or TF-card operation. The web interface is local HTTP, not TLS; use
-it only on a trusted LAN or control VLAN.
+scene upload, PixLite Mk3 network reconfiguration, OTA, MQTT/cloud control, camera
+operation, or TF-card operation. The web interface uses local HTTP without TLS.
+Use it only on a trusted LAN or control VLAN.
 
 ## Community and license
 
-This is an unofficial Advatek Labs community integration. It is not an
-Advatek Lighting-supported production product, and community issues are not a
-substitute for urgent show-critical support.
+This is an Advatek Labs community integration. Advatek Lighting Technical
+Support does not cover this third-party hardware or any Advatek Labs community
+project. GitHub Issues are the community support route and are not a substitute
+for urgent or show-critical support.
 
-Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
-[Code of Conduct](CODE_OF_CONDUCT.md). Please report security issues privately
-as described in [SECURITY.md](SECURITY.md).
+Advatek does not endorse one compatible third-party product or supplier over
+another. Community members and the Advatek team are welcome to share tested
+profiles, improvements, documentation, and repeatable hardware evidence.
+
+Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md). Please
+report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 MIT licensed. See [LICENSE](LICENSE) and
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). PixLite API and ADAR protocol
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). PixLite Mk3 API and ADAR protocol
 documents are not redistributed.

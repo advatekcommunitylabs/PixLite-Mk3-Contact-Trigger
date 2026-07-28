@@ -1,19 +1,19 @@
-# Advatek PixLite Contact Closure Trigger
+# Advatek PixLite Mk3 Contact Closure Trigger
 
 ## GitHub project summary
 
-The Advatek PixLite Contact Closure Trigger is an open-source ESP32 appliance
-that connects physical push buttons, relay contacts, and maintained switches to
-a PixLite Mk3. It gives installers and operators a compact local web interface
-for discovering a PixLite, selecting scenes or playlists, assigning GPIOs, and
-configuring playback and intensity actions without writing custom firmware.
+This project is an open-source ESP32 appliance that connects physical push
+buttons, relay contacts, and maintained switches to a PixLite Mk3. It gives
+installers and operators a compact local web interface for discovering a
+PixLite Mk3, selecting scenes or playlists, assigning inputs, and configuring
+playback and intensity actions without writing custom firmware.
 
 The supported targets are the Waveshare ESP32-S3-ETH development board and the
 Waveshare ESP32-S3-(POE)-ETH-8DI-8RO industrial board. Both use W5500 Ethernet,
 16 MB flash, and 8 MB PSRAM; each standard/PoE pair shares one firmware
 artifact because PoE only changes the power path. The firmware is structured
 as reusable core, ESP32 platform, and board-profile layers so future ESP32
-boards can be added without forking PixLite, ADAR, trigger, configuration, or
+boards can be added without forking PixLite Mk3, ADAR, trigger, configuration, or
 web-interface code.
 
 Suggested GitHub description:
@@ -26,48 +26,27 @@ Suggested repository topics:
 `advatek`, `pixlite`, `esp32`, `esp32-s3`, `arduino`, `w5500`, `ethernet`,
 `poe`, `contact-closure`, `show-control`
 
-## GitHub publication checklist
-
-Before making the repository public:
-
-1. Publish the private staging repository as
-   `AdvatekLabs/PixLite-Mk3-Contact-Trigger`.
-2. Use `main` as the protected default/release branch, `dev` as the protected
-   integration branch, and require the CI workflow for pull requests.
-3. Enable Issues and the included structured bug, hardware-test, and feature
-   templates.
-4. Enable private vulnerability reporting so
-   [SECURITY.md](SECURITY.md) has a confidential intake path.
-5. Confirm Actions may publish release assets with the scoped
-   `contents: write` permission used by the release workflow.
-6. Review `HARDWARE-TESTS.md` and `CHANGELOG.md` immediately before publishing.
-7. Publish the first artifact as a clearly labelled beta, not a hardware-ready
-   stable release.
-8. Verify the release zip opens as a same-named Arduino folder and compile it
-   once from a clean Arduino IDE installation.
-
 ## Project status
 
-**Community beta—bench bring-up passed; full hardware acceptance pending.**
+**Community beta.**
 
 The modular firmware and per-board Arduino sketches compile with Arduino-ESP32
 3.3.10 and meet the current flash, static-RAM, and embedded-interface budgets.
-A real Waveshare ESP32-S3-ETH and PixLite A4-S Mk3 have passed the initial
-bench flow. The Waveshare ESP32-S3-(POE)-ETH-8DI-8RO profile is
-compile-supported and awaits ordered-hardware validation. The project must not
-be described as hardware-ready until every remaining gate in
-[HARDWARE-TESTS.md](HARDWARE-TESTS.md) is complete.
+Supported targets and release compatibility are identified in
+[`compatibility.json`](compatibility.json). The public
+[hardware change log](HARDWARE-TESTS.md) begins at repository publication and
+records physical validation for later hardware-affecting modifications.
 
 ## What it does
 
 - Supports up to eight direct GPIO contacts or eight onboard-isolated
   industrial DI terminals, depending on the selected board artifact.
 - Supports normally-open and normally-closed contacts.
-- Presents inputs as an add/remove list instead of showing eight unused
-  channels; newly added contacts default to 100 ms debounce.
+- Presents inputs as an add/remove list. Newly added contacts default to 100 ms
+  debounce.
 - Provides Momentary Press/Release and Maintained Latch On/Latch Off behavior.
 - Triggers PixLite Mk3 scenes and playlists once or continuously.
-- Steps forward or backward through each PixLite's cached scene list with
+- Steps forward or backward through each PixLite Mk3's cached scene list with
   wraparound.
 - Stops playback, blanks outputs, sets or releases intensity overrides, and
   provides tap/hold brighter and darker controls.
@@ -87,18 +66,26 @@ be described as hardware-ready until every remaining gate in
 ### Current boundaries
 
 Version 1 can target up to 16 PixLite Mk3 controllers from its GPIO actions.
-PixLite HTTP work is serialized and it does not provide synchronized
+PixLite Mk3 HTTP work is serialized and it does not provide synchronized
 multi-controller playback. It also does not support PixLite Mk2, scene upload,
-PixLite network reconfiguration, OTA, cloud control, MQTT, cameras, or TF
+PixLite Mk3 network reconfiguration, OTA, cloud control, MQTT, cameras, or TF
 cards.
 
-The web interface is local HTTP, not TLS. Deploy it only on a trusted local
+The web interface uses local HTTP without TLS. Deploy it only on a trusted local
 network or an appropriately isolated control VLAN.
+
+This is an Advatek Labs community beta. Advatek Lighting Technical Support does
+not cover it as a production product. Supported-board entries and supplier
+links document compatibility. Advatek does not endorse the listed products.
+Integrators must check local electrical codes, applicable standards,
+manufacturer instructions, and requirements for qualified electrical work.
+
+Advatek Technical Support does not cover this third-party hardware or Advatek
+Labs community projects. Use the project's GitHub Issues for reproducible
+community support requests; do not rely on it for urgent show-critical support.
 
 ## Supported hardware
 
-| Component | Supported configuration |
-| --- | --- |
 | Board artifact | Supported products | Inputs |
 | --- | --- | --- |
 | `AdvatekTrigger-Waveshare-ESP32-S3-ETH` | ESP32-S3-ETH and ESP32-S3-POE-ETH development boards | GPIO1, 2, 15, 16, 18, 38, 39 and 40 |
@@ -118,7 +105,7 @@ Its enabled state and 1–100% brightness are persistent web settings; disabling
 the LED also suppresses trigger flashes.
 
 Stop Playback returns the controller to live mode. This is intentional:
-PixLite's `modeCtrl/Stop` does not stop continuous (`cnt: 0`) playback.
+PixLite Mk3's `modeCtrl/Stop` does not stop continuous (`cnt: 0`) playback.
 
 Read [WIRING.md](WIRING.md) before connecting switches or relay contacts.
 
@@ -130,10 +117,13 @@ Read [WIRING.md](WIRING.md) before connecting switches or relay contacts.
 - The optional Waveshare PoE module or a suitable USB-C power supply.
 - A data-capable USB-C cable for the initial flash.
 - A PixLite Mk3 on the same local network.
+- A suitable industrial-grade microSD installed in the PixLite Mk3 for
+  SHOWTime scene and playlist playback.
 - Arduino IDE with internet access for installing the ESP32 board package.
 - Volt-free push buttons, switches, or relay contacts.
 
-Do not connect external voltage to a contact input.
+Do not connect external voltage to a contact input. The ESP32 board's own
+TF/microSD slot is not used by this firmware.
 
 ### 1. Install Arduino support
 
@@ -148,11 +138,11 @@ For an end-user release, use the prominent **Download latest Arduino build**
 link in the repository README. It resolves to the newest release without
 requiring a user to browse source folders. Download one of:
 
-- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`—recommended; extract it and open
+- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`: extract it and open
   the contained sketch.
-- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino`—place it inside a folder with the
+- `AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino`: place it inside a folder with the
   same base name before opening it in Arduino IDE.
-- `AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`—for both standard and
+- `AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`: for both standard and
   PoE industrial 8DI/8RO boards.
 
 The repository copies are under [`generated/`](generated/).
@@ -189,13 +179,13 @@ Leave unsupported camera and TF-card peripherals disconnected.
 
 1. Power the board by USB first. Test PoE only after USB-powered Ethernet has
    been confirmed.
-2. Connect the W5500 Ethernet port to the same network as the PixLite.
+2. Connect the W5500 Ethernet port to the same network as the PixLite Mk3.
 3. Open `http://advatrigger.local/` or the DHCP address printed in Serial
    Monitor.
 4. Keep Ethernet selected, or configure Wi-Fi Station as the operational
    uplink.
 5. Choose DHCP or static addressing.
-6. Run PixLite discovery, select the controller, and enter operator
+6. Run PixLite Mk3 discovery, select the controller, and enter operator
    credentials if required.
 7. Confirm that scenes and playlists load.
 8. Configure each input name, GPIO, contact polarity, debounce, switch mode,
@@ -224,19 +214,24 @@ debounce is not surge protection.
 
 - Hold **BOOT** for 5–14 seconds after startup, then release while the LED
   flashes: clear local authentication and start the selected recovery
-  connection for 15 minutes. Direct Ethernet supplies DHCP at
-  `192.168.4.1` only when the cable was disconnected during recovery entry.
+  connection for 15 minutes. Direct Ethernet restarts once into an isolated
+  recovery boot and supplies DHCP at `192.168.4.1` only when the cable remains
+  disconnected until the LED pulses cyan.
+- Wi-Fi recovery advertises a captive setup page. Network saving uses a visible
+  two-tap in-page confirmation so it works in phone captive portals without
+  requiring the user to know the recovery IP; the numeric address remains a
+  fallback for browsers that do not open automatically.
 - Hold **BOOT** for 15–19 seconds, then release while the LED is red: erase
   configuration and restart with factory defaults.
 - Keep holding for 20 seconds to cancel the pending recovery/reset action.
 
-Exported backups omit Wi-Fi, PixLite, recovery, and web-interface passwords.
+Exported backups omit Wi-Fi, PixLite Mk3, recovery, and web-interface passwords.
 
 ## Maintainer setup
 
 Prerequisites:
 
-- Node.js 22
+- Node.js 24
 - pnpm 10.12.1
 - Arduino CLI or Arduino IDE
 - Arduino-ESP32 3.3.10
@@ -274,19 +269,14 @@ Before publishing a release:
 1. Complete the automated CI build and test suite.
 2. Confirm these budgets:
    - Firmware binary no larger than 1.5 MB.
-   - Embedded UI no larger than 12 KB gzip.
+   - Embedded UI no larger than 13 KB gzip.
    - Static DRAM data+BSS no larger than 64 KB.
-3. Complete the real-hardware matrix in
-   [HARDWARE-TESTS.md](HARDWARE-TESTS.md).
-4. Confirm at least 25 PoE-only cold boots.
-5. Confirm all eight permitted GPIOs, BOOT recovery, DHCP/static Ethernet,
-   operational Wi-Fi Station, ADAR discovery, authenticated PixLite connection,
-   playback, intensity, backup restoration, and the 24-hour burn-in.
-6. Record the Waveshare revision, PoE module, PixLite model/firmware, memory
-   watermarks, timings, and evidence.
-7. Update `compatibility.json`, release notes, and known limitations.
+3. If the release changes hardware-facing behaviour, add the physical
+   validation result to [HARDWARE-TESTS.md](HARDWARE-TESTS.md).
+4. Update `compatibility.json`, release notes, and known limitations.
 
-Do not remove the beta warning until these hardware gates pass.
+Do not remove the beta warning without an explicit maintainer decision backed
+by appropriate public evidence.
 
 ### Create a GitHub release
 
@@ -306,20 +296,20 @@ The workflow:
 5. Creates `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`.
 6. Generates SHA-256 checksums.
 7. Publishes the sketch, zip, compatibility manifest, getting-started guide,
-   wiring guide, hardware-acceptance record, license, and checksums to GitHub
+   wiring guide, hardware change log, license, and checksums to GitHub
    Releases.
 
 The workflow can also be run manually from **Actions → Release artifacts →
 Run workflow** to inspect artifacts without creating a tagged release.
 
-### Recommended release notes
+### Release-note contents
 
 Each release should state:
 
 - Firmware, UI, configuration-schema, and board-profile versions.
 - Supported Arduino-ESP32 version and exact Arduino IDE settings.
-- Supported hardware and PixLite API range.
-- Whether hardware acceptance is complete.
+- Supported hardware and PixLite Mk3 API range.
+- Hardware validation completed for any hardware-affecting changes.
 - New features, fixes, migrations, and breaking changes.
 - Wiring changes and any GPIOs requiring remapping.
 - Known limitations and recovery instructions.
@@ -357,24 +347,24 @@ tests/            host, UI and repository contract tests
 tools/            deterministic web embedding and sketch generation
 ```
 
-See [PORTING.md](PORTING.md) before adding another ESP32 PCB. New boards should
-normally be contributed as profiles rather than maintained as firmware forks.
+See [PORTING.md](PORTING.md) before adding another ESP32 PCB. Contribute new
+boards as profiles that share the common firmware.
 
 ## Documentation
 
-- [README.md](README.md)—concise repository landing page
-- [Getting started](docs/GETTING-STARTED.md)—Arduino upload and commissioning
-- [WIRING.md](WIRING.md)—contact and reserved-pin wiring
-- [Protected contact inputs](docs/PROTECTED-CONTACT-INPUTS.md)—stripboard and
-  isolation options
-- [Local API](docs/API.md)—ESP32 HTTP API
-- [Architecture](docs/ARCHITECTURE.md)—source layers and runtime ownership
-- [CONTRIBUTING.md](CONTRIBUTING.md)—community development workflow
-- [PORTING.md](PORTING.md)—adding another ESP32 board
-- [HARDWARE-TESTS.md](HARDWARE-TESTS.md)—release acceptance evidence
-- [SUPPORT.md](SUPPORT.md)—reproducible issue reports
-- [SECURITY.md](SECURITY.md)—deployment and vulnerability reporting
-- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)—attributions
+- [README.md](README.md): concise repository landing page
+- [Getting started](docs/GETTING-STARTED.md): Arduino upload and commissioning
+- [WIRING.md](WIRING.md): contact and reserved-pin wiring
+- [Off-the-shelf isolated contact inputs](docs/PROTECTED-CONTACT-INPUTS.md):
+  selecting a complete module for field wiring
+- [Local API](docs/API.md): ESP32 HTTP API
+- [Architecture](docs/ARCHITECTURE.md): source layers and runtime ownership
+- [CONTRIBUTING.md](CONTRIBUTING.md): community development workflow
+- [PORTING.md](PORTING.md): adding another ESP32 board
+- [HARDWARE-TESTS.md](HARDWARE-TESTS.md): post-public hardware change validation
+- [SUPPORT.md](SUPPORT.md): reproducible issue reports
+- [SECURITY.md](SECURITY.md): deployment and vulnerability reporting
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md): attributions
 
 ## License and contributions
 
@@ -383,5 +373,5 @@ The project is licensed under the MIT License. Contributions should follow
 secrets in fixtures or backups, include appropriate tests and documentation,
 and keep generated artifacts in sync.
 
-The PixLite API and ADAR protocol documents are not redistributed by this
+The PixLite Mk3 API and ADAR protocol documents are not redistributed by this
 repository.

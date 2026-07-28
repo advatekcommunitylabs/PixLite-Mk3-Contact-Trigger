@@ -19,6 +19,8 @@ namespace advatek {
 class WebApiDelegate {
  public:
   virtual String stateJson() = 0;
+  virtual String inputStateJson() = 0;
+  virtual bool pixliteOperationsAvailable() const = 0;
   virtual void configurationChanged() = 0;
   virtual void requestFactoryReset() = 0;
 };
@@ -51,6 +53,9 @@ class WebApi {
     server_.on("/api/state", HTTP_GET, [this]() {
       if (authorize()) sendJson(200, delegate_.stateJson());
     });
+    server_.on("/api/inputs", HTTP_GET, [this]() {
+      if (authorize()) sendJson(200, delegate_.inputStateJson());
+    });
     server_.on("/api/config", HTTP_GET, [this]() {
       if (authorize()) streamConfig();
     });
@@ -72,6 +77,10 @@ class WebApi {
     });
     server_.on("/api/discover", HTTP_POST, [this]() {
       if (!authorize()) return;
+      if (!delegate_.pixliteOperationsAvailable()) {
+        sendError(503, "PixLite operations unavailable during direct Ethernet recovery");
+        return;
+      }
       if (!memory_.ready) {
         sendError(503, "Discovery disabled in degraded memory mode");
         return;
@@ -106,6 +115,10 @@ class WebApi {
     });
     server_.on("/api/connect", HTTP_POST, [this]() {
       if (!authorize()) return;
+      if (!delegate_.pixliteOperationsAvailable()) {
+        sendError(503, "PixLite operations unavailable during direct Ethernet recovery");
+        return;
+      }
       if (!memory_.ready) {
         sendError(503, "PixLite connection disabled in degraded memory mode");
         return;
@@ -117,6 +130,10 @@ class WebApi {
     });
     server_.on("/api/action/test", HTTP_POST, [this]() {
       if (!authorize()) return;
+      if (!delegate_.pixliteOperationsAvailable()) {
+        sendError(503, "PixLite operations unavailable during direct Ethernet recovery");
+        return;
+      }
       if (!memory_.ready) {
         sendError(503, "PixLite actions disabled in degraded memory mode");
         return;
@@ -384,7 +401,11 @@ class WebApi {
     updateString(doc, doc.root(), "targetId", requestedId, sizeof(requestedId));
     updateString(doc, doc.root(), "mac", requestedMac, sizeof(requestedMac));
     updateString(doc, doc.root(), "host", requestedHost, sizeof(requestedHost));
-    int8_t targetIndex = pixLiteIndexById(config_, requestedId);
+    // An empty ID means "add a new controller" in this endpoint. The shared
+    // target resolver intentionally treats an empty ID as the legacy primary
+    // alias for actions, so only call it here when the request supplied an ID.
+    int8_t targetIndex =
+        requestedId[0] ? pixLiteIndexById(config_, requestedId) : -1;
     if (targetIndex < 0) targetIndex = pixLiteIndexByMac(config_, requestedMac);
     if (targetIndex < 0) targetIndex = pixLiteIndexByHost(config_, requestedHost);
     const bool adding = targetIndex < 0;
@@ -545,6 +566,10 @@ class WebApi {
       return;
     }
     parseAction(doc, doc.root(), action);
+    if (action.kind == ActionKind::None) {
+      sendJson(200, "{\"ok\":true}");
+      return;
+    }
     if (pixlite_.execute(action)) sendJson(200, "{\"ok\":true}");
     else sendError(502, pixlite_.lastError());
   }
@@ -555,7 +580,7 @@ class WebApi {
       sendError(413, "Configuration request exceeds 12 KB");
       return;
     }
-    if (!memory_.tokens) {
+    if (!memory_.configTokens) {
       sendError(503, "Configuration changes disabled in degraded memory mode");
       return;
     }
@@ -565,7 +590,7 @@ class WebApi {
             requestBody.c_str(),
             candidate,
             board_,
-            memory_.tokens,
+            memory_.configTokens,
             CONFIG_TOKEN_CAPACITY,
             error,
             sizeof(error))) {
@@ -579,7 +604,7 @@ class WebApi {
       return;
     }
     JsonDocument passwordDocument(
-        requestBody.c_str(), memory_.tokens, CONFIG_TOKEN_CAPACITY);
+        requestBody.c_str(), memory_.configTokens, CONFIG_TOKEN_CAPACITY);
     if (passwordDocument.parse()) {
       const int16_t network = passwordDocument.objectValue(passwordDocument.root(), "network");
       const int16_t passwordToken =

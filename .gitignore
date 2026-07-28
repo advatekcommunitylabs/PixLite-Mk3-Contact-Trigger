@@ -1,6 +1,7 @@
 node_modules/
 .pnpm-store/
 web/dist/
+site/
 build/
 .build/
 .pio/
@@ -13,3 +14,4 @@ Thumbs.db
 *.tmp
 *.log
 *.inspect.ndjson
+docs/assets/hardware-schematics/Advatek-Trigger-Hardware-Schematics.pptx

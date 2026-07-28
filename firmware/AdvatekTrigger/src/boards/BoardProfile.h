@@ -17,6 +17,14 @@ enum class InputHardwareKind : uint8_t {
   IsolatedDigitalInput = 1,
 };
 
+// Addressable RGB LEDs do not all transmit colour bytes in the same order.
+// Keep this in the board profile so shared status behaviour continues to use
+// logical red/green/blue values on every supported PCB.
+enum class StatusLedColorOrder : uint8_t {
+  Rgb = 0,
+  Grb = 1,
+};
+
 struct SpiEthernetPins {
   int8_t miso;
   int8_t mosi;
@@ -60,6 +68,7 @@ struct BoardProfile {
   uint8_t maximumInputs;
   int8_t recoveryButtonPin;
   int8_t statusLedPin;
+  StatusLedColorOrder statusLedColorOrder;
   bool requiresPsram;
   uint8_t minimumFlashMb;
   uint8_t minimumPsramMb;

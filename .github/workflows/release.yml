@@ -11,13 +11,13 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.12.1
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
@@ -45,14 +45,16 @@ jobs:
           cp docs/RELEASE-START-8DI-8RO.md generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/START-HERE.md
           cp docs/waveshare-esp32-s3-eth-8di-8ro-inputs.svg generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/
           cd generated
-          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH/
-          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/
+          # Arduino IDE may create an ignored build/ directory beside a sketch.
+          # Exclude it defensively so release zips contain only end-user files.
+          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH/ -x '*/build/*'
+          zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/ -x '*/build/*'
           sha256sum *.ino *.zip compatibility.json WIRING.md GETTING-STARTED.md HARDWARE.md *.svg HARDWARE-TESTS.md LICENSE > SHA256SUMS.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: advatek-trigger-${{ github.ref_name }}
           path: generated/
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Advatek Trigger ${{ github.ref_name }}

@@ -8,6 +8,7 @@
 #include "../../firmware/AdvatekTrigger/src/core/InputEngine.h"
 #include "../../firmware/AdvatekTrigger/src/core/LatestAction.h"
 #include "../../firmware/AdvatekTrigger/src/core/MediaRefreshPolicy.h"
+#include "../../firmware/AdvatekTrigger/src/core/MediaOrderPolicy.h"
 #include "../../firmware/AdvatekTrigger/src/core/PixLiteStatusPolicy.h"
 #include "../../firmware/AdvatekTrigger/src/core/PixLiteResponsePolicy.h"
 #include "../../firmware/AdvatekTrigger/src/core/RuntimePolicy.h"
@@ -26,9 +27,11 @@ static void testDebounceAndEdges() {
   assert(!InputEngine::update(runtime, true, 50, 179).occurred);
   const InputEvent press = InputEngine::update(runtime, true, 50, 180);
   assert(press.occurred && press.active);
+  assert(runtime.eventSequence == 1);
   const InputEvent release = InputEngine::update(runtime, false, 10, 200);
   assert(!release.occurred);
   assert(InputEngine::update(runtime, false, 10, 210).occurred);
+  assert(runtime.eventSequence == 2);
 }
 
 static void testMillisRollover() {
@@ -90,6 +93,35 @@ static void testSceneStepping() {
   assert(sceneStepIndex(files, 5, "not-in-list.scn", true) == 3);
   assert(sceneStepIndex(&files[1], 1, "", false) == -1);
   assert(sceneStepIndex(nullptr, 0, "", false) == -1);
+  assert(strcmp(
+             sceneStepReference("Opening.scn", "Closing.scn"),
+             "Opening.scn") == 0);
+  assert(strcmp(sceneStepReference("", "Middle.scn"), "Middle.scn") == 0);
+  assert(strcmp(
+             sceneStepReference("Intermission.pl", "Middle.scn"),
+             "Middle.scn") == 0);
+}
+
+static void testMediaAlphabeticalOrder() {
+  MediaFile files[7]{};
+  strcpy(files[0].name, "Stars.scn");
+  strcpy(files[1].name, "Amber Glow.scn");
+  strcpy(files[2].name, "scene 10.scn");
+  strcpy(files[3].name, "Scene 2.scn");
+  strcpy(files[4].name, "Blue Waves.scn");
+  strcpy(files[5].name, "ambient.pl");
+  files[5].playlist = true;
+  strcpy(files[6].name, "Scene 1.scn");
+
+  sortMediaFiles(files, 7);
+  assert(strcmp(files[0].name, "Amber Glow.scn") == 0);
+  assert(strcmp(files[1].name, "ambient.pl") == 0);
+  assert(strcmp(files[2].name, "Blue Waves.scn") == 0);
+  assert(strcmp(files[3].name, "Scene 1.scn") == 0);
+  assert(strcmp(files[4].name, "Scene 2.scn") == 0);
+  assert(strcmp(files[5].name, "scene 10.scn") == 0);
+  assert(strcmp(files[6].name, "Stars.scn") == 0);
+  assert(files[1].playlist);
 }
 
 static void testMediaRefreshAfterReconnect() {
@@ -177,7 +209,7 @@ static void testConfigurationSchemaGate() {
   schemaV2.inputs[0].enabled = true;
   schemaV2.inputs[0].debounceMs = 125;
   strcpy(schemaV2.inputs[0].name, "Existing v2 input");
-  strcpy(schemaV2.pixlite.host, "192.168.1.84");
+  strcpy(schemaV2.pixlite.host, "192.0.2.84");
   assert(migrateStoredConfig(
       &schemaV2, sizeof(schemaV2), decoded, "board", "1.2.0", allowed, 8, migrated));
   assert(migrated);
@@ -187,7 +219,7 @@ static void testConfigurationSchemaGate() {
   assert(strcmp(decoded.inputs[0].name, "Existing v2 input") == 0);
   assert(decoded.inputs[0].debounceMs == 125);
   assert(decoded.pixliteCount == 1);
-  assert(strcmp(decoded.pixlites[0].host, "192.168.1.84") == 0);
+  assert(strcmp(decoded.pixlites[0].host, "192.0.2.84") == 0);
   assert(strcmp(decoded.pixlites[0].id, "primary") == 0);
   assert(decoded.statusLed.enabled);
   assert(decoded.statusLed.brightnessPercent == 100);
@@ -221,8 +253,8 @@ static void testConfigurationSchemaGate() {
   schemaV3.sequence = 52;
   strcpy(schemaV3.hardware.boardId, "board");
   strcpy(schemaV3.hardware.profileVersion, "1.2.0");
-  strcpy(schemaV3.pixlite.host, "192.168.1.84");
-  strcpy(schemaV3.pixlite.macAddress, "E0B6F5E0E9C1");
+  strcpy(schemaV3.pixlite.host, "192.0.2.84");
+  strcpy(schemaV3.pixlite.macAddress, "021122334455");
   strcpy(schemaV3.pixlite.username, "oper");
   schemaV3.pixlite.port = 80;
   strcpy(schemaV3.inputs[0].onAction.targetId, "primary");
@@ -231,7 +263,7 @@ static void testConfigurationSchemaGate() {
   assert(migrated);
   assert(decoded.pixliteCount == 1);
   assert(strcmp(decoded.pixlites[0].id, "primary") == 0);
-  assert(strcmp(decoded.pixlites[0].macAddress, "E0B6F5E0E9C1") == 0);
+  assert(strcmp(decoded.pixlites[0].macAddress, "021122334455") == 0);
   assert(strcmp(decoded.inputs[0].onAction.targetId, "primary") == 0);
 
   AppConfigV4 schemaV4{};
@@ -288,6 +320,34 @@ static void testMdnsHostnameValidation() {
   assert(!validMdnsHostname("advatrigger.local"));
   assert(!validMdnsHostname("advatek trigger"));
   assert(!validMdnsHostname("abcdefghijklmnopqrstuvwxyz123456"));
+}
+
+static void testOperationalWifiValidation() {
+  NetworkConfig network{};
+  network.uplink = UplinkMode::Ethernet;
+  assert(validOperationalWifi(network));
+  network.uplink = UplinkMode::WifiStation;
+  assert(!validOperationalWifi(network));
+  strcpy(network.wifiSsid, "Venue-WiFi");
+  assert(validOperationalWifi(network));
+}
+
+static void testJsonObjectKeysDoNotMatchStringValues() {
+  const char *json =
+      "{\"network\":{\"uplink\":\"ethernet\",\"hostname\":\"advatrigger\","
+      "\"recoveryConnection\":\"wifi\",\"ethernet\":{\"mode\":\"static\","
+      "\"address\":\"192.0.2.88\",\"netmask\":\"255.255.255.0\","
+      "\"gateway\":\"192.0.2.1\",\"dns\":\"192.0.2.1\"}}}";
+  JsonToken tokens[40]{};
+  JsonDocument document(json, tokens, 40);
+  assert(document.parse());
+  const int16_t network = document.objectValue(document.root(), "network");
+  const int16_t ethernet = document.objectValue(network, "ethernet");
+  assert(ethernet >= 0);
+  assert(document.token(ethernet).type == JsonTokenType::Object);
+  assert(document.equals(document.objectValue(ethernet, "mode"), "static"));
+  assert(document.equals(
+      document.objectValue(ethernet, "gateway"), "192.0.2.1"));
 }
 
 static void testBoundedEthernetRetries() {
@@ -352,11 +412,14 @@ int main() {
   testLatestWinsAndExpiry();
   testIntensityClamp();
   testSceneStepping();
+  testMediaAlphabeticalOrder();
   testMediaRefreshAfterReconnect();
   testAdarPacketBytes();
   testConfigurationSchemaGate();
   testMemoryAndBoundedPayloadPolicy();
   testMdnsHostnameValidation();
+  testOperationalWifiValidation();
+  testJsonObjectKeysDoNotMatchStringValues();
   testBoundedEthernetRetries();
   testPixLiteProgramPriority();
   testPixLiteApiErrorResponse();

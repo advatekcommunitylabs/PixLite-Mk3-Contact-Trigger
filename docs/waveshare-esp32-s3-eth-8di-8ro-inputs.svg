@@ -7,7 +7,7 @@
   <rect class="bg" width="1200" height="680"/>
   <text class="title" x="60" y="62">Waveshare industrial 8DI input mapping</text>
   <text class="sub" x="60" y="92">ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO · component/enclosure label view</text>
-  <rect class="panel" x="60" y="130" width="1080" height="430" rx="18"/>
+  <rect class="panel" x="60" y="130" width="1080" height="540" rx="18"/>
   <text class="label" x="110" y="178">ISOLATED FIELD TERMINALS</text>
   <text class="label" x="840" y="178">FIRMWARE SIGNAL</text>
   <g>

@@ -90,13 +90,26 @@ class JsonDocument {
     if (!valid(objectIndex) || tokens_[objectIndex].type != JsonTokenType::Object) return -1;
     int16_t index = objectIndex + 1;
     while (index < count_ && tokens_[index].start < tokens_[objectIndex].end) {
-      if (tokens_[index].parent == objectIndex &&
-          tokens_[index].type == JsonTokenType::String &&
-          equals(index, key)) {
-        const int16_t valueIndex = index + 1;
-        return valid(valueIndex) && tokens_[valueIndex].parent == objectIndex ? valueIndex : -1;
+      if (tokens_[index].parent != objectIndex) {
+        index = skip(index);
+        continue;
       }
-      index = skip(index);
+      // Object children are an ordered key/value sequence. Advance over the
+      // complete value after each key instead of inspecting string values as
+      // potential keys. Without this distinction, {"uplink":"ethernet",
+      // "ethernet":{...}} resolves the value "ethernet" as the key and skips
+      // the real nested IPv4 object.
+      const int16_t keyIndex = index;
+      const int16_t valueIndex = keyIndex + 1;
+      if (!valid(valueIndex) ||
+          tokens_[valueIndex].parent != objectIndex) {
+        return -1;
+      }
+      if (tokens_[keyIndex].type == JsonTokenType::String &&
+          equals(keyIndex, key)) {
+        return valueIndex;
+      }
+      index = skip(valueIndex);
     }
     return -1;
   }

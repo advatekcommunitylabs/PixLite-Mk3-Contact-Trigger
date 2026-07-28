@@ -56,6 +56,7 @@ inline const BoardProfile WAVESHARE_ESP32_S3_ETH = {
     8,
     0,
     21,
+    StatusLedColorOrder::Grb,
     true,
     16,
     8,

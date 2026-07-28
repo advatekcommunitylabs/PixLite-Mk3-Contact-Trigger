@@ -66,7 +66,14 @@ class App : public WebApiDelegate {
 
     store_.begin();
     const bool loaded = store_.load(config_, board_, hostname);
-    showStatusOrange();
+    // Preserve a clear release-to-ready sequence across the one-time direct
+    // recovery restart: white means "recovery is starting"; cyan means the
+    // isolated Ethernet service is ready for the computer to connect.
+    if (NetworkManager::directEthernetRecoveryBootRequested()) {
+      showRecoveryStartingWhite();
+    } else {
+      showStatusOrange();
+    }
     log_.addf(
         LogLevel::Info,
         "%s configuration schema %u (%s)",
@@ -98,7 +105,11 @@ class App : public WebApiDelegate {
     pinMode(board_.recoveryButtonPin, INPUT_PULLUP);
     network_.begin(apName);
     web_.begin();
-    xTaskCreatePinnedToCore(networkTaskEntry, "network", 12288, this, 1, &networkTask_, 0);
+    // Live industrial-board testing showed the combined HTTP, ADAR and PixLite
+    // call path could leave less than 200 bytes free in the original 12 KB
+    // task. The extra 8 KB remains well inside the internal-heap budget and
+    // gives network failures enough headroom to unwind safely.
+    xTaskCreatePinnedToCore(networkTaskEntry, "network", 20480, this, 1, &networkTask_, 0);
   }
 
   void loop() {
@@ -163,6 +174,16 @@ class App : public WebApiDelegate {
             String(network_.ethernetFullDuplex() ? "true" : "false") + ",";
     json += "\"failureReason\":\"" +
             jsonEscape(network_.ethernetFailureReason()) + "\"},";
+    json += "\"wifi\":{\"statusCode\":" +
+            String(network_.wifiStatusCode()) +
+            ",\"status\":\"" +
+            jsonEscape(network_.wifiStatusName()) +
+            "\",\"disconnectReasonCode\":" +
+            String(network_.wifiDisconnectReason()) +
+            ",\"disconnectReason\":\"" +
+            jsonEscape(network_.wifiDisconnectReasonText()) +
+            "\",\"rssiDbm\":" +
+            String(network_.wifiRssiDbm()) + "},";
     json += "\"pixlite\":{\"online\":" + String(status.online ? "true" : "false") + ",";
     json += "\"host\":\"" + jsonEscape(primary ? primary->host : "") + "\",";
     json += "\"mode\":\"" + jsonEscape(status.mode) + "\",";
@@ -187,10 +208,29 @@ class App : public WebApiDelegate {
     for (uint8_t i = 0; i < MAX_INPUTS; ++i) {
       if (i) json += ',';
       json += "{\"active\":" + String(runtime_[i].stableActive ? "true" : "false") +
-              ",\"ramping\":" + String(runtime_[i].rampActive ? "true" : "false") + "}";
+              ",\"ramping\":" + String(runtime_[i].rampActive ? "true" : "false") +
+              ",\"eventSequence\":" + String(runtime_[i].eventSequence) + "}";
     }
     json += "]}";
     return json;
+  }
+
+  String inputStateJson() override {
+    // This intentionally small response is polled more often than /api/state.
+    // eventSequence prevents a complete press/release between polls being lost.
+    String json = "{\"inputs\":[";
+    json.reserve(420);
+    for (uint8_t i = 0; i < MAX_INPUTS; ++i) {
+      if (i) json += ',';
+      json += "{\"active\":" + String(runtime_[i].stableActive ? "true" : "false") +
+              ",\"eventSequence\":" + String(runtime_[i].eventSequence) + "}";
+    }
+    json += "]}";
+    return json;
+  }
+
+  bool pixliteOperationsAvailable() const override {
+    return !network_.ethernetRecoveryRunning();
   }
 
   void configurationChanged() override {
@@ -231,13 +271,18 @@ class App : public WebApiDelegate {
       network_.loop();
       web_.loop();
       const bool uplinkConnected = network_.uplinkConnected();
-      if (!uplinkConnected) {
+      // A directly connected recovery computer creates physical Ethernet link
+      // but cannot reach the configured PixLite LAN. Keep the recovery UI
+      // responsive by suppressing all PixLite HTTP work in this mode.
+      const bool pixliteNetworkReady =
+          uplinkConnected && !network_.ethernetRecoveryRunning();
+      if (!pixliteNetworkReady) {
         // Ensure that restoring Ethernet/Wi-Fi also refreshes every saved
         // controller after its first successful status poll.
         memset(lastStatusPollOnline, 0, sizeof(lastStatusPollOnline));
       }
       PendingAction pending{};
-      if (uplinkConnected) {
+      if (pixliteNetworkReady) {
         for (uint8_t target = 0; target < MAX_PIXLITES; ++target) {
           if (mailboxes_[target].take(pending, millis())) {
             pixlite_.execute(target, pending.action);
@@ -245,7 +290,7 @@ class App : public WebApiDelegate {
         }
       }
       bool mediaRequestAttempted = false;
-      if (uplinkConnected && config_.pixliteCount) {
+      if (pixliteNetworkReady && config_.pixliteCount) {
         const uint32_t mediaNow = millis();
         for (uint8_t checked = 0;
              checked < config_.pixliteCount && checked < MAX_PIXLITES;
@@ -285,7 +330,9 @@ class App : public WebApiDelegate {
       }
       // Do not issue a status poll in the same pass as version/media loading;
       // action mailboxes get another scheduling opportunity between requests.
-      if (!mediaRequestAttempted && uplinkConnected && config_.pixliteCount) {
+      if (!mediaRequestAttempted &&
+          pixliteNetworkReady &&
+          config_.pixliteCount) {
         const uint32_t pollNow = millis();
         for (uint8_t checked = 0;
              checked < config_.pixliteCount && checked < MAX_PIXLITES;
@@ -443,13 +490,19 @@ class App : public WebApiDelegate {
       if (intent == RecoveryIntent::FactoryReset) {
         requestFactoryReset();
       } else if (intent == RecoveryIntent::ClearAuthentication) {
+        // End the orange/white hold indication deterministically on white.
+        // The WS2812 retains this state through the short software restart,
+        // and begin() restores white before direct recovery reaches cyan.
+        showRecoveryStartingWhite();
         store_.clearAuthentication(config_);
         const bool recoveryStarted = network_.openRecoveryNetwork();
-        recoveryLedIntent_ =
-            recoveryStarted
-                ? RecoveryIntent::ClearAuthentication
-                : RecoveryIntent::FactoryReset;
-        recoveryFeedbackUntil_ = now + 5000;
+        if (recoveryStarted) {
+          recoveryLedIntent_ = RecoveryIntent::None;
+          recoveryFeedbackUntil_ = 0;
+        } else {
+          recoveryLedIntent_ = RecoveryIntent::None;
+          recoveryFailureUntil_ = now + 5000;
+        }
         log_.add(
             LogLevel::Warning,
             recoveryStarted
@@ -475,22 +528,28 @@ class App : public WebApiDelegate {
   void showStatusOrange() {
     if (board_.statusLedPin < 0) return;
     if (!config_.statusLed.enabled) {
-      rgbLedWrite(board_.statusLedPin, 0, 0, 0);
+      writeStatusLed(0, 0, 0);
       return;
     }
     // Tuned on the fitted WS2812 so the status color reads as orange rather
     // than pink through the board and enclosure.
-    rgbLedWrite(
-        board_.statusLedPin,
+    writeStatusLed(
         scaleStatusLedChannel(255),
         scaleStatusLedChannel(48),
         0);
   }
 
+  void showRecoveryStartingWhite() {
+    if (board_.statusLedPin < 0) return;
+    // Recovery feedback must remain visible even if the normal status LED was
+    // disabled or dimmed in the web interface.
+    writeStatusLed(255, 255, 255);
+  }
+
   void flashStatusLed(uint32_t now) {
     if (board_.statusLedPin < 0 || !config_.statusLed.enabled) return;
     const uint8_t white = scaleStatusLedChannel(255);
-    rgbLedWrite(board_.statusLedPin, white, white, white);
+    writeStatusLed(white, white, white);
     triggerFlashActive_ = true;
     triggerFlashUntil_ = now + 120;
   }
@@ -499,30 +558,59 @@ class App : public WebApiDelegate {
     if (board_.statusLedPin < 0) return;
     // Recovery feedback overrides the user brightness/off preference so a
     // person holding BOOT can safely see which release zone is armed.
+    if (recoveryFailureUntil_) {
+      if (dueAt(now, recoveryFailureUntil_)) {
+        recoveryFailureUntil_ = 0;
+        showStatusOrange();
+      } else {
+        writeStatusLed(((now / 250U) & 1U) == 0 ? 255 : 0, 0, 0);
+        return;
+      }
+    }
     if (recoveryLedIntent_ == RecoveryIntent::FactoryReset) {
-      rgbLedWrite(board_.statusLedPin, 255, 0, 0);
+      writeStatusLed(255, 0, 0);
       return;
     }
     if (recoveryLedIntent_ == RecoveryIntent::ClearAuthentication) {
       if (!recoveryPressed_ && dueAt(now, recoveryFeedbackUntil_)) {
         recoveryLedIntent_ = RecoveryIntent::None;
-        showStatusOrange();
+        recoveryFeedbackUntil_ = 0;
       } else if (((now / 250U) & 1U) == 0) {
-        rgbLedWrite(board_.statusLedPin, 255, 48, 0);
+        writeStatusLed(255, 48, 0);
       } else {
-        rgbLedWrite(board_.statusLedPin, 255, 255, 255);
+        writeStatusLed(255, 255, 255);
+        return;
       }
-      return;
+      if (recoveryLedIntent_ == RecoveryIntent::ClearAuthentication) return;
     }
     if (recoveryPressed_ &&
         recoveryLedIntent_ == RecoveryIntent::Cancelled) {
       showStatusOrange();
       return;
     }
+    if (network_.accessPointRunning()) {
+      const uint8_t blue = ((now / 500U) & 1U) == 0 ? 255 : 32;
+      writeStatusLed(0, 0, blue);
+      return;
+    }
+    if (network_.ethernetRecoveryRunning()) {
+      const uint8_t cyan = ((now / 500U) & 1U) == 0 ? 255 : 32;
+      writeStatusLed(0, cyan, cyan);
+      return;
+    }
     if (triggerFlashActive_ && dueAt(now, triggerFlashUntil_)) {
       triggerFlashActive_ = false;
       showStatusOrange();
     }
+  }
+
+  void writeStatusLed(uint8_t red, uint8_t green, uint8_t blue) {
+    if (board_.statusLedPin < 0) return;
+    const rgb_led_color_order_t order =
+        board_.statusLedColorOrder == StatusLedColorOrder::Rgb
+            ? LED_COLOR_ORDER_RGB
+            : LED_COLOR_ORDER_GRB;
+    rgbLedWriteOrdered(board_.statusLedPin, order, red, green, blue);
   }
 
   uint8_t scaleStatusLedChannel(uint8_t channel) const {
@@ -541,8 +629,10 @@ class App : public WebApiDelegate {
         heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     memorySnapshot_.internalLargestBlock =
         heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    // ESP-IDF reports this value in bytes, unlike upstream FreeRTOS where the
+    // value is expressed in StackType_t words.
     memorySnapshot_.networkStackWatermarkBytes =
-        networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) * sizeof(StackType_t) : 0;
+        networkTask_ ? uxTaskGetStackHighWaterMark(networkTask_) : 0;
     if ((initial || memorySnapshot_.internalFree < 64U * 1024U) && !warnedFreeHeap_) {
       if (memorySnapshot_.internalFree < 64U * 1024U) {
         log_.add(LogLevel::Warning, "Internal free heap crossed below 64 KB");
@@ -599,6 +689,7 @@ class App : public WebApiDelegate {
   bool factoryResetRequested_ = false;
   uint32_t recoveryStartedAt_ = 0;
   uint32_t recoveryFeedbackUntil_ = 0;
+  uint32_t recoveryFailureUntil_ = 0;
   uint32_t factoryResetDueAt_ = 0;
   RecoveryIntent recoveryLedIntent_ = RecoveryIntent::None;
   uint32_t triggerFlashUntil_ = 0;
