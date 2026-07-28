@@ -5,7 +5,8 @@ dry-contact input. The firmware is a community beta. Follow this guide and
 evaluate the completed installation for its intended environment before live
 use.
 
-For the DIN-rail ESP32-S3-(POE)-ETH-8DI-8RO with built-in isolated inputs, use
+For the Waveshare ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial
+board with built-in isolated inputs, use
 the separate [industrial 8DI getting-started guide](GETTING-STARTED-8DI-8RO.md)
 and its board-specific Arduino download.
 
@@ -153,7 +154,7 @@ Read [WIRING.md](../WIRING.md) for every permitted and reserved pin. Use
 cables leave the enclosure or may experience ground differences or
 interference.
 
-![Waveshare project pinout](waveshare-esp32-s3-eth-project-pinout.svg)
+![Waveshare ESP32-S3-ETH project pinout](waveshare-esp32-s3-eth-project-pinout.svg)
 
 ## 9. Finish commissioning
 

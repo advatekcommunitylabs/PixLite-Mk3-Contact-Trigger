@@ -56,7 +56,7 @@ GND. Never apply external voltage to a GPIO. This bare connection is for bench
 testing or a button inside the same enclosure; installed event buttons should
 use the protected or group-isolated input design published with the release.
 
-![Waveshare project pinout](waveshare-esp32-s3-eth-project-pinout.svg)
+![Waveshare ESP32-S3-ETH project pinout](waveshare-esp32-s3-eth-project-pinout.svg)
 
 The status LED is orange while running and flashes white on each accepted
 contact edge. Every new input defaults to 100 ms debounce, adjustable in the

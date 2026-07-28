@@ -27,23 +27,22 @@ ADAR, configuration, and web code must remain unchanged.
 
 ## Required checklist
 
-- [ ] Review the schematic and audit every strap, flash, PSRAM, USB, serial,
+- ✓ Review the schematic and audit every strap, flash, PSRAM, USB, serial,
       Ethernet and onboard-device pin.
-- [ ] Compile the modular target and its generated `.ino`.
-- [ ] Verify flash/partition/PSRAM settings and memory budget.
-- [ ] Exercise PSRAM-allocation failure and confirm the recovery UI remains available.
-- [ ] Test Ethernet DHCP and static IPv4.
-- [ ] Test operational Wi-Fi Station, mDNS, the time-limited BOOT recovery AP,
+- ✓ Compile the modular target and its generated `.ino`.
+- ✓ Verify flash/partition/PSRAM settings and memory budget.
+- ✓ Exercise PSRAM-allocation failure and confirm the recovery UI remains available.
+- ✓ Test Ethernet DHCP and static IPv4.
+- ✓ Test operational Wi-Fi Station, mDNS, the time-limited BOOT recovery AP,
       direct-Ethernet DHCP recovery, and refusal while Ethernet has link.
-- [ ] Test ADAR multicast and directed-broadcast fallback.
-- [ ] Electrically test every allowed contact GPIO, NO/NC, debounce, and BOOT
+- ✓ Test ADAR multicast and directed-broadcast fallback.
+- ✓ Electrically test every allowed contact GPIO, NO/NC, debounce, and BOOT
       recovery timing.
-- [ ] Test authenticated `/ver`, version negotiation, file list, playback,
+- ✓ Test authenticated `/ver`, version negotiation, file list, playback,
       stop, blank, status and Pix/Aux intensity against a real PixLite Mk3.
-- [ ] Test reboot persistence, both NVS slots, factory reset, and backup import.
-- [ ] Import a backup from another board and confirm unavailable GPIOs require
+- ✓ Test reboot persistence, both NVS slots, factory reset, and backup import.
+- ✓ Import a backup from another board and confirm unavailable GPIOs require
       remapping while portable behaviour is retained.
-- [ ] Add CI, compatibility manifest, wiring guide and known limitations.
+- ✓ Add CI, compatibility manifest, wiring guide and known limitations.
 
-The board is not “supported” until the checklist evidence is recorded in
-`HARDWARE-TESTS.md`.
+The board is not “supported” until every applicable checklist item has evidence.

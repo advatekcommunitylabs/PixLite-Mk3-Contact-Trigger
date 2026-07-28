@@ -4,15 +4,52 @@ For buttons outside the controller enclosure, start with a **commercially
 assembled optocoupler or isolated digital-input module**. Do not build a
 component-level interface from this guide.
 
-The simplest complete option is the supported Waveshare industrial 8DI board,
-which already provides isolated `DI1`–`DI8` terminals. When using the
-Pico-header ESP32-S3-ETH board, add an off-the-shelf multi-channel interface
-module with documented dry-contact inputs and 3.3 V-compatible logic outputs.
+The simplest complete option is the Waveshare ESP32-S3-ETH-8DI-8RO /
+ESP32-S3-POE-ETH-8DI-8RO industrial board, which already provides isolated
+`DI1`–`DI8` terminals. When using the Waveshare ESP32-S3-ETH /
+ESP32-S3-POE-ETH development board, add an off-the-shelf multi-channel
+interface module with documented dry-contact inputs and 3.3 V-compatible
+logic outputs.
 
-![Illustrative off-the-shelf eight-channel optocoupler module](assets/hardware-schematics/off-the-shelf-8-channel-optocoupler.png)
+![Real DONGKER eight-channel optocoupler module with its isolated field and ESP32 logic terminal groups identified](assets/hardware-schematics/off-the-shelf-8-channel-optocoupler-cropped.svg)
 
-*Illustrative module category only. Products and terminal layouts vary; this is
-not a supplier recommendation or a wiring reference.*
+The pictured module is the
+[DONGKER DC 3.3/5 V eight-channel optocoupler module](https://www.amazon.co.uk/dp/B08LVXX6MV).
+Its published listing specifies 3.3–5 V inputs, 1.8–24 V logic-side power,
+NPN/PNP selection, and separate input and output terminal groups. That
+electrical arrangement is compatible with this project when wired as described
+below. The listing is a compatibility example, not a supplier recommendation.
+Confirm that the delivered board and its markings still match the linked
+documentation before connecting it.
+
+## Keep the field supply isolated
+
+The optocouplers isolate the signals. A separate isolated supply must also
+power the field side so its positive and common conductors do not reconnect to
+the ESP32 supply.
+
+Use a commercially assembled isolated 5 V-to-5 V DC/DC module with:
+
+- a published galvanic-isolation rating;
+- regulated 5 V output;
+- enough output current for all enabled optocoupler channels; and
+- the required input/output filtering and decoupling already fitted by its
+  manufacturer.
+
+A normal buck, boost, or USB power module is not isolated. Do not use one for
+the field supply.
+
+For the pictured module, select **NPN** mode and use these two separate power
+domains:
+
+| Side | Connections |
+| --- | --- |
+| Isolated field side | Isolated `+5 V` to input `COM`; isolated `0 V` to one side of every dry contact; the other side of each contact to `IN1`–`IN8` |
+| ESP32 logic side | ESP32 `3.3 V` to output-side `VCC`; ESP32 `GND` to output-side `GND`; `OUT1`–`OUT8` to approved GPIOs |
+
+The isolated converter input may use a suitable controller-side 5 V supply
+inside the enclosure. Its output `+5 V` and `0 V` belong only to the field
+side. Never join isolated `0 V` to ESP32 `GND`.
 
 ## Choose a complete, documented module
 
@@ -55,8 +92,8 @@ Follow the selected module manufacturer's terminal diagram.
 1. Disconnect USB, PoE, and any alternative power before wiring.
 2. Identify the module's field-input side and ESP32 logic-output side from its
    manual.
-3. Configure its input side for passive dry contacts using only its approved
-   supply and common terminals.
+3. Configure its input side for passive dry contacts using only its isolated
+   field supply and common terminals.
 4. Connect each 3.3 V-compatible logic output to one firmware-approved GPIO.
 5. Connect any logic-side supply and common exactly as the module manual
    requires. Do not bridge an isolated field common to ESP32 GND.
@@ -66,9 +103,9 @@ Follow the selected module manufacturer's terminal diagram.
 8. Add the corresponding GPIO in the web interface and start with the default
    100 ms debounce.
 
-The approved GPIOs for the Pico-header board are `GPIO1`, `GPIO2`, `GPIO15`,
-`GPIO16`, `GPIO18`, `GPIO38`, `GPIO39`, and `GPIO40`. Each enabled input must
-use a unique GPIO.
+The approved GPIOs for the Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH
+development board are `GPIO1`, `GPIO2`, `GPIO15`, `GPIO16`, `GPIO18`,
+`GPIO38`, `GPIO39`, and `GPIO40`. Each enabled input must use a unique GPIO.
 
 ## Installation and support boundary
 

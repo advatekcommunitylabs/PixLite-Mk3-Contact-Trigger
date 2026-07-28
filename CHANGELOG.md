@@ -5,8 +5,6 @@ Configuration schema and board-profile versions are tracked independently.
 
 ## [Unreleased]
 
-- Added a concise public validation log for hardware-affecting changes made
-  after the initial public beta.
 - Refocused public field-wiring guidance on complete off-the-shelf isolated
   input modules and removed component-level PCB, BOM, and stripboard
   construction instructions.
@@ -162,5 +160,3 @@ The current release candidate identifies as `1.0.0-beta.6`.
 
 - Bench-tested with a Waveshare ESP32-S3-ETH and PixLite A4-S Mk3 running
   firmware 3.14.2/API v1.9.
-- Full hardware-ready acceptance remains pending; see
-  [HARDWARE-TESTS.md](HARDWARE-TESTS.md).

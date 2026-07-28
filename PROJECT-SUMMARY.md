@@ -33,9 +33,7 @@ Suggested repository topics:
 The modular firmware and per-board Arduino sketches compile with Arduino-ESP32
 3.3.10 and meet the current flash, static-RAM, and embedded-interface budgets.
 Supported targets and release compatibility are identified in
-[`compatibility.json`](compatibility.json). The public
-[hardware change log](HARDWARE-TESTS.md) begins at repository publication and
-records physical validation for later hardware-affecting modifications.
+[`compatibility.json`](compatibility.json).
 
 ## What it does
 
@@ -271,8 +269,7 @@ Before publishing a release:
    - Firmware binary no larger than 1.5 MB.
    - Embedded UI no larger than 13 KB gzip.
    - Static DRAM data+BSS no larger than 64 KB.
-3. If the release changes hardware-facing behaviour, add the physical
-   validation result to [HARDWARE-TESTS.md](HARDWARE-TESTS.md).
+3. Confirm the affected boards against the documented acceptance checks.
 4. Update `compatibility.json`, release notes, and known limitations.
 
 Do not remove the beta warning without an explicit maintainer decision backed
@@ -296,8 +293,7 @@ The workflow:
 5. Creates `AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`.
 6. Generates SHA-256 checksums.
 7. Publishes the sketch, zip, compatibility manifest, getting-started guide,
-   wiring guide, hardware change log, license, and checksums to GitHub
-   Releases.
+   wiring guide, license, and checksums to GitHub Releases.
 
 The workflow can also be run manually from **Actions → Release artifacts →
 Run workflow** to inspect artifacts without creating a tagged release.
@@ -309,7 +305,7 @@ Each release should state:
 - Firmware, UI, configuration-schema, and board-profile versions.
 - Supported Arduino-ESP32 version and exact Arduino IDE settings.
 - Supported hardware and PixLite Mk3 API range.
-- Hardware validation completed for any hardware-affecting changes.
+- Relevant physical test results.
 - New features, fixes, migrations, and breaking changes.
 - Wiring changes and any GPIOs requiring remapping.
 - Known limitations and recovery instructions.
@@ -361,7 +357,6 @@ boards as profiles that share the common firmware.
 - [Architecture](docs/ARCHITECTURE.md): source layers and runtime ownership
 - [CONTRIBUTING.md](CONTRIBUTING.md): community development workflow
 - [PORTING.md](PORTING.md): adding another ESP32 board
-- [HARDWARE-TESTS.md](HARDWARE-TESTS.md): post-public hardware change validation
 - [SUPPORT.md](SUPPORT.md): reproducible issue reports
 - [SECURITY.md](SECURITY.md): deployment and vulnerability reporting
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md): attributions

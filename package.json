@@ -17,8 +17,10 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check:docs": "node tools/check-docs.mjs",
-    "build:docs-site": "node tools/build-docs-site.mjs",
-    "check:docs-site": "node tools/build-docs-site.mjs --check",
+    "build:guide-annotations": "node tools/build-guide-annotations.mjs",
+    "check:guide-annotations": "node tools/build-guide-annotations.mjs --check",
+    "build:docs-site": "pnpm build:guide-annotations && node tools/build-docs-site.mjs",
+    "check:docs-site": "pnpm check:guide-annotations && node tools/build-docs-site.mjs --check",
     "check:generated": "node tools/build-sketch.mjs --check"
   },
   "devDependencies": {

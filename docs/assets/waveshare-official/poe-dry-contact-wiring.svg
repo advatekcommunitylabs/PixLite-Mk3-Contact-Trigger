@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
-  <title id="title">Dry-contact wiring for the Waveshare industrial PoE board</title>
+  <title id="title">Dry-contact wiring for the Waveshare ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO</title>
   <desc id="desc">Eight optional dry-contact switches connect between the shared isolated DGND terminal and DI1 through DI8. The adjacent input COM terminal, relay terminals, ESP32 ground and protective earth are not used.</desc>
   <style>
     .bg{fill:#202020}.panel{fill:#2c2c2e;stroke:#555;stroke-width:2}.term{fill:#f15a2c}.unused{fill:#58585a}

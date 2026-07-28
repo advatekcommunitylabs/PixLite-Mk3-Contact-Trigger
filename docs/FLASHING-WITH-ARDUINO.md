@@ -20,12 +20,13 @@ You need:
 
 | Your hardware | Download |
 | --- | --- |
-| ESP32-S3-ETH or ESP32-S3-POE-ETH Pico-header development board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) |
-| ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) |
+| Waveshare ESP32-S3-ETH or ESP32-S3-POE-ETH development board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) |
+| Waveshare ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) |
 
 PoE changes only the power source. Each standard-Ethernet and PoE pair uses the
 same firmware ZIP.
-The screenshots below use the Pico-header development-board download. The
+The screenshots below use the Waveshare ESP32-S3-ETH development-board
+download. The
 industrial download has a longer filename, but the Arduino settings and upload
 controls are the same.
 
@@ -41,7 +42,7 @@ Do not install the similarly named **Arduino ESP32 Boards by Arduino** package
 for this project. If Arduino offers a newer Espressif version, use 3.3.10 until
 the compatibility manifest is updated.
 
-![Arduino Boards Manager showing esp32 by Espressif Systems 3.3.10 installed](assets/arduino-flash-guide/00-install-esp32-core.png)
+![Arduino Boards Manager showing esp32 by Espressif Systems 3.3.10 installed](assets/arduino-flash-guide/00-install-esp32-core-annotated.svg)
 
 ## 2. Extract and open the sketch
 
@@ -59,7 +60,7 @@ On Windows, extract near the top of a normal user folder, such as
 when the industrial board's longer filename is placed inside an excessively
 long path.
 
-![Generated Advatek Trigger sketch open in Arduino IDE](assets/arduino-flash-guide/01-open-sketch.png)
+![Generated Advatek Trigger sketch open in Arduino IDE](assets/arduino-flash-guide/01-open-sketch-annotated.svg)
 
 ## 3. Connect the board and select its port
 
@@ -75,7 +76,7 @@ unsure, disconnect and reconnect USB and select the newly appearing port.
 
 Do **not** select `Waveshare ESP32-S3-Zero`; it is a different board.
 
-![Arduino board selector showing ESP32S3 Dev Module and a connected COM port](assets/arduino-flash-guide/02-select-board-and-port.png)
+![Arduino board selector showing ESP32S3 Dev Module and a connected COM port](assets/arduino-flash-guide/02-select-board-and-port-annotated.svg)
 
 For the industrial **ESP32-S3-POE-ETH-8DI-8RO**, disconnect PoE for the first
 upload and use only a data-capable USB-C cable to the computer. The
@@ -101,7 +102,7 @@ Leave the other options at their defaults. Arduino IDE remembers many options
 per board, but changing board definitions can reset Flash Size, Partition
 Scheme, or PSRAM. Recheck this table before every first upload to a new device.
 
-![Arduino Tools menu showing the required ESP32-S3 flash, partition, PSRAM and USB settings](assets/arduino-flash-guide/03-tools-settings.png)
+![Arduino Tools menu showing the required ESP32-S3 flash, partition, PSRAM and USB settings](assets/arduino-flash-guide/03-tools-settings-annotated.svg)
 
 ## 5. Compile and upload
 
@@ -116,9 +117,9 @@ Immediately after installing or changing the ESP32 package, allow Arduino IDE
 to finish indexing before judging the automatically displayed board name.
 Your manual selection must remain **ESP32S3 Dev Module**.
 
-![Arduino IDE compiling the Advatek Trigger sketch after Upload is selected](assets/arduino-flash-guide/04-upload-firmware.png)
+![Arduino IDE compiling the Advatek Trigger sketch after Upload is selected](assets/arduino-flash-guide/04-upload-firmware-annotated.svg)
 
-![Arduino IDE output showing the firmware write reached 100 percent, its hash was verified, and the board was reset](assets/arduino-flash-guide/05-upload-complete.png)
+![Arduino IDE output showing the firmware write reached 100 percent, its hash was verified, and the board was reset](assets/arduino-flash-guide/05-upload-complete-annotated.svg)
 
 If Arduino cannot put the board into download mode automatically:
 
@@ -143,7 +144,7 @@ Open **Tools → Serial Monitor** and select `115200 baud`. A healthy boot repor
 
 Do not continue if the log reports the wrong board profile or degraded PSRAM.
 
-![Serial Monitor boot lines confirming beta.6, the Waveshare ESP32-S3-ETH profile, 16 MB flash and normal 8 MB PSRAM](assets/arduino-flash-guide/06-first-boot.png)
+![Serial Monitor boot lines confirming beta.6, the Waveshare ESP32-S3-ETH profile, 16 MB flash and normal 8 MB PSRAM](assets/arduino-flash-guide/06-first-boot-annotated.svg)
 
 Connect Ethernet to the same local network as the computer and PixLite Mk3, then
 open:
@@ -169,5 +170,5 @@ and lets you assign a unique local name.
 | Browser cannot open `.local` | Use the numeric DHCP address from Serial Monitor |
 
 After the web interface opens, continue with the
-[Pico-header development-board guide](GETTING-STARTED.md) or the
+[Waveshare ESP32-S3-ETH development-board guide](GETTING-STARTED.md) or the
 [industrial 8DI guide](GETTING-STARTED-8DI-8RO.md).

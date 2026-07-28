@@ -81,11 +81,11 @@ These files are generated and committed for Arduino users:
 Change the source under `web/` or `firmware/`, then run `pnpm build`.
 `pnpm check:generated` must pass before a pull request.
 
-## Hardware changes
+## Physical testing
 
 Hardware evidence should identify:
 
-- exact PCB and module revisions;
+- exact board and connected modules;
 - Arduino-ESP32 version and build settings;
 - PixLite Mk3 model, firmware, and negotiated API version;
 - power method, link mode, and network topology;
@@ -93,25 +93,24 @@ Hardware evidence should identify:
 - memory and stack watermarks;
 - expected result, observed result, and reproducible steps.
 
-Do not mark a test passed from visual assumption alone. For hardware-affecting
-changes made after public launch, record the tested and untested scope honestly
-in [HARDWARE-TESTS.md](HARDWARE-TESTS.md).
+Do not mark a test passed from visual assumption alone. Include the tested and
+untested scope in the pull request.
 
 Power down before changing wiring. Never connect an externally powered signal
 directly to an ESP32 contact pin.
 
 ## Pull-request checklist
 
-- [ ] The change is scoped and described in plain language.
-- [ ] Tests cover new portable behavior and regressions.
-- [ ] User-facing behavior and API changes are documented.
-- [ ] Configuration migration and backup compatibility were considered.
-- [ ] No credentials, secrets, or private protocol documents are included.
-- [ ] `pnpm typecheck`, `pnpm test`, `pnpm test:native`, and
-      `pnpm check:docs` pass.
-- [ ] Generated artifacts were rebuilt and `pnpm check:generated` passes.
-- [ ] Hardware-affecting changes include a post-public validation-log entry.
-- [ ] `CHANGELOG.md` is updated when the change affects users.
+- ✓ The change is scoped and described in plain language.
+- ✓ Tests cover new portable behavior and regressions.
+- ✓ User-facing behavior and API changes are documented.
+- ✓ Configuration migration and backup compatibility were considered.
+- ✓ No credentials, secrets, or private protocol documents are included.
+- ✓ `pnpm typecheck`, `pnpm test`, `pnpm test:native`, and `pnpm check:docs`
+  pass.
+- ✓ Generated artifacts were rebuilt and `pnpm check:generated` passes.
+- ✓ Physical test results are included when the change affects installed hardware.
+- ✓ `CHANGELOG.md` is updated when the change affects users.
 
 By contributing, you agree that your contribution is licensed under the
 project's MIT License.

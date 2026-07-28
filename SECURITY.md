@@ -1,5 +1,11 @@
 # Security policy
 
+This is a single-purpose controller intended for use on a trusted local
+network, so significant security issues are considered unlikely in normal
+installations. The project still errs on the side of caution. Responsible
+reports are reviewed, sensitive details are handled privately, and users
+should follow the deployment guidance below.
+
 ## Supported versions
 
 Until a stable release exists, security fixes target the current beta branch

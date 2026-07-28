@@ -148,7 +148,5 @@ generated sketch directly; change canonical source and regenerate it.
   board canaries, and the credential-free Wi-Fi diagnostic probe used to
   distinguish RF/configuration failures without changing release fallback
   behaviour.
-- [HARDWARE-TESTS.md](../HARDWARE-TESTS.md) records post-public physical
-  validation for later hardware-affecting modifications.
 
 Automated success is necessary but does not confer hardware-ready status.

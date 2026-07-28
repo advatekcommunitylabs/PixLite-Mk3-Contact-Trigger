@@ -6,8 +6,8 @@ This Arduino folder supports both:
 - `ESP32-S3-POE-ETH-8DI-8RO`
 
 PoE changes only the power path. Do not open the similarly named
-`AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino`; that file is for the smaller Pico
-header development board and uses different pins.
+`AdvatekTrigger-Waveshare-ESP32-S3-ETH.ino`; that file is for the Waveshare
+ESP32-S3-ETH / ESP32-S3-POE-ETH development board and uses different pins.
 
 ## Upload
 
@@ -57,5 +57,4 @@ unused by this release.
 
 This target is an Advatek Labs community beta. Third-party hardware references
 document compatibility. Advatek does not endorse the listed products. Follow local electrical
-codes, applicable standards, and manufacturer instructions. Hardware-affecting
-modifications made after public launch are recorded in `HARDWARE-TESTS.md`.
+codes, applicable standards, and manufacturer instructions.

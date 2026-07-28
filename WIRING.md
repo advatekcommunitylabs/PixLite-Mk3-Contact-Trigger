@@ -4,8 +4,8 @@
 
 | Board | Where switches connect |
 | --- | --- |
-| Waveshare ESP32-S3-(POE)-ETH Pico-header board | Approved GPIO and nearby GND, subject to the protection guidance below |
-| Waveshare ESP32-S3-(POE)-ETH-8DI-8RO | Built-in isolated DI1–DI8 terminal group; follow the Waveshare passive/active wiring diagram |
+| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | Approved GPIO and nearby GND, subject to the protection guidance below |
+| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | Built-in isolated DI1–DI8 terminal group; follow the Waveshare passive/active wiring diagram |
 
 The industrial board maps DI1–DI8 internally to GPIO4–GPIO11. Do not connect
 its field switches to ESP32 header ground. Its relays, RS485, buzzer, and
@@ -20,7 +20,7 @@ endorse the listed products. Integrators must follow local electrical codes,
 applicable standards, manufacturer instructions, and requirements for qualified
 electrical personnel.
 
-## Pico-header development board
+## Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board
 
 The inputs are for **volt-free/dry contacts only**.
 

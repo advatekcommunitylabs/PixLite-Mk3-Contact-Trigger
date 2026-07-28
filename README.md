@@ -22,8 +22,7 @@ Maintainers and contributors can continue to the
 > **Community beta:** use the matching board-specific download and follow the
 > installation guide before connecting field hardware. Advatek Technical
 > Support does not cover third-party hardware or Advatek Labs community
-> projects. Hardware-affecting changes made after public launch are recorded in
-> the [public hardware change log](HARDWARE-TESTS.md).
+> projects.
 
 ## Quick start
 
@@ -31,8 +30,8 @@ Choose the download that exactly matches the Waveshare hardware:
 
 | Hardware | Matching Arduino download | Input connection |
 | --- | --- | --- |
-| ESP32-S3-ETH / ESP32-S3-POE-ETH Pico-header development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
-| ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
+| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
+| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
 
 PoE changes only the power path. The standard-Ethernet and PoE variants of each
 physical board share one firmware pin map and download.
@@ -128,10 +127,11 @@ wins, and actions that cannot be delivered expire after two seconds.
 
 ## Electrical safety
 
-On the Pico-header development board, ESP32 pins accept **volt-free contacts
-only**. Never apply external voltage directly to a GPIO. The industrial 8DI
-board instead uses its built-in isolated screw terminals and supports the
-passive/active arrangements documented by Waveshare.
+On the Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board, ESP32
+pins accept **volt-free contacts only**. Never apply external voltage directly
+to a GPIO. The industrial 8DI board instead uses its built-in isolated screw
+terminals and supports the passive/active arrangements documented by
+Waveshare.
 
 For PoE-powered installations and switch cabling outside the enclosure, use
 the isolated-input approach described in
@@ -148,7 +148,8 @@ Integrators are responsible for checking local electrical codes, applicable
 standards, manufacturer instructions, and whether qualified electrical
 personnel are required for their installation.
 
-Permitted contact pins on the Pico-header PoE-accessible board layout are:
+Permitted contact pins on the Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH board
+layout are:
 `GPIO1`, `GPIO2`, `GPIO15`, `GPIO16`, `GPIO18`, `GPIO38`, `GPIO39`, and
 `GPIO40`. The firmware allow-list is the source of truth.
 
@@ -217,7 +218,6 @@ with dark/light themes and per-guide PDF/Markdown export controls.
 | [Architecture](docs/ARCHITECTURE.md) | Firmware and web contributors |
 | [Contributing](CONTRIBUTING.md) | Community contributors |
 | [Board porting](PORTING.md) | Maintainers adding an ESP32 PCB |
-| [Hardware change validation](HARDWARE-TESTS.md) | Contributors modifying hardware-facing behaviour |
 | [Project and release summary](PROJECT-SUMMARY.md) | Advatek Labs repository and release maintainers |
 | [Support](SUPPORT.md) | Users reporting a problem |
 | [Security](SECURITY.md) | Installers and vulnerability reporters |

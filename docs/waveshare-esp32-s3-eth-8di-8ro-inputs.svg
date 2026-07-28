@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
-  <title id="title">Waveshare ESP32-S3-ETH-8DI-8RO input mapping</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Waveshare ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO input mapping</title>
   <desc id="desc">Eight isolated input terminals DI1 through DI8 map to ESP32 GPIO4 through GPIO11. Field switches connect to the isolated terminal group, not to ESP32 header ground.</desc>
   <style>
-    .bg{fill:#202020}.panel{fill:#2c2c2e;stroke:#555;stroke-width:2}.term{fill:#f15a2c}.wire{stroke:#cbc8c5;stroke-width:4}.title{font:700 30px Arial,sans-serif;fill:#fff}.sub{font:16px Arial,sans-serif;fill:#cbc8c5}.label{font:700 17px Arial,sans-serif;fill:#fff}.gpio{font:700 15px Arial,sans-serif;fill:#353436}.note{font:700 17px Arial,sans-serif;fill:#f15a2c}
+    .bg{fill:#202020}.panel{fill:#2c2c2e;stroke:#555;stroke-width:2}.term{fill:#f15a2c}.wire{stroke:#cbc8c5;stroke-width:4}.title{font:700 25px Arial,sans-serif;fill:#fff}.sub{font:16px Arial,sans-serif;fill:#cbc8c5}.label{font:700 17px Arial,sans-serif;fill:#fff}.gpio{font:700 15px Arial,sans-serif;fill:#353436}.note{font:700 17px Arial,sans-serif;fill:#f15a2c}
   </style>
-  <rect class="bg" width="1200" height="680"/>
-  <text class="title" x="60" y="62">Waveshare industrial 8DI input mapping</text>
-  <text class="sub" x="60" y="92">ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO · component/enclosure label view</text>
-  <rect class="panel" x="60" y="130" width="1080" height="540" rx="18"/>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="60" y="58">Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO</text>
+  <text class="sub" x="60" y="92">Isolated input mapping | component/enclosure label view</text>
+  <rect class="panel" x="60" y="130" width="1080" height="560" rx="18"/>
   <text class="label" x="110" y="178">ISOLATED FIELD TERMINALS</text>
   <text class="label" x="840" y="178">FIRMWARE SIGNAL</text>
   <g>
@@ -20,6 +20,7 @@
     <rect class="term" x="110" y="487" width="150" height="40" rx="6"/><text class="label" x="185" y="513" text-anchor="middle">DI7</text><line class="wire" x1="260" y1="507" x2="840" y2="507"/><rect x="840" y="487" width="150" height="40" rx="6" fill="#e7e3df"/><text class="gpio" x="915" y="513" text-anchor="middle">GPIO10</text>
     <rect class="term" x="110" y="534" width="150" height="40" rx="6"/><text class="label" x="185" y="560" text-anchor="middle">DI8</text><line class="wire" x1="260" y1="554" x2="840" y2="554"/><rect x="840" y="534" width="150" height="40" rx="6" fill="#e7e3df"/><text class="gpio" x="915" y="560" text-anchor="middle">GPIO11</text>
   </g>
-  <text class="note" x="60" y="620">Wire buttons within the isolated DI terminal group. Do not use an ESP32 GPIO header or ESP32 GND for field switches.</text>
-  <text class="sub" x="60" y="650">Verify the enclosure labels and Waveshare passive/active input diagram before applying external voltage.</text>
+  <text class="note" x="110" y="612">Wire buttons only within the isolated DI terminal group.</text>
+  <text class="note" x="110" y="638">Do not use an ESP32 GPIO header or ESP32 GND for field switches.</text>
+  <text class="sub" x="110" y="668">Verify the enclosure labels and Waveshare passive/active input diagram before applying external voltage.</text>
 </svg>

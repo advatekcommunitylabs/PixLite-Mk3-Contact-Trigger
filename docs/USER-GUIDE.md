@@ -4,16 +4,6 @@ This short guide covers normal software use after the controller has been
 flashed, wired, and connected to the same local network as its PixLite Mk3
 controllers.
 
-## Community-beta status
-
-Use the firmware version and board-specific download shown in the web
-interface and release notes. Advatek Technical Support does not cover
-third-party hardware or Advatek Labs community projects.
-
-The [public hardware change log](../HARDWARE-TESTS.md) records physical
-validation for hardware-affecting modifications merged after public launch. It
-is not a certification or warranty record.
-
 ## Open the controller
 
 In a web browser, open:
@@ -29,7 +19,7 @@ controller is ready to receive contact triggers.
 If the `.local` address does not open, use the numeric Device IP shown in the
 interface or by Serial Monitor at `115200` baud.
 
-![Contact Trigger status dashboard showing the device address, Ethernet health, connected PixLite Mk3, and setup progress](assets/user-guide/01-status-and-pixlite-mk3.png)
+![Contact Trigger status dashboard showing the device address, Ethernet health, connected PixLite Mk3, and setup progress](assets/user-guide/01-status-and-pixlite-mk3-annotated.svg)
 
 ## Check or add a PixLite Mk3
 
@@ -59,7 +49,7 @@ address and updates the connection. If its media list is empty after files
 have changed, reconnect it with **Edit** and **Connect and save**, then open
 **View media** again.
 
-![Saved PixLite Mk3 controller and alphabetically ordered scenes and playlists](assets/user-guide/02-pixlite-mk3-media.png)
+![Saved PixLite Mk3 controller and alphabetically ordered scenes and playlists](assets/user-guide/02-pixlite-mk3-media-annotated.svg)
 
 ## Configure a button or switch
 
@@ -82,7 +72,7 @@ fields** means a pin, PixLite Mk3, or media selection is still missing.
 For a normally-closed field contact, enable **Normally closed** so the displayed
 and triggered states follow its logical operation.
 
-![Input editor showing terminal assignment, switch type, debounce, edge actions, autosave state, and Hold-to-test](assets/user-guide/03-input-configuration.png)
+![Input editor showing terminal assignment, switch type, debounce, edge actions, autosave state, and Hold-to-test](assets/user-guide/03-input-configuration-annotated.svg)
 
 ## Choose actions
 
@@ -108,11 +98,11 @@ maintained setup is a looping scene on Latch on and **Live mode** on Latch off.
 The web interface configures intensity behaviour. The connected button or
 switch controls intensity during operation.
 
-![Input action configured to step through PixLite Mk3 scenes with a selected playback repeat mode](assets/user-guide/04-scene-stepping.png)
+![Input action configured to step through PixLite Mk3 scenes with a selected playback repeat mode](assets/user-guide/04-scene-stepping-annotated.svg)
 
-![RGB colour-fade Test mode selected as a physical input action](assets/user-guide/05-test-colour-fade.png)
+![RGB colour-fade Test mode selected as a physical input action](assets/user-guide/05-test-colour-fade-annotated.svg)
 
-![GPIO-driven intensity action showing output target, step size, repeat timing, and fade](assets/user-guide/06-intensity-action.png)
+![GPIO-driven intensity action showing output target, step size, repeat timing, and fade](assets/user-guide/06-intensity-action-annotated.svg)
 
 ## Understand the status LED
 
@@ -145,7 +135,7 @@ note of the new address before saving. Select **Save network and restart**
 once, then select **Tap again to save and restart**. The button changes to
 **Settings accepted - restarting** before the page disconnects.
 
-![Network settings showing the operational connection, editable local name, addressing, and BOOT recovery method](assets/user-guide/07-network-and-recovery.png)
+![Network settings showing the operational connection, editable local name, addressing, and BOOT recovery method](assets/user-guide/07-network-and-recovery-annotated.svg)
 
 Wi-Fi does not automatically fall back to Ethernet if its configured network
 is unavailable. To recover access, hold **BOOT for 5–14 seconds** and release:
@@ -183,7 +173,7 @@ PixLite Mk3, or interface passwords.
 5. Open **Diagnostics**, select **Refresh log**, and keep the result for a
    support report.
 
-![Diagnostics view showing board identity, firmware versions, Ethernet state, memory health, and the event log](assets/user-guide/08-diagnostics.png)
+![Diagnostics view showing board identity, firmware versions, Ethernet state, memory health, and the event log](assets/user-guide/08-diagnostics-annotated.svg)
 
 ## Use the interface on a phone
 
@@ -192,15 +182,15 @@ network recovery remain available without a separate app.
 
 ### Mobile status
 
-![Mobile status dashboard](assets/user-guide/09-mobile-status.png)
+![Mobile status dashboard](assets/user-guide/09-mobile-status-annotated.svg)
 
 ### Mobile input editing
 
-![Mobile input editor with full-width Hold-to-test and Remove controls](assets/user-guide/10-mobile-input.png)
+![Mobile input editor with full-width Hold-to-test and Remove controls](assets/user-guide/10-mobile-input-annotated.svg)
 
 ### Mobile network recovery
 
-![Mobile network and recovery controls](assets/user-guide/11-mobile-network.png)
+![Mobile network and recovery controls](assets/user-guide/11-mobile-network-annotated.svg)
 
 For access recovery and factory-reset instructions, see the
 [getting-started recovery section](GETTING-STARTED.md#recovery). For a

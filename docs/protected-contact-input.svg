@@ -23,7 +23,7 @@
 
   <rect width="1200" height="720" class="bg"/>
   <text x="52" y="55" class="title">Basic protected dry-contact input</text>
-  <text x="52" y="83" class="small">Repeat this channel for every switch. PoE powers the Waveshare board; no 48 V wiring enters this circuit.</text>
+  <text x="52" y="83" class="small">Repeat this channel for every switch. PoE powers the Waveshare ESP32-S3-ETH; no 48 V wiring enters this circuit.</text>
 
   <rect x="42" y="112" width="1116" height="505" rx="14" class="panel"/>
   <line x1="460" y1="112" x2="460" y2="617" stroke="#d3d2d0" stroke-width="2" stroke-dasharray="8 8"/>

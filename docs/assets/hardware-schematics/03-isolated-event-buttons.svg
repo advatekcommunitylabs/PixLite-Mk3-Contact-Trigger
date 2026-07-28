@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
-  <title>Group isolation is the recommended event setup</title>
+  <title>Isolated event buttons for the Waveshare ESP32-S3-ETH</title>
   <rect width="1600" height="900" fill="#1F1F20"/>
   <rect width="1600" height="116" fill="#353436"/>
   <rect y="112" width="1600" height="4" fill="#F15A2C"/>

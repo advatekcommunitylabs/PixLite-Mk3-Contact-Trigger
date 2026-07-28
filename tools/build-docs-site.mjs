@@ -47,8 +47,6 @@ const groups = [
     pages: [
       ['docs/SITE-HOME.md', 'guide-home', 'Guide home',
         'Choose the correct route for installing, commissioning, or operating the controller.'],
-      ['docs/USER-GUIDE.md', 'user-guide', 'Software user guide',
-        'Normal operation of a flashed and commissioned controller.'],
       ['docs/FLASHING-WITH-ARDUINO.md', 'flashing-with-arduino',
         'Flash with Arduino IDE',
         'An illustrated upload guide for non-technical users.'],
@@ -58,6 +56,8 @@ const groups = [
       ['docs/GETTING-STARTED-8DI-8RO.md', 'getting-started-8di',
         'Industrial 8DI setup',
         'Commission the Waveshare isolated-input industrial board.'],
+      ['docs/USER-GUIDE.md', 'user-guide', 'Software user guide',
+        'Normal operation of a flashed and commissioned controller.'],
     ],
   },
   {
@@ -70,8 +70,6 @@ const groups = [
       ['docs/PROTECTED-CONTACT-INPUTS.md', 'protected-inputs',
         'Isolated input modules',
         'Select a complete off-the-shelf module for field wiring.'],
-      ['HARDWARE-TESTS.md', 'hardware-tests', 'Hardware change log',
-        'Post-public validation for hardware-affecting modifications.'],
     ],
   },
   {
@@ -266,10 +264,21 @@ function renderMarkdown(markdown, page) {
   // Marked emits task-list checkboxes but does not add a class to the list
   // item. Add one here so older embedded browsers can suppress the ordinary
   // bullet without relying on the newer :has() selector.
-  return marked.parse(markdown).replace(
-    /<li><input disabled="" type="checkbox"/g,
-    '<li class="task-list-item"><input disabled="" type="checkbox"',
-  );
+  return marked.parse(markdown)
+    .replace(
+      /<li><input disabled="" type="checkbox"/g,
+      '<li class="task-list-item"><input disabled="" type="checkbox"',
+    )
+    .replace(
+      /<li>✓\s*/g,
+      '<li class="static-check"><span class="static-check-mark" aria-hidden="true">✓</span>',
+    )
+    // GitHub renders these blockquotes as alerts. Marked deliberately stays
+    // platform-neutral, so remove the source marker and expose a styling hook.
+    .replace(
+      /<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/gi,
+      (_, type) => `<blockquote class="alert alert-${type.toLowerCase()}"><p>`,
+    );
 }
 
 function renderPage(page) {

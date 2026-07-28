@@ -38,7 +38,6 @@ jobs:
           cp docs/HARDWARE.md generated/HARDWARE.md
           cp docs/waveshare-esp32-s3-eth-project-pinout.svg generated/
           cp docs/waveshare-esp32-s3-eth-8di-8ro-inputs.svg generated/
-          cp HARDWARE-TESTS.md generated/
           cp LICENSE generated/
           cp docs/RELEASE-START-HERE.md generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH/START-HERE.md
           cp docs/waveshare-esp32-s3-eth-project-pinout.svg generated/AdvatekTrigger-Waveshare-ESP32-S3-ETH/
@@ -49,7 +48,7 @@ jobs:
           # Exclude it defensively so release zips contain only end-user files.
           zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH/ -x '*/build/*'
           zip -r AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO/ -x '*/build/*'
-          sha256sum *.ino *.zip compatibility.json WIRING.md GETTING-STARTED.md HARDWARE.md *.svg HARDWARE-TESTS.md LICENSE > SHA256SUMS.txt
+          sha256sum *.ino *.zip compatibility.json WIRING.md GETTING-STARTED.md HARDWARE.md *.svg LICENSE > SHA256SUMS.txt
       - uses: actions/upload-artifact@v7
         with:
           name: advatek-trigger-${{ github.ref_name }}
@@ -70,5 +69,4 @@ jobs:
             generated/HARDWARE.md
             generated/waveshare-esp32-s3-eth-project-pinout.svg
             generated/waveshare-esp32-s3-eth-8di-8ro-inputs.svg
-            generated/HARDWARE-TESTS.md
             generated/LICENSE

@@ -11,7 +11,7 @@ See the
 [official Waveshare product page](https://www.waveshare.com/esp32-s3-eth-8di-8ro.htm?sku=30838)
 for the manufacturer's complete electrical specification.
 
-![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front-cutout.png)
+![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front-cropped.svg)
 
 This is an Advatek Labs community-beta installation guide. Use the exact
 board-specific download, follow the manufacturer's electrical specification,
@@ -27,7 +27,7 @@ ESP32-S3 board settings and upload process with real Arduino IDE screenshots.
 
 ## Identify the PoE board connections
 
-![Official Waveshare PoE board image annotated with the project connection points](assets/waveshare-official/poe-board-ports-annotated.svg)
+![Waveshare ESP32-S3-POE-ETH-8DI-8RO annotated with the project connection points](assets/waveshare-official/poe-board-ports-annotated.svg)
 
 1. **PoE Ethernet:** connect this RJ45 socket to an IEEE 802.3af PoE switch or
    injector for normal power and network operation.
@@ -162,7 +162,7 @@ This board maps its eight isolated field inputs as follows:
 | DI7 | GPIO10 |
 | DI8 | GPIO11 |
 
-![Industrial board input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
+![Waveshare ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
 
 For the passive buttons and contact closures used by this project:
 

@@ -6,7 +6,7 @@ first installation, and the project pinouts. Read the
 
 ## Supported controllers
 
-### Pico-header development board
+### Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board
 
 Use the **Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH** based on ESP32-S3R8. The
 PoE version is the same controller with a power-only daughterboard, so both use
@@ -35,7 +35,7 @@ manufacturer-provided external-DC terminals, but external-DC selection and
 wiring are outside this project's v1 installation scope. The firmware download
 is unchanged by the product's power option.
 
-![Waveshare industrial board input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
+![Waveshare ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
 
 Use the isolated `DI1`–`DI8` screw terminals. Do not add an external
 optocoupler module to this board, and do not connect field switches to its
@@ -55,7 +55,7 @@ ESP32 GPIO headers.
 | Volt-free push button, maintained switch, or relay contact | Provides the physical trigger |
 | Low-voltage control cable | Connects remote contacts to the selected input hardware |
 | Enclosure, suitable connectors, and strain relief | Keeps wiring secure and serviceable |
-| Documented off-the-shelf isolated input module | Recommended when Pico-header-board switches leave the enclosure |
+| Documented off-the-shelf isolated input module | Recommended when switches connected to the Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH leave the enclosure |
 
 The ESP32 board's own TF/microSD slot is unused. It is separate from the
 industrial-grade microSD required inside the PixLite Mk3 for SHOWTime.
@@ -84,7 +84,7 @@ The [off-the-shelf isolated-input guide](PROTECTED-CONTACT-INPUTS.md) explains
 how to select a complete module without asking users to design or assemble a
 PCB.
 
-## Pico-header project pinout
+## Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH project pinout
 
 The drawing is viewed from the component side, with USB-C and the PoE module at
 the top. Orange pins are the only GPIOs offered by this board profile. Nearby
@@ -134,19 +134,22 @@ They do not provide cable-fault, transient, or surge protection.
 
 ## Off-the-shelf isolated input module
 
-Use a commercially assembled module when a Pico-header-board button cable
-leaves the enclosure.
+Use a commercially assembled module when a button cable connected to the
+Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH leaves the enclosure.
 
-![Illustrative off-the-shelf eight-channel optocoupler module](assets/hardware-schematics/off-the-shelf-8-channel-optocoupler.png)
+![Real DONGKER eight-channel optocoupler module with its isolated field and ESP32 logic terminal groups identified](assets/hardware-schematics/off-the-shelf-8-channel-optocoupler-cropped.svg)
 
-This image illustrates the module category. It provides no supplier
-recommendation or wiring reference. Terminal layouts vary. Select a module whose manufacturer
-explicitly documents passive dry-contact inputs, galvanic isolation where
-required, and 3.3 V-compatible ESP32 outputs.
+The pictured
+[DONGKER DC 3.3/5 V eight-channel optocoupler module](https://www.amazon.co.uk/dp/B08LVXX6MV)
+is an electrically compatible example when its field side is powered from a
+separate isolated 5 V supply and its logic side is powered at 3.3 V. It is not
+a supplier recommendation. Product designs and listings can change, so confirm
+the delivered module against its current terminal diagram before wiring it.
 
 Follow the [off-the-shelf isolated-input guide](PROTECTED-CONTACT-INPUTS.md)
-and the selected product's manual. Verify one channel before connecting the
-remaining inputs.
+for the two-domain wiring arrangement. Keep the isolated field `+5 V` and
+`0 V` separate from ESP32 `3.3 V` and `GND`. Verify one channel before
+connecting the remaining inputs.
 
 ## Installation boundaries
 

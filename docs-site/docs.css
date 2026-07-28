@@ -203,7 +203,7 @@ button:focus-visible, a:focus-visible {
   font-size: 15px;
 }
 .article {
-  padding: 30px 34px 46px;
+  padding: 26px 28px 42px;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--panel);
@@ -231,9 +231,9 @@ button:focus-visible, a:focus-visible {
 .article > h2,
 .article > h3,
 .article > h4 {
-  width: min(100%, 82ch);
-  margin-right: auto;
-  margin-left: auto;
+  width: 100%;
+  margin-right: 0;
+  margin-left: 0;
 }
 .article img {
   display: block;
@@ -267,6 +267,9 @@ button:focus-visible, a:focus-visible {
   color: var(--muted);
 }
 .article blockquote p { margin: 0; }
+.article blockquote.alert {
+  color: var(--ink);
+}
 .article code {
   padding: .13em .35em;
   border: 1px solid var(--line);
@@ -291,6 +294,16 @@ button:focus-visible, a:focus-visible {
 .article li > input[type="checkbox"] {
   margin: 0 .55em 0 -1.45em;
   accent-color: var(--orange);
+}
+.article li.static-check {
+  list-style: none;
+}
+.static-check-mark {
+  display: inline-block;
+  width: 1.45em;
+  margin-left: -1.45em;
+  color: var(--success);
+  font-weight: 900;
 }
 .article hr { border: 0; border-top: 1px solid var(--line); }
 .page-footer {
