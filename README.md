@@ -1,9 +1,10 @@
-# Advatek Labs PixLite Mk3 Contact Closure Trigger
+# PixLite Mk3 Contact Closure Trigger
 
-An open-source ESP32 appliance that turns physical push buttons, maintained
-switches, and relay contacts into PixLite Mk3 scene, playlist, intensity and
-test mode actions. Installers configure it through a compact local web
-interface; no firmware editing is required after the initial Arduino upload.
+An open-source community beta for turning physical push buttons, maintained
+switches and relay contacts into PixLite Mk3 scene, playlist, intensity and
+test mode actions. The ESP32 controller is configured through a compact local
+web interface; no firmware editing is required after the initial Arduino
+upload.
 
 ## Start here
 
@@ -53,11 +54,6 @@ unrelated and is not used by this firmware.
 New to Arduino? Follow the
 [illustrated flashing guide](docs/FLASHING-WITH-ARDUINO.md) for screenshots of
 every board, port, build-option, and upload step.
-
-Prefer a formatted web guide? Open the
-[Advatek Labs Contact Trigger guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).
-Every page can be printed or saved as a clean PDF, and its editable Markdown
-source can be downloaded directly.
 
 1. Install [Arduino IDE](https://www.arduino.cc/en/software) and Espressif
    **Arduino-ESP32 3.3.10**.
