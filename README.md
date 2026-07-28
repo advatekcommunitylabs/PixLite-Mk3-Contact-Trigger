@@ -5,6 +5,20 @@ switches, and relay contacts into PixLite Mk3 playback and intensity actions.
 Installers configure it through a compact local web interface; no firmware
 editing is required after the initial Arduino upload.
 
+## Start here
+
+> [!TIP]
+> **New users should begin with the
+> [step-by-step guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).**
+> It helps you choose the correct hardware download, flash the ESP32, connect
+> switches, and configure the controller. Every guide can also be printed,
+> saved as a PDF, or downloaded as Markdown.
+
+Already have a flashed controller? Open the
+[software user guide](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/user-guide.html).
+Maintainers and contributors can continue to the
+[repository documentation](#documentation).
+
 > **Community beta:** use the matching board-specific download and follow the
 > installation guide before connecting field hardware. Advatek Technical
 > Support does not cover third-party hardware or Advatek Labs community
