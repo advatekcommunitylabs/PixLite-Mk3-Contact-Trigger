@@ -58,8 +58,8 @@ The current release candidate identifies as `1.0.0-beta.6`.
   addressing object with the same name.
 - The industrial guide now uses transparent, self-contained product renders,
   visible port annotations, standard normally-open switch symbols, and
-  non-prescriptive cable guidance. Internal acceptance steps remain in the
-  hardware test record. The end-user guide contains installation instructions.
+  non-prescriptive cable guidance. The end-user guide contains the installation
+  instructions.
 - Ethernet operation now initializes an idle, unassociated Wi-Fi interface so
   BOOT recovery can reliably create its temporary access point without
   providing any automatic Wi-Fi fallback.

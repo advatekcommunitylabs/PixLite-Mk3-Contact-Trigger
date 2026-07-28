@@ -6,14 +6,14 @@ body:
   - type: input
     id: board
     attributes:
-      label: Board and revision
+      label: Board model
     validations:
       required: true
   - type: input
     id: power
     attributes:
       label: Power source and PoE module
-      placeholder: USB-C or Waveshare PoE module revision
+      placeholder: USB-C, external DC, or Waveshare PoE module
     validations:
       required: true
   - type: input

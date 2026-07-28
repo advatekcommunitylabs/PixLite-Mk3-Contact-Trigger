@@ -1,7 +1,7 @@
 # Hardware schematic assets
 
-These diagrams are provided in three public formats so community contributors are not
-locked to one design application.
+The direct-button diagram is provided in three public formats so community
+contributors are not locked to one design application.
 
 | Format | Use |
 | --- | --- |
@@ -13,9 +13,8 @@ GitHub documentation embeds the SVG exports and links to the small, plain-text
 `.drawio` masters. This makes diagram changes reviewable without requiring
 proprietary software.
 
-The editable assets contain:
-
-1. Up to eight direct dry-contact buttons for bench or same-enclosure testing.
+The editable diagram shows up to eight direct dry-contact buttons for bench or
+same-enclosure testing.
 
 All text, blocks, button symbols, and wiring remain editable in the diagrams.net
 masters. Recent PowerPoint versions can also insert SVGs and may offer
