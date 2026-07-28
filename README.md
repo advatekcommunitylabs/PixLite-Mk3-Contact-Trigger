@@ -226,9 +226,8 @@ Advatek does not endorse one compatible third-party product or supplier over
 another. Community members and the Advatek team are welcome to share tested
 profiles, improvements, documentation, and repeatable hardware evidence.
 
-Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md) and the
-[Code of Conduct](CODE_OF_CONDUCT.md). Please report security issues privately
-as described in [SECURITY.md](SECURITY.md).
+Contributions are welcome under [CONTRIBUTING.md](CONTRIBUTING.md). Please
+report security issues privately as described in [SECURITY.md](SECURITY.md).
 
 MIT licensed. See [LICENSE](LICENSE) and
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). PixLite Mk3 API and ADAR protocol
