@@ -23,3 +23,7 @@ unchanged.
 `poe-board-ports-annotated.svg` is generated deterministically from the
 background-cleaned photograph. `poe-dry-contact-wiring.svg` is the editable
 source for its matching PNG guide render.
+
+`poe-board-dry-contacts-annotated.svg` combines the attributed product
+photograph with an editable input highlight and eight switch circuit symbols.
+Its matching PNG is used on the hardware guide page.

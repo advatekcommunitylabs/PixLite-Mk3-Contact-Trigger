@@ -35,6 +35,13 @@ manufacturer-provided external-DC terminals, but external-DC selection and
 wiring are outside this project's v1 installation scope. The firmware download
 is unchanged by the product's power option.
 
+![Eight dry-contact switches connected to the isolated inputs on a real Waveshare ESP32-S3-POE-ETH-8DI-8RO](assets/waveshare-official/poe-board-dry-contacts-annotated.png)
+
+For passive switches, use the isolated input terminal group along the top edge
+of the enclosure. Connect each switch between `DGND` and one input from `DI1`
+to `DI8`. The switches may use a shared `DGND` return for a short multicore
+cable, or a separate `DGND` conductor paired with each input.
+
 ![Waveshare ESP32-S3-ETH-8DI-8RO and ESP32-S3-POE-ETH-8DI-8RO input mapping](waveshare-esp32-s3-eth-8di-8ro-inputs.svg)
 
 Use the isolated `DI1`–`DI8` screw terminals. Do not add an external

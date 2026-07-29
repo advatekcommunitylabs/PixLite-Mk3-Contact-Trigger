@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="980" viewBox="0 0 1400 980" role="img" aria-labelledby="title desc">
+  <title id="title">Eight dry-contact switches connected to the Waveshare industrial 8DI board</title>
+  <desc id="desc">A real Waveshare ESP32-S3-POE-ETH-8DI-8RO is shown with its isolated input terminal group highlighted. Eight normally-open switches connect individually from DI1 through DI8 to the shared DGND return. Input COM and the relay terminals are not used.</desc>
+  <style>
+    .bg{fill:#202020}.panel{fill:#2c2c2e;stroke:#565658;stroke-width:2}
+    .photo-panel{fill:#181818;stroke:#565658;stroke-width:2}.accent{fill:#f15a2c}
+    .wire{fill:none;stroke:#e8e5e1;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+    .blade{fill:none;stroke:#f15a2c;stroke-width:6;stroke-linecap:round}
+    .contact{fill:#2c2c2e;stroke:#f15a2c;stroke-width:4}
+    .highlight{fill:none;stroke:#f15a2c;stroke-width:6}
+    .leader{fill:none;stroke:#f15a2c;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+    .title{font:700 34px Arial,sans-serif;fill:#fff}
+    .sub{font:18px Arial,sans-serif;fill:#d0cdca}
+    .label{font:700 17px Arial,sans-serif;fill:#fff}
+    .small{font:16px Arial,sans-serif;fill:#d0cdca}
+    .note{font:700 18px Arial,sans-serif;fill:#f15a2c}
+    .ok{font:700 18px Arial,sans-serif;fill:#8cc955}
+  </style>
+  <defs>
+    <clipPath id="photo-crop">
+      <rect x="48" y="108" width="1304" height="440" rx="16"/>
+    </clipPath>
+  </defs>
+
+  <rect class="bg" width="1400" height="980"/>
+  <text class="title" x="48" y="52">Connect dry-contact switches to the isolated inputs</text>
+  <text class="sub" x="48" y="82">Use DGND and DI1-DI8. Each switch closes one isolated input circuit.</text>
+
+  <rect class="photo-panel" x="48" y="108" width="1304" height="440" rx="16"/>
+  <image href="poe-board-front-cutout.png" x="170" y="-100" width="1060" height="795" preserveAspectRatio="xMidYMid meet" clip-path="url(#photo-crop)"/>
+
+  <!-- The orange outline identifies the input terminal strip on the real product photo. -->
+  <rect class="highlight" x="580" y="138" width="220" height="50" rx="8"/>
+  <path class="leader" d="M800 163 H1170 V244"/>
+  <rect class="accent" x="1010" y="226" width="310" height="72" rx="9"/>
+  <text class="label" x="1165" y="255" text-anchor="middle">ISOLATED INPUT TERMINALS</text>
+  <text class="small" x="1165" y="280" text-anchor="middle">COM, DGND, DI1-DI8</text>
+
+  <rect class="panel" x="48" y="574" width="1304" height="330" rx="16"/>
+  <text class="label" x="78" y="610">PASSIVE, VOLT-FREE SWITCHES</text>
+  <text class="small" x="78" y="636">One normally-open contact is shown for each available input.</text>
+
+  <!-- Input terminal labels align with the eight switch circuits below. -->
+  <g transform="translate(258 660)">
+    <g>
+      <rect class="accent" x="0" width="100" height="44" rx="6"/><text class="label" x="50" y="28" text-anchor="middle">DI1</text>
+      <rect class="accent" x="112" width="100" height="44" rx="6"/><text class="label" x="162" y="28" text-anchor="middle">DI2</text>
+      <rect class="accent" x="224" width="100" height="44" rx="6"/><text class="label" x="274" y="28" text-anchor="middle">DI3</text>
+      <rect class="accent" x="336" width="100" height="44" rx="6"/><text class="label" x="386" y="28" text-anchor="middle">DI4</text>
+      <rect class="accent" x="448" width="100" height="44" rx="6"/><text class="label" x="498" y="28" text-anchor="middle">DI5</text>
+      <rect class="accent" x="560" width="100" height="44" rx="6"/><text class="label" x="610" y="28" text-anchor="middle">DI6</text>
+      <rect class="accent" x="672" width="100" height="44" rx="6"/><text class="label" x="722" y="28" text-anchor="middle">DI7</text>
+      <rect class="accent" x="784" width="100" height="44" rx="6"/><text class="label" x="834" y="28" text-anchor="middle">DI8</text>
+    </g>
+
+    <!-- Eight IEC-style normally-open switch symbols. -->
+    <g>
+      <path class="wire" d="M50 44 V104"/><circle class="contact" cx="38" cy="114" r="5"/><circle class="contact" cx="62" cy="114" r="5"/><path class="blade" d="M38 114 L58 98"/><path class="wire" d="M62 114 V170"/>
+      <path class="wire" d="M162 44 V104"/><circle class="contact" cx="150" cy="114" r="5"/><circle class="contact" cx="174" cy="114" r="5"/><path class="blade" d="M150 114 L170 98"/><path class="wire" d="M174 114 V170"/>
+      <path class="wire" d="M274 44 V104"/><circle class="contact" cx="262" cy="114" r="5"/><circle class="contact" cx="286" cy="114" r="5"/><path class="blade" d="M262 114 L282 98"/><path class="wire" d="M286 114 V170"/>
+      <path class="wire" d="M386 44 V104"/><circle class="contact" cx="374" cy="114" r="5"/><circle class="contact" cx="398" cy="114" r="5"/><path class="blade" d="M374 114 L394 98"/><path class="wire" d="M398 114 V170"/>
+      <path class="wire" d="M498 44 V104"/><circle class="contact" cx="486" cy="114" r="5"/><circle class="contact" cx="510" cy="114" r="5"/><path class="blade" d="M486 114 L506 98"/><path class="wire" d="M510 114 V170"/>
+      <path class="wire" d="M610 44 V104"/><circle class="contact" cx="598" cy="114" r="5"/><circle class="contact" cx="622" cy="114" r="5"/><path class="blade" d="M598 114 L618 98"/><path class="wire" d="M622 114 V170"/>
+      <path class="wire" d="M722 44 V104"/><circle class="contact" cx="710" cy="114" r="5"/><circle class="contact" cx="734" cy="114" r="5"/><path class="blade" d="M710 114 L730 98"/><path class="wire" d="M734 114 V170"/>
+      <path class="wire" d="M834 44 V104"/><circle class="contact" cx="822" cy="114" r="5"/><circle class="contact" cx="846" cy="114" r="5"/><path class="blade" d="M822 114 L842 98"/><path class="wire" d="M846 114 V170"/>
+    </g>
+
+    <!-- All passive switch returns share the isolated DGND terminal. -->
+    <path class="wire" d="M62 170 H846"/>
+  </g>
+
+  <rect class="accent" x="78" y="781" width="132" height="48" rx="6"/>
+  <text class="label" x="144" y="812" text-anchor="middle">DGND</text>
+  <path class="leader" d="M210 805 H292 V830 H1104"/>
+  <text class="ok" x="78" y="870">Shared isolated return</text>
+  <text class="note" x="48" y="944">Leave input COM and the relay terminals unused. Do not apply external voltage for passive contacts.</text>
+</svg>
