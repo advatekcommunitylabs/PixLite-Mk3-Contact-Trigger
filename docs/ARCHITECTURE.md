@@ -68,7 +68,7 @@ flowchart LR
     Resolve --> HTTP["PixLite Mk3 API v1.x"]
     HTTP --> Status["Status/media cache in PSRAM"]
     Status --> API["Streamed local web API"]
-    API --> UI["Embedded Advatek Labs SPA"]
+    API --> UI["Embedded Advatek Community Labs SPA"]
 ```
 
 The GPIO loop never waits for PixLite Mk3 HTTP. Publishing a newer edge replaces

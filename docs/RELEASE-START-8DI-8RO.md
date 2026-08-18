@@ -55,6 +55,6 @@ The input selector shows `DI1`–`DI8`. Use the isolated input screw terminals,
 not ESP32 header pins. Relays, RS485, buzzer, and TF card are intentionally
 unused by this release.
 
-This target is an Advatek Labs community beta. Third-party hardware references
-document compatibility. Advatek does not endorse the listed products. Follow local electrical
-codes, applicable standards, and manufacturer instructions.
+This target is an Advatek Community Labs beta. Third-party hardware references
+document compatibility. Advatek does not endorse the listed products. Follow
+local electrical codes, applicable standards, and manufacturer instructions.

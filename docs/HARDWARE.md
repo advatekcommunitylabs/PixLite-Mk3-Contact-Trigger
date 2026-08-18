@@ -168,8 +168,8 @@ endorse the listed products. Integrators must check local electrical codes, appl
 standards, manufacturer instructions, and whether qualified personnel are
 required.
 
-Advatek Technical Support does not cover third-party hardware or Advatek Labs
-community projects. Use GitHub Issues for reproducible community support
+Advatek Technical Support does not cover third-party hardware or Advatek
+Community Labs projects. Use GitHub Issues for reproducible community support
 requests. No urgent or show-critical support is available through this project.
 
 Use certified industrial digital-input equipment for outdoor cable, cabling

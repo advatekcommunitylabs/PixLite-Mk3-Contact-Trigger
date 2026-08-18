@@ -43,7 +43,7 @@ a separate Arduino board definition.
 ## 2. Open the generated sketch
 
 Download the
-[v1.0.0-beta.6 same-named Arduino folder zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip).
+[v1.0.0-beta.6 same-named Arduino folder zip](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip).
 It is the easiest and least error-prone release artifact:
 
 1. Extract the downloaded zip.

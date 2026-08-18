@@ -1,4 +1,4 @@
-# PixLite Mk3 Contact Closure Trigger
+# PixLite Mk3 Contact Trigger
 
 An open-source community beta for turning physical push buttons, maintained
 switches and relay contacts into PixLite Mk3 scene, playlist, intensity and
@@ -10,19 +10,19 @@ upload.
 
 > [!TIP]
 > **New users should begin with the
-> [step-by-step guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).**
+> [step-by-step guide site](https://advatekcommunitylabs.github.io/PixLite-Mk3-Contact-Trigger/).**
 > It helps you choose the correct hardware download, flash the ESP32, connect
 > switches, and configure the controller. Every guide can also be printed,
 > saved as a PDF, or downloaded as Markdown.
 
 Already have a flashed controller? Open the
-[software user guide](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/user-guide.html).
+[software user guide](https://advatekcommunitylabs.github.io/PixLite-Mk3-Contact-Trigger/user-guide.html).
 Maintainers and contributors can continue to the
 [repository documentation](#documentation).
 
 > **Community beta:** use the matching board-specific download and follow the
 > installation guide before connecting field hardware. Advatek Technical
-> Support does not cover third-party hardware or Advatek Labs community
+> Support does not cover third-party hardware or Advatek Community Labs
 > projects.
 
 ## Quick start
@@ -31,8 +31,8 @@ Choose the download that exactly matches the Waveshare hardware:
 
 | Hardware | Matching Arduino download | Input connection |
 | --- | --- | --- |
-| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
-| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
+| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | [ESP32-S3-ETH zip](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
+| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
 
 PoE changes only the power path. The standard-Ethernet and PoE variants of each
 physical board share one firmware pin map and download.
@@ -198,7 +198,7 @@ canary and enforces firmware, static-DRAM, and compressed-interface budgets.
 ## Documentation
 
 The guides below are also published as a responsive
-[GitHub Pages documentation site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/)
+[GitHub Pages documentation site](https://advatekcommunitylabs.github.io/PixLite-Mk3-Contact-Trigger/)
 with dark/light themes and per-guide PDF/Markdown export controls.
 
 | Guide | Audience |
@@ -214,7 +214,7 @@ with dark/light themes and per-guide PDF/Markdown export controls.
 | [Architecture](docs/ARCHITECTURE.md) | Firmware and web contributors |
 | [Contributing](CONTRIBUTING.md) | Community contributors |
 | [Board porting](PORTING.md) | Maintainers adding an ESP32 PCB |
-| [Project and release summary](PROJECT-SUMMARY.md) | Advatek Labs repository and release maintainers |
+| [Project and release summary](PROJECT-SUMMARY.md) | Advatek Community Labs repository and release maintainers |
 | [Support](SUPPORT.md) | Users reporting a problem |
 | [Security](SECURITY.md) | Installers and vulnerability reporters |
 
@@ -227,8 +227,8 @@ Use it only on a trusted LAN or control VLAN.
 
 ## Community and license
 
-This is an Advatek Labs community integration. Advatek Lighting Technical
-Support does not cover this third-party hardware or any Advatek Labs community
+This is an Advatek Community Labs integration. Advatek Lighting Technical
+Support does not cover this third-party hardware or any Advatek Community Labs
 project. GitHub Issues are the community support route and are not a substitute
 for urgent or show-critical support.
 

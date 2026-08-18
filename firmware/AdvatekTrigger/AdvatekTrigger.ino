@@ -1,5 +1,5 @@
 /*
-  Advatek PixLite Mk3 Contact Closure Trigger
+  Advatek PixLite Mk3 Contact Trigger
 
   Canonical modular firmware. End users may instead download the generated
   board-specific single-file sketch from `generated/`.

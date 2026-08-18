@@ -1,4 +1,4 @@
-# Using the Advatek Labs Contact Trigger
+# Using the Advatek Community Labs Contact Trigger
 
 This short guide covers normal software use after the controller has been
 flashed, wired, and connected to the same local network as its PixLite Mk3

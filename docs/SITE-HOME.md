@@ -3,7 +3,7 @@
 Configure physical buttons, switches, and relay contacts to control PixLite Mk3
 scenes, playlists, output modes, and intensity.
 
-> **Advatek Labs community beta:** follow the board-specific guide and evaluate
+> **Advatek Community Labs beta:** follow the board-specific guide and evaluate
 > the installation for its intended environment before use.
 
 Advatek Technical Support does not cover this third-party hardware or Advatek

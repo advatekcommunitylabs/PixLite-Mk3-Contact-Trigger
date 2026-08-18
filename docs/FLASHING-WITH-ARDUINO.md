@@ -1,6 +1,6 @@
 # Flashing with Arduino IDE
 
-This illustrated guide installs the Advatek Labs community beta on either
+This illustrated guide installs the Advatek Community Labs beta on either
 supported Waveshare ESP32-S3 board. You do not need to edit or paste any code:
 download the folder for your hardware, open its `.ino` file, select the options
 shown below, and choose **Upload**.
@@ -20,8 +20,8 @@ You need:
 
 | Your hardware | Download |
 | --- | --- |
-| Waveshare ESP32-S3-ETH or ESP32-S3-POE-ETH development board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) |
-| Waveshare ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) |
+| Waveshare ESP32-S3-ETH or ESP32-S3-POE-ETH development board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip`](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) |
+| Waveshare ESP32-S3-ETH-8DI-8RO or ESP32-S3-POE-ETH-8DI-8RO industrial board | [`AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip`](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) |
 
 PoE changes only the power source. Each standard-Ethernet and PoE pair uses the
 same firmware ZIP.

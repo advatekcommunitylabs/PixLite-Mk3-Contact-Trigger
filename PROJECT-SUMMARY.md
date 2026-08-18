@@ -1,4 +1,4 @@
-# Advatek PixLite Mk3 Contact Closure Trigger
+# Advatek PixLite Mk3 Contact Trigger
 
 ## GitHub project summary
 
@@ -72,7 +72,7 @@ cards.
 The web interface uses local HTTP without TLS. Deploy it only on a trusted local
 network or an appropriately isolated control VLAN.
 
-This is an Advatek Labs community beta. Advatek Lighting Technical Support does
+This is an Advatek Community Labs beta. Advatek Lighting Technical Support does
 not cover it as a production product. Supported-board entries and supplier
 links document compatibility. Advatek does not endorse the listed products.
 Integrators must check local electrical codes, applicable standards,

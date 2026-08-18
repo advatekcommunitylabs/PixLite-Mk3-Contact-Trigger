@@ -16,10 +16,10 @@ describe('compact commissioning UI contracts', () => {
 
   it('keeps accessibility, branding, and responsive affordances in the embedded source', () => {
     expect(html).toContain('aria-live="polite"');
-    expect(html).toContain('aria-label="Main sections"');
+    expect(html).toContain('aria-label="Sections"');
     expect(css).toContain('@media(max-width:850px)');
     expect(css).toContain('--orange:#f15a2c');
-    expect(html).toContain('ADVATEK LABS');
+    expect(html).toContain('ADVATEK COMMUNITY LABS');
     expect(html).not.toContain('class="brand-mark"');
     expect(html).toContain('rel="icon" href="data:image/svg+xml');
     expect(html).toContain("fill='%23f15a2c'");

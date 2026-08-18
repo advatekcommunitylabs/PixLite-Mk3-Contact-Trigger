@@ -18,8 +18,8 @@ Do not open a public issue for a suspected vulnerability or include working
 exploit details in a discussion.
 
 Use GitHub's private **Report a vulnerability** flow for the repository. If
-private vulnerability reporting is unavailable, contact the Advatek Labs
-repository maintainers privately and ask for a secure reporting channel.
+private vulnerability reporting is unavailable, contact the Advatek Community
+Labs repository maintainers privately and ask for a secure reporting channel.
 
 Include the affected version, attack preconditions, impact, reproduction steps,
 and any proposed mitigation. Remove real credentials and customer network
