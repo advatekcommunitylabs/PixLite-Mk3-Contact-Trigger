@@ -13,7 +13,7 @@ for the manufacturer's complete electrical specification.
 
 ![Waveshare ESP32-S3-POE-ETH-8DI-8RO in its rail-mount enclosure](assets/waveshare-official/poe-board-front-cropped.svg)
 
-This is an Advatek Labs community-beta installation guide. Use the exact
+This is an Advatek Community Labs beta installation guide. Use the exact
 board-specific download, follow the manufacturer's electrical specification,
 and evaluate the completed installation for its intended environment.
 
@@ -51,7 +51,7 @@ Waveshare. See the
 ## Download the correct build
 
 Download
-[AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip),
+[AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip](https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip),
 extract it, and open the same-named `.ino` file. Do not use the
 `ESP32-S3-ETH` sketch: its Ethernet and input pins are different.
 

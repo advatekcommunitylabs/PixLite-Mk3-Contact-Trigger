@@ -1,7 +1,7 @@
 # Contributing
 
-Thank you for helping make the Advatek Labs PixLite Mk3 Contact Closure Trigger
-more useful and reliable for the community.
+Thank you for helping make the Advatek Community Labs PixLite Mk3 Contact
+Contact Trigger more useful and reliable for the community.
 
 Advatek team members, integrators, and community contributors are all welcome
 to propose improvements and contribute repeatable evidence. References to

@@ -140,7 +140,7 @@ The current release candidate identifies as `1.0.0-beta.6`.
 ### Added
 
 - Up to 16 saved, action-addressable PixLite Mk3 controllers.
-- ADAR nickname and MAC presentation in the compact Advatek Labs interface.
+- ADAR nickname and MAC presentation in the compact Advatek Community Labs interface.
 - Solid-colour PixLite Mk3 Test mode with explicit Administrator requirement.
 - Add/remove input workflow with 100 ms default debounce.
 - Persistent status LED enable and brightness controls.

@@ -3,7 +3,7 @@
   <rect width="1600" height="900" fill="#1F1F20"/>
   <rect width="1600" height="116" fill="#353436"/>
   <rect y="112" width="1600" height="4" fill="#F15A2C"/>
-  <text x="58" y="43" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#F15A2C">ADVATEK LABS</text>
+  <text x="58" y="43" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" fill="#F15A2C">ADVATEK COMMUNITY LABS</text>
   <text x="58" y="88" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" fill="#FFFFFF">Up to eight dry-contact buttons for bench testing</text>
   <text x="1540" y="70" text-anchor="end" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#CBC8C5">DIRECT CONTACT · EDITABLE DIAGRAM</text>
   <text x="1000" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#CBC8C5">One button = one 2-core cable (twisted pair): GPIO signal + GND return</text>

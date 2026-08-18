@@ -253,10 +253,10 @@ describe('repository contracts', () => {
     const release = readFileSync('.github/workflows/release.yml', 'utf8');
     const startHere = readFileSync('docs/RELEASE-START-HERE.md', 'utf8');
     expect(readme).toContain(
-      'AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip',
+      'advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip',
     );
     expect(readme).toContain(
-      'AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip',
+      'advatekcommunitylabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip',
     );
     expect(readme).toContain('docs/HARDWARE.md');
     expect(existsSync('docs/waveshare-esp32-s3-eth-project-pinout.svg')).toBe(true);

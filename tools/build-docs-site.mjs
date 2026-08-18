@@ -16,7 +16,7 @@ const root = process.cwd();
 const checkOnly = process.argv.includes('--check');
 const output = resolve(root, checkOnly ? '.build/docs-site-check' : 'site');
 const repositoryUrl =
-  'https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger';
+  'https://github.com/advatekcommunitylabs/PixLite-Mk3-Contact-Trigger';
 const docsCssSource = resolve(root, 'docs-site/docs.css');
 const docsJsSource = resolve(root, 'docs-site/docs.js');
 const docsAssetVersion = createHash('sha256')
@@ -307,14 +307,14 @@ function renderPage(page) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#202020">
     <meta name="description" content="${escapeHtml(page.description)}">
-    <title>${escapeHtml(title)} · Advatek Labs</title>
+    <title>${escapeHtml(title)} · Advatek Community Labs</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Cpath fill='%23f15a2c' d='M0 0v1l1-.5z'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="assets/docs.css?v=${docsAssetVersion}">
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Advatek Labs Contact Trigger project overview">
-        <span><b>ADVATEK LABS</b><small>PixLite Mk3 Contact Trigger</small></span>
+      <a class="brand" href="index.html" aria-label="Advatek Community Labs Contact Trigger project overview">
+        <span><b>ADVATEK COMMUNITY LABS</b><small>PixLite Mk3 Contact Trigger</small></span>
       </a>
       <span class="top-context">${escapeHtml(page.group)} · Community beta</span>
       <div class="top-actions">
@@ -334,7 +334,7 @@ function renderPage(page) {
         </header>
         <article class="article">${article}</article>
         <footer class="page-footer">
-          <span>Advatek Labs community beta · Not an Advatek Lighting-supported production product</span>
+          <span>Advatek Community Labs beta · Not an Advatek Lighting-supported production product</span>
           <a href="${repositoryUrl}" target="_blank" rel="noopener noreferrer">View project on GitHub</a>
         </footer>
       </main>

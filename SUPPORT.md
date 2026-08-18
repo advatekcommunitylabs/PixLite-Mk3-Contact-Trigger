@@ -1,7 +1,7 @@
 # Support
 
-This is an Advatek Labs community project. **Advatek Technical Support does not
-cover this third-party hardware or any Advatek Labs community project.**
+This is an Advatek Community Labs project. **Advatek Technical Support does not
+cover this third-party hardware or any Advatek Community Labs project.**
 
 GitHub Issues are the right place for reproducible firmware, interface,
 documentation, and hardware-integration problems. Community assistance is not

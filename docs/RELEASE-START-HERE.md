@@ -1,7 +1,7 @@
 # Start here: flash the Waveshare ESP32-S3-ETH
 
-This folder is the ready-to-open Arduino build for the Advatek Labs PixLite Mk3
-Contact Closure Trigger. Do not paste or modify the firmware source.
+This folder is the ready-to-open Arduino build for the Advatek Community Labs
+PixLite Mk3 Contact Trigger. Do not paste or modify the firmware source.
 
 ## Upload in six steps
 
