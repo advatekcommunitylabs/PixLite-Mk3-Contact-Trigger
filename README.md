@@ -10,13 +10,13 @@ upload.
 
 > [!TIP]
 > **New users should begin with the
-> [step-by-step guide site](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/).**
+> [step-by-step guide site](https://advatekcommunitylabs.github.io/PixLite-Mk3-Contact-Trigger/).**
 > It helps you choose the correct hardware download, flash the ESP32, connect
 > switches, and configure the controller. Every guide can also be printed,
 > saved as a PDF, or downloaded as Markdown.
 
 Already have a flashed controller? Open the
-[software user guide](https://advateklabs.github.io/PixLite-Mk3-Contact-Trigger/user-guide.html).
+[software user guide](https://advatekcommunitylabs.github.io/PixLite-Mk3-Contact-Trigger/user-guide.html).
 Maintainers and contributors can continue to the
 [repository documentation](#documentation).
 
@@ -31,8 +31,8 @@ Choose the download that exactly matches the Waveshare hardware:
 
 | Hardware | Matching Arduino download | Input connection |
 | --- | --- | --- |
-| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | [ESP32-S3-ETH zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
-| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
+| Waveshare ESP32-S3-ETH / ESP32-S3-POE-ETH development board | [ESP32-S3-ETH zip](https://github.com/AdvatekCommunityLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH.zip) | Approved GPIO to GND; add suitable protection when wiring leaves the enclosure |
+| Waveshare ESP32-S3-ETH-8DI-8RO / ESP32-S3-POE-ETH-8DI-8RO industrial board | [Industrial 8DI zip](https://github.com/AdvatekCommunityLabs/PixLite-Mk3-Contact-Trigger/releases/download/v1.0.0-beta.6/AdvatekTrigger-Waveshare-ESP32-S3-ETH-8DI-8RO.zip) | Built-in isolated DI1–DI8 screw terminals |
 
 PoE changes only the power path. The standard-Ethernet and PoE variants of each
 physical board share one firmware pin map and download.
