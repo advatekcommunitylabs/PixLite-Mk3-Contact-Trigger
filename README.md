@@ -47,7 +47,7 @@ copied or edited. Repository builds are also available under
 Scene and playlist playback uses PixLite Mk3 SHOWTime. A suitable
 **industrial-grade microSD card must be installed in the PixLite Mk3** before
 SHOWTime media can be stored or played. Follow the
-[official SHOWTime guidance](https://www.advateklighting.com/en-us/software/showtime)
+[Recommended microSD Cards for SHOWTime](https://www.advateklighting.com/blog/guides/recommended-microsd-cards-for-showtime)
 for card preparation. The microSD/TF slot on either ESP32 trigger board is
 unrelated and is not used by this firmware.
 
